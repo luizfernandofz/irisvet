@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Fuse from 'fuse.js'
 import { supabase } from '../lib/supabase'
+import { formatarData } from '../lib/utils'
 
 const ESPECIE_EMOJI = {
   canino: '🐕', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
@@ -17,6 +18,13 @@ const ESPECIES = [
   { value: 'outro', label: 'Outro' },
 ]
 
+const TIPO_BADGE = {
+  'Consulta': { bg: '#EEEDFE', color: '#534AB7', border: '#AFA9EC' },
+  'Retorno/Reavaliação': { bg: '#E1F5EE', color: '#0F6E56', border: '#5DCAA5' },
+  'Exame Complementar': { bg: '#E6F1FB', color: '#185FA5', border: '#85B7EB' },
+  'Intervenção': { bg: '#FAEEDA', color: '#854F0B', border: '#FAC775' },
+}
+
 function normalizar(str) {
   return (str || '')
     .normalize('NFD')
@@ -25,9 +33,18 @@ function normalizar(str) {
     .trim()
 }
 
+function badgeStyle(tipo) {
+  const s = TIPO_BADGE[tipo] || { bg: '#f0f0f0', color: '#555', border: '#ccc' }
+  return {
+    fontSize: 10, padding: '2px 8px', borderRadius: 20,
+    background: s.bg, color: s.color, border: `1px solid ${s.border}`,
+    fontWeight: 600, whiteSpace: 'nowrap'
+  }
+}
+
 export default function Consultar() {
   const navigate = useNavigate()
-  const [fichas, setFichas] = useState([])
+  const [pacientes, setPacientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [filtroTutor, setFiltroTutor] = useState('')
   const [filtroTelefone, setFiltroTelefone] = useState('')
@@ -38,101 +55,92 @@ export default function Consultar() {
   const [resultados, setResultados] = useState([])
 
   useEffect(() => {
-    async function fetchFichas() {
+    async function fetchDados() {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('consultations')
+
+      // Buscar pacientes com todas as suas consultas e reavaliações
+      const { data: patients } = await supabase
+        .from('patients')
         .select(`
-          id, data, local, tipo_atendimento, status,
-          patients (
-            id, nome, especie, raca,
-            tutors ( id, nome, telefone )
-          )
+          id, nome, especie, raca,
+          tutors ( id, nome, telefone ),
+          consultations ( id, data, tipo_atendimento, status ),
+          follow_ups ( id, data, tipo_atendimento )
         `)
-        .order('data', { ascending: false })
+        .order('nome')
 
-      if (error) { console.error(error); setLoading(false); return }
+      const formatados = (patients || []).map(p => {
+        const consultas = (p.consultations || []).map(c => ({
+          id: c.id,
+          tipo: c.tipo_atendimento || 'Consulta',
+          data: c.data,
+          status: c.status,
+          tabela: 'consultations',
+        }))
+        const reavs = (p.follow_ups || []).map(f => ({
+          id: f.id,
+          tipo: f.tipo_atendimento || 'Retorno/Reavaliação',
+          data: f.data,
+          status: 'finalizada',
+          tabela: 'follow_ups',
+        }))
+        const todasFichas = [...consultas, ...reavs].sort((a, b) => b.data.localeCompare(a.data))
+        const ultimaData = todasFichas[0]?.data || ''
 
-      const formatadas = (data || []).map(c => ({
-        id: c.id,
-        data: c.data,
-        local: c.local,
-        tipo_atendimento: c.tipo_atendimento,
-        status: c.status,
-        patient_id: c.patients?.id,
-        pet_nome: c.patients?.nome || '',
-        pet_especie: c.patients?.especie || '',
-        pet_raca: c.patients?.raca || '',
-        tutor_nome: c.patients?.tutors?.nome || '',
-        tutor_telefone: c.patients?.tutors?.telefone || '',
-        tutor_id: c.patients?.tutors?.id,
-        // campos normalizados para pesquisa
-        _tutor_norm: normalizar(c.patients?.tutors?.nome),
-        _pet_norm: normalizar(c.patients?.nome),
-        _telefone_norm: normalizar(c.patients?.tutors?.telefone),
-      }))
+        return {
+          id: p.id,
+          nome: p.nome || '',
+          especie: p.especie || '',
+          raca: p.raca || '',
+          tutor_nome: p.tutors?.nome || '',
+          tutor_telefone: p.tutors?.telefone || '',
+          fichas: todasFichas,
+          ultimaData,
+          _nome_norm: normalizar(p.nome),
+          _tutor_norm: normalizar(p.tutors?.nome),
+          _telefone_norm: normalizar(p.tutors?.telefone),
+        }
+      })
 
-      setFichas(formatadas)
-      setResultados(formatadas)
+      // Ordenar por data mais recente
+      formatados.sort((a, b) => b.ultimaData.localeCompare(a.ultimaData))
+
+      setPacientes(formatados)
+      setResultados(formatados)
       setLoading(false)
     }
-    fetchFichas()
+    fetchDados()
   }, [])
 
   useEffect(() => {
-    let lista = [...fichas]
+    let lista = [...pacientes]
 
-    // Filtro de espécie (exacto)
-    if (filtroEspecie) {
-      lista = lista.filter(f => f.pet_especie === filtroEspecie)
-    }
+    if (filtroEspecie) lista = lista.filter(p => p.especie === filtroEspecie)
 
-    // Filtro de data
-    if (filtroDataDe) lista = lista.filter(f => f.data >= filtroDataDe)
-    if (filtroDataAte) lista = lista.filter(f => f.data <= filtroDataAte)
+    if (filtroDataDe) lista = lista.filter(p => p.ultimaData >= filtroDataDe)
+    if (filtroDataAte) lista = lista.filter(p => p.ultimaData <= filtroDataAte)
 
-    // Fuzzy search por tutor (com normalização)
     if (filtroTutor.trim()) {
       const termo = normalizar(filtroTutor)
-      const fuse = new Fuse(lista, {
-        keys: ['_tutor_norm'],
-        threshold: 0.4,
-        includeScore: true,
-        useExtendedSearch: false,
-      })
-      // Fuse já usa os campos normalizados
+      const fuse = new Fuse(lista, { keys: ['_tutor_norm'], threshold: 0.4 })
       const r = fuse.search(termo)
-      // fallback: se fuse não encontrar, tenta includes simples
-      if (r.length > 0) {
-        lista = r.map(x => x.item)
-      } else {
-        lista = lista.filter(f => f._tutor_norm.includes(termo))
-      }
+      lista = r.length > 0 ? r.map(x => x.item) : lista.filter(p => p._tutor_norm.includes(termo))
     }
 
-    // Fuzzy search por telefone
     if (filtroTelefone.trim()) {
       const termo = normalizar(filtroTelefone)
-      lista = lista.filter(f => f._telefone_norm.includes(termo))
+      lista = lista.filter(p => p._telefone_norm.includes(termo))
     }
 
-    // Fuzzy search por pet (com normalização)
     if (filtroPet.trim()) {
       const termo = normalizar(filtroPet)
-      const fuse = new Fuse(lista, {
-        keys: ['_pet_norm'],
-        threshold: 0.4,
-      })
+      const fuse = new Fuse(lista, { keys: ['_nome_norm'], threshold: 0.4 })
       const r = fuse.search(termo)
-      if (r.length > 0) {
-        lista = r.map(x => x.item)
-      } else {
-        lista = lista.filter(f => f._pet_norm.includes(termo))
-      }
+      lista = r.length > 0 ? r.map(x => x.item) : lista.filter(p => p._nome_norm.includes(termo))
     }
 
     setResultados(lista)
-  }, [filtroTutor, filtroTelefone, filtroPet, filtroEspecie, filtroDataDe, filtroDataAte, fichas])
+  }, [filtroTutor, filtroTelefone, filtroPet, filtroEspecie, filtroDataDe, filtroDataAte, pacientes])
 
   function limparFiltros() {
     setFiltroTutor('')
@@ -150,13 +158,14 @@ export default function Consultar() {
         {/* CABEÇALHO */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7' }}>írisvet</div>
-            <div style={{ fontSize: 13, color: '#888' }}>Consultar pacientes</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }}
+              onClick={() => navigate('/')}>írisvet</div>
+            <div style={{ fontSize: 13, color: '#888' }}>Localizar paciente</div>
           </div>
           <button onClick={() => navigate('/')} style={{
             padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
             background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
-          }}>← Voltar</button>
+          }}>🏠 Home</button>
         </div>
 
         {/* FILTROS */}
@@ -170,38 +179,22 @@ export default function Consultar() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
               <label style={labelStyle}>Nome do tutor</label>
-              <input
-                type="text" value={filtroTutor}
-                onChange={e => setFiltroTutor(e.target.value)}
-                placeholder="Ex: Angela..."
-                style={inputStyle}
-              />
+              <input type="text" value={filtroTutor} onChange={e => setFiltroTutor(e.target.value)}
+                placeholder="Ex: Angela..." style={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>Telefone</label>
-              <input
-                type="text" value={filtroTelefone}
-                onChange={e => setFiltroTelefone(e.target.value)}
-                placeholder="Ex: 911..."
-                style={inputStyle}
-              />
+              <input type="text" value={filtroTelefone} onChange={e => setFiltroTelefone(e.target.value)}
+                placeholder="Ex: 911..." style={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>Nome do pet</label>
-              <input
-                type="text" value={filtroPet}
-                onChange={e => setFiltroPet(e.target.value)}
-                placeholder="Ex: Honey..."
-                style={inputStyle}
-              />
+              <input type="text" value={filtroPet} onChange={e => setFiltroPet(e.target.value)}
+                placeholder="Ex: Honey..." style={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>Espécie</label>
-              <select
-                value={filtroEspecie}
-                onChange={e => setFiltroEspecie(e.target.value)}
-                style={inputStyle}
-              >
+              <select value={filtroEspecie} onChange={e => setFiltroEspecie(e.target.value)} style={inputStyle}>
                 {ESPECIES.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
               </select>
             </div>
@@ -220,9 +213,7 @@ export default function Consultar() {
             marginTop: 12, padding: '7px 16px', borderRadius: 8,
             border: '1px solid #ddd', background: 'white', color: '#888',
             fontSize: 12, cursor: 'pointer'
-          }}>
-            Limpar filtros
-          </button>
+          }}>Limpar filtros</button>
         </div>
 
         {/* RESULTADOS */}
@@ -231,19 +222,19 @@ export default function Consultar() {
           boxShadow: '0 2px 16px rgba(83,74,183,0.08)', overflow: 'hidden'
         }}>
           <div style={{ padding: '16px 24px', borderBottom: '1px solid #f0f0f0', fontSize: 13, color: '#888' }}>
-            {loading ? 'A carregar...' : `${resultados.length} ficha${resultados.length !== 1 ? 's' : ''} encontrada${resultados.length !== 1 ? 's' : ''}`}
+            {loading ? 'A carregar...' : `${resultados.length} paciente${resultados.length !== 1 ? 's' : ''} encontrado${resultados.length !== 1 ? 's' : ''}`}
           </div>
 
           {!loading && resultados.length === 0 && (
             <div style={{ padding: 40, textAlign: 'center', color: '#bbb', fontSize: 14 }}>
-              Nenhuma ficha encontrada
+              Nenhum paciente encontrado
             </div>
           )}
 
-          {resultados.map((ficha, i) => (
-            <FichaRow
-              key={ficha.id}
-              ficha={ficha}
+          {resultados.map((paciente, i) => (
+            <PacienteRow
+              key={paciente.id}
+              paciente={paciente}
               ultimo={i === resultados.length - 1}
               navigate={navigate}
             />
@@ -255,77 +246,103 @@ export default function Consultar() {
   )
 }
 
-function FichaRow({ ficha, ultimo, navigate }) {
+function PacienteRow({ paciente, ultimo, navigate }) {
   const [aberto, setAberto] = useState(false)
-  const emoji = ESPECIE_EMOJI[ficha.pet_especie] || ''
+  const emoji = ESPECIE_EMOJI[paciente.especie] || ''
 
   return (
     <div style={{ borderBottom: ultimo ? 'none' : '1px solid #f0f0f0' }}>
-      <div
-        onClick={() => setAberto(a => !a)}
-        style={{
-          padding: '16px 24px', cursor: 'pointer', display: 'flex',
-          alignItems: 'center', justifyContent: 'space-between',
-          background: aberto ? '#f9f8ff' : 'white', transition: 'background 0.15s'
-        }}
-        onMouseEnter={e => { if (!aberto) e.currentTarget.style.background = '#fafafa' }}
-        onMouseLeave={e => { if (!aberto) e.currentTarget.style.background = 'white' }}
-      >
-        <div>
+      {/* LINHA DO ANIMAL */}
+      <div style={{
+        padding: '16px 24px', display: 'flex',
+        alignItems: 'center', justifyContent: 'space-between',
+        background: aberto ? '#f9f8ff' : 'white'
+      }}>
+        <div
+          onClick={() => setAberto(a => !a)}
+          style={{ flex: 1, cursor: 'pointer' }}
+        >
           <div style={{ fontSize: 15, fontWeight: 600, color: '#222', marginBottom: 3 }}>
-            {emoji} {ficha.pet_nome || 'Sem nome'}{' '}
-            {ficha.pet_raca
-              ? <span style={{ fontSize: 13, fontWeight: 400, color: '#888' }}>· {ficha.pet_raca}</span>
-              : null}
+            {emoji} {paciente.nome || 'Sem nome'}
+            {paciente.raca ? <span style={{ fontSize: 13, fontWeight: 400, color: '#888' }}> · {paciente.raca}</span> : null}
           </div>
           <div style={{ fontSize: 13, color: '#888' }}>
-            {ficha.tutor_nome}{ficha.tutor_telefone ? ` · ${ficha.tutor_telefone}` : ''} · {ficha.data}
-            {ficha.status === 'rascunho' && (
-              <span style={{
-                marginLeft: 8, fontSize: 11, padding: '2px 8px', borderRadius: 20,
-                background: '#FAEEDA', color: '#854F0B', fontWeight: 500
-              }}>rascunho</span>
+            {paciente.tutor_nome}
+            {paciente.fichas.length > 0 && (
+              <span style={{ marginLeft: 8, fontSize: 11, color: '#aaa' }}>
+                · {paciente.fichas.length} ficha{paciente.fichas.length !== 1 ? 's' : ''}
+              </span>
             )}
           </div>
         </div>
-        <div style={{ fontSize: 18, color: '#aaa' }}>{aberto ? '▲' : '▼'}</div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={() => navigate(`/nova-consulta/${paciente.id}`)}
+            style={{
+              padding: '7px 14px', borderRadius: 8, border: '1px solid #534AB7',
+              background: '#EEEDFE', color: '#534AB7', fontSize: 12,
+              fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap'
+            }}
+          >+ Nova Consulta</button>
+          <div
+            onClick={() => setAberto(a => !a)}
+            style={{ fontSize: 18, color: '#aaa', cursor: 'pointer', padding: '0 4px' }}
+          >{aberto ? '▲' : '▼'}</div>
+        </div>
       </div>
 
+      {/* FICHAS DO ANIMAL */}
       {aberto && (
-        <div style={{
-          padding: '12px 24px 20px', background: '#f9f8ff',
-          display: 'flex', gap: 10, flexWrap: 'wrap'
-        }}>
-          <button
-            onClick={() => navigate(`/consulta/${ficha.id}`)}
-            style={btnStyle('#534AB7', '#EEEDFE')}
-          >
-            👁 Ver ficha
-          </button>
-          <button
-            onClick={() => navigate(`/editar/${ficha.id}`)}
-            style={btnStyle('#555', 'white')}
-          >
-            ✏️ Editar
-          </button>
-          <button
-            onClick={() => navigate(`/reavaliacao/${ficha.id}`)}
-            style={btnStyle('#0F6E56', '#E1F5EE')}
-          >
-            ➕ Adicionar reavaliação
-          </button>
+        <div style={{ background: '#f9f8ff', borderTop: '1px solid #eee' }}>
+          {paciente.fichas.length === 0 ? (
+            <div style={{ padding: '16px 24px', fontSize: 13, color: '#bbb' }}>
+              Sem fichas registadas
+            </div>
+          ) : (
+            paciente.fichas.map((ficha, i) => (
+              <div key={ficha.id} style={{
+                padding: '12px 24px 12px 40px',
+                borderBottom: i < paciente.fichas.length - 1 ? '1px solid #eee' : 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+                  <span style={badgeStyle(ficha.tipo)}>{ficha.tipo}</span>
+                  <span style={{ fontSize: 13, color: '#555' }}>{formatarData(ficha.data)}</span>
+                  {ficha.status === 'rascunho' && (
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: '#FAEEDA', color: '#854F0B', fontWeight: 500 }}>
+                      rascunho
+                    </span>
+                  )}
+                </div>
+                <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                  <button
+                    onClick={() => ficha.tabela === 'consultations'
+                      ? navigate(`/consulta/${ficha.id}`)
+                      : navigate(`/consulta/${ficha.id}?tipo=reav`)
+                    }
+                    style={{
+                      padding: '6px 12px', borderRadius: 7, border: '1px solid #AFA9EC',
+                      background: '#EEEDFE', color: '#534AB7', fontSize: 12, fontWeight: 500, cursor: 'pointer'
+                    }}
+                  >👁 Ver</button>
+                  {ficha.tabela === 'consultations' && (
+                    <button
+                      onClick={() => navigate(`/editar/${ficha.id}`)}
+                      style={{
+                        padding: '6px 12px', borderRadius: 7, border: '1px solid #ddd',
+                        background: 'white', color: '#555', fontSize: 12, cursor: 'pointer'
+                      }}
+                    >✏️ Editar</button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>
   )
-}
-
-function btnStyle(color, bg) {
-  return {
-    padding: '9px 18px', borderRadius: 8, border: `1px solid ${color}`,
-    background: bg, color: color, fontSize: 13, fontWeight: 500,
-    cursor: 'pointer'
-  }
 }
 
 const labelStyle = {

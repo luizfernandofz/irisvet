@@ -19,7 +19,6 @@ export default function EditarFicha() {
   const [revisao, setRevisao] = useState(false)
   const [finalizing, setFinalizing] = useState(false)
   const [erro, setErro] = useState(null)
-
   const [dados, setDados] = useState(null)
 
   useEffect(() => {
@@ -42,7 +41,7 @@ export default function EditarFicha() {
         const { data, error } = await supabase.storage
           .from('images')
           .createSignedUrl(img.storage_path, 60 * 60 * 24)
-      return { ...img, preview: error ? '' : data.signedUrl, original: error ? '' : data.signedUrl }
+        return { ...img, preview: error ? '' : data.signedUrl, original: error ? '' : data.signedUrl }
       }))
 
       const paciente = cons.patients || {}
@@ -100,7 +99,6 @@ export default function EditarFicha() {
     setSaving(true)
     setErro(null)
     try {
-      // Actualizar tutor
       if (dadosActuais.tutor_id) {
         await supabase.from('tutors').update({
           nome: dadosActuais.tutor_nome,
@@ -111,7 +109,6 @@ export default function EditarFicha() {
         }).eq('id', dadosActuais.tutor_id)
       }
 
-      // Actualizar paciente
       if (dadosActuais.paciente_id) {
         await supabase.from('patients').update({
           nome: dadosActuais.paciente_nome,
@@ -122,7 +119,6 @@ export default function EditarFicha() {
         }).eq('id', dadosActuais.paciente_id)
       }
 
-      // Actualizar consulta
       await supabase.from('consultations').update({
         data: dadosActuais.data,
         local: dadosActuais.local,
@@ -196,21 +192,19 @@ export default function EditarFicha() {
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7' }}>írisvet</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }}
+              onClick={() => navigate('/')}>írisvet</div>
             <div style={{ fontSize: 13, color: '#888' }}>Editar ficha</div>
           </div>
-          <button onClick={() => navigate(`/consulta/${id}`)} style={{
-            padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
-            background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
-          }}>← Voltar</button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={() => navigate(`/consulta/${id}`)} style={btnNav}>← Voltar</button>
+            <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
+          </div>
         </div>
 
         <ProgressBar sessaoActual={sessao} total={6} />
 
-        <div style={{
-          background: 'white', borderRadius: 16, padding: '32px',
-          boxShadow: '0 2px 16px rgba(83,74,183,0.08)'
-        }}>
+        <div style={{ background: 'white', borderRadius: 16, padding: '32px', boxShadow: '0 2px 16px rgba(83,74,183,0.08)' }}>
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1 }}>
               Sessão {sessao} de 6
@@ -220,7 +214,7 @@ export default function EditarFicha() {
             </div>
           </div>
 
-          {sessao === 1 && <Sessao1e2 dados={dados} onChange={setDados} />}
+          {sessao === 1 && <Sessao1e2 dados={dados} onChange={setDados} locked={false} />}
           {sessao === 2 && <Sessao3 dados={dados} onChange={setDados} />}
           {sessao === 3 && <Sessao4 dados={dados} onChange={setDados} />}
           {sessao === 4 && <Sessao5 dados={dados} onChange={setDados} />}
@@ -228,43 +222,31 @@ export default function EditarFicha() {
           {sessao === 6 && <Sessao7 dados={dados} onChange={setDados} consultationId={id} />}
 
           {erro && (
-            <div style={{
-              background: '#FAECE7', color: '#993C1D', borderRadius: 8,
-              padding: '10px 12px', fontSize: 13, marginTop: 16
-            }}>{erro}</div>
+            <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 16 }}>
+              {erro}
+            </div>
           )}
 
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginTop: 32, paddingTop: 24, borderTop: '1px solid #f0f0f0'
-          }}>
-            <button
-              onClick={() => setSessao(s => s - 1)}
-              disabled={sessao === 1}
-              style={{
-                padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd',
-                background: 'white', color: sessao === 1 ? '#ccc' : '#555',
-                fontSize: 14, cursor: sessao === 1 ? 'not-allowed' : 'pointer'
-              }}
-            >← Anterior</button>
-
-            <span style={{ fontSize: 12, color: '#aaa' }}>
-              {saving ? '💾 A guardar...' : ''}
-            </span>
-
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, paddingTop: 24, borderTop: '1px solid #f0f0f0' }}>
+            <button onClick={() => setSessao(s => s - 1)} disabled={sessao === 1}
+              style={{ padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: sessao === 1 ? '#ccc' : '#555', fontSize: 14, cursor: sessao === 1 ? 'not-allowed' : 'pointer' }}>
+              ← Anterior
+            </button>
+            <span style={{ fontSize: 12, color: '#aaa' }}>{saving ? '💾 A guardar...' : ''}</span>
             <button
               onClick={sessao === 6 ? () => setRevisao(true) : () => setSessao(s => s + 1)}
               disabled={saving}
-              style={{
-                padding: '10px 24px', borderRadius: 8, border: 'none',
-                background: saving ? '#a9a4e8' : '#534AB7',
-                color: 'white', fontSize: 14, fontWeight: 600,
-                cursor: saving ? 'not-allowed' : 'pointer'
-              }}
-            >{sessao === 6 ? '👁 Rever ficha →' : 'Próxima →'}</button>
+              style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: saving ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
+              {sessao === 6 ? '👁 Rever ficha →' : 'Próxima →'}
+            </button>
           </div>
         </div>
       </div>
     </div>
   )
+}
+
+const btnNav = {
+  padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
+  background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
 }

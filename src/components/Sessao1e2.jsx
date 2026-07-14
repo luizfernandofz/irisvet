@@ -38,7 +38,7 @@ function calcularIdade(dataNasc) {
   return `${anos} ${anos === 1 ? 'ano' : 'anos'} e ${meses} ${meses === 1 ? 'mês' : 'meses'}`
 }
 
-export default function Sessao1e2({ dados, onChange }) {
+export default function Sessao1e2({ dados, onChange, locked = false }) {
   const [clinicas, setClinicas] = useState([])
   const [showClinicas, setShowClinicas] = useState(false)
 
@@ -65,6 +65,13 @@ export default function Sessao1e2({ dados, onChange }) {
   )
 
   const idade = calcularIdade(dados.paciente_nascimento)
+
+  const lockedStyle = {
+    ...inputStyle,
+    background: '#f0f0f0',
+    color: '#888',
+    cursor: 'not-allowed',
+  }
 
   return (
     <div>
@@ -129,27 +136,35 @@ export default function Sessao1e2({ dados, onChange }) {
 
       {/* CLIENTE */}
       <div style={{ marginBottom: 24 }}>
-        <div style={sectionTitleStyle}>Cliente (Tutor)</div>
+        <div style={sectionTitleStyle}>
+          Cliente (Tutor)
+          {locked && <span style={{ fontSize: 10, fontWeight: 400, color: '#aaa', marginLeft: 8 }}>— campos bloqueados</span>}
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
             <label style={labelStyle}>Nome</label>
-            <input type="text" value={dados.tutor_nome || ''} onChange={e => set('tutor_nome', e.target.value)} placeholder="Nome completo" style={inputStyle} />
+            <input type="text" value={dados.tutor_nome || ''} onChange={e => set('tutor_nome', e.target.value)}
+              placeholder="Nome completo" style={locked ? lockedStyle : inputStyle} readOnly={locked} />
           </div>
           <div>
             <label style={labelStyle}>Telefone</label>
-            <input type="text" value={dados.tutor_telefone || ''} onChange={e => set('tutor_telefone', e.target.value)} placeholder="Ex: 911234567" style={inputStyle} />
+            <input type="text" value={dados.tutor_telefone || ''} onChange={e => set('tutor_telefone', e.target.value)}
+              placeholder="Ex: 911234567" style={locked ? lockedStyle : inputStyle} readOnly={locked} />
           </div>
           <div>
             <label style={labelStyle}>NIF / CPF</label>
-            <input type="text" value={dados.tutor_nif || ''} onChange={e => set('tutor_nif', e.target.value)} style={inputStyle} />
+            <input type="text" value={dados.tutor_nif || ''} onChange={e => set('tutor_nif', e.target.value)}
+              style={locked ? lockedStyle : inputStyle} readOnly={locked} />
           </div>
           <div>
             <label style={labelStyle}>Email</label>
-            <input type="email" value={dados.tutor_email || ''} onChange={e => set('tutor_email', e.target.value)} style={inputStyle} />
+            <input type="email" value={dados.tutor_email || ''} onChange={e => set('tutor_email', e.target.value)}
+              style={locked ? lockedStyle : inputStyle} readOnly={locked} />
           </div>
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={labelStyle}>Morada</label>
-            <input type="text" value={dados.tutor_morada || ''} onChange={e => set('tutor_morada', e.target.value)} style={inputStyle} />
+            <input type="text" value={dados.tutor_morada || ''} onChange={e => set('tutor_morada', e.target.value)}
+              style={locked ? lockedStyle : inputStyle} readOnly={locked} />
           </div>
         </div>
       </div>
@@ -158,33 +173,41 @@ export default function Sessao1e2({ dados, onChange }) {
 
       {/* PACIENTE */}
       <div>
-        <div style={sectionTitleStyle}>Paciente</div>
+        <div style={sectionTitleStyle}>
+          Paciente
+          {locked && <span style={{ fontSize: 10, fontWeight: 400, color: '#aaa', marginLeft: 8 }}>— campos bloqueados</span>}
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
             <label style={labelStyle}>Nome do animal</label>
-            <input type="text" value={dados.paciente_nome || ''} onChange={e => set('paciente_nome', e.target.value)} placeholder="Ex: Honey" style={inputStyle} />
+            <input type="text" value={dados.paciente_nome || ''} onChange={e => set('paciente_nome', e.target.value)}
+              placeholder="Ex: Honey" style={locked ? lockedStyle : inputStyle} readOnly={locked} />
           </div>
           <div>
             <label style={labelStyle}>Espécie</label>
-            <select value={dados.paciente_especie || ''} onChange={e => set('paciente_especie', e.target.value)} style={inputStyle}>
+            <select value={dados.paciente_especie || ''} onChange={e => set('paciente_especie', e.target.value)}
+              style={locked ? lockedStyle : inputStyle} disabled={locked}>
               <option value="">Seleccionar...</option>
               {ESPECIES.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
             </select>
           </div>
           <div>
             <label style={labelStyle}>Raça</label>
-            <input type="text" value={dados.paciente_raca || ''} onChange={e => set('paciente_raca', e.target.value)} style={inputStyle} />
+            <input type="text" value={dados.paciente_raca || ''} onChange={e => set('paciente_raca', e.target.value)}
+              style={locked ? lockedStyle : inputStyle} readOnly={locked} />
           </div>
           <div>
             <label style={labelStyle}>Género</label>
-            <select value={dados.paciente_genero || ''} onChange={e => set('paciente_genero', e.target.value)} style={inputStyle}>
+            <select value={dados.paciente_genero || ''} onChange={e => set('paciente_genero', e.target.value)}
+              style={locked ? lockedStyle : inputStyle} disabled={locked}>
               <option value="">Seleccionar...</option>
               {GENEROS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
             </select>
           </div>
           <div>
             <label style={labelStyle}>Data de nascimento</label>
-            <input type="date" value={dados.paciente_nascimento || ''} onChange={e => set('paciente_nascimento', e.target.value)} style={inputStyle} />
+            <input type="date" value={dados.paciente_nascimento || ''} onChange={e => set('paciente_nascimento', e.target.value)}
+              style={locked ? lockedStyle : inputStyle} readOnly={locked} />
           </div>
           <div>
             <label style={labelStyle}>Idade (calculada)</label>

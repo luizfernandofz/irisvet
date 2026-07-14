@@ -41,7 +41,7 @@ function Home({ session }) {
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 6 }}>📋</div>
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Nova consulta</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>Novo Paciente</div>
             <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Criar nova ficha</div>
           </button>
 
@@ -50,12 +50,12 @@ function Home({ session }) {
             style={{
               padding: '20px 12px', borderRadius: 12,
               border: '2px solid #eee', background: 'white',
-              color: '#333', cursor: 'not-allowed', textAlign: 'center', opacity: 0.5
+              color: '#333', cursor: 'pointer', textAlign: 'center'
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 6 }}>🔍</div>
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Consultar</div>
-            <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>Disponível na Fase 4</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>Localizar Paciente</div>
+            <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>Pesquisar fichas</div>
           </button>
         </div>
 
@@ -93,6 +93,7 @@ function AppInner() {
     <Routes>
       <Route path="/" element={<Home session={session} />} />
       <Route path="/nova-consulta" element={<NovaConsulta />} />
+      <Route path="/nova-consulta/:patientId" element={<NovaConsulta />} />
       <Route path="/consultar" element={<Consultar />} />
       <Route path="/consulta/:id" element={<VerFicha />} />
       <Route path="/editar/:id" element={<EditarFicha />} />

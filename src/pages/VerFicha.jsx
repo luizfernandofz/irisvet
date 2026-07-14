@@ -125,6 +125,7 @@ export default function VerFicha() {
   const navigate = useNavigate()
   const [dados, setDados] = useState(null)
   const [imagens, setImagens] = useState([])
+  const [followUps, setFollowUps] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -150,8 +151,15 @@ export default function VerFicha() {
         return { ...img, preview: error ? '' : data.signedUrl }
       }))
 
+      const { data: fus } = await supabase
+        .from('follow_ups')
+        .select('*')
+        .eq('consultation_id', id)
+        .order('data', { ascending: true })
+
       setDados(cons)
       setImagens(imagensComUrl)
+      setFollowUps(fus || [])
       setLoading(false)
     }
     fetchDados()
@@ -185,7 +193,8 @@ export default function VerFicha() {
         {/* CABEÇALHO */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7' }}>írisvet</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }}
+              onClick={() => navigate('/')}>írisvet</div>
             <div style={{ fontSize: 13, color: '#888' }}>Ficha de atendimento</div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
@@ -193,10 +202,8 @@ export default function VerFicha() {
               padding: '8px 16px', borderRadius: 8, border: '1px solid #534AB7',
               background: '#EEEDFE', color: '#534AB7', fontSize: 13, cursor: 'pointer', fontWeight: 500
             }}>✏️ Editar</button>
-            <button onClick={() => navigate('/consultar')} style={{
-              padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
-              background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
-            }}>← Voltar</button>
+            <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
+            <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
           </div>
         </div>
 
@@ -371,21 +378,49 @@ export default function VerFicha() {
           </div>
         </Card>
 
+        {/* REAVALIAÇÕES */}
+        {followUps.length > 0 && (
+          <Card>
+            <SeccaoTitulo>Reavaliações ({followUps.length})</SeccaoTitulo>
+            {followUps.map((fu, i) => (
+              <div key={fu.id} style={{
+                borderBottom: i < followUps.length - 1 ? '1px solid #f0f0f0' : 'none',
+                paddingBottom: i < followUps.length - 1 ? 24 : 0,
+                marginBottom: i < followUps.length - 1 ? 24 : 0,
+              }}>
+                <div style={{
+                  fontSize: 13, fontWeight: 600, color: '#534AB7',
+                  background: '#EEEDFE', borderRadius: 8, padding: '8px 12px', marginBottom: 16
+                }}>
+                  Reavaliação {i + 1} — {fu.data}
+                  {fu.local ? ` · ${fu.local}` : ''}
+                  {fu.tipo_atendimento ? ` · ${fu.tipo_atendimento}` : ''}
+                </div>
+                <Grid2>
+                  <Campo label="Motivo" valor={fu.motivo} />
+                  <Campo label="Avaliação" valor={fu.avaliacao} />
+                  <Campo label="Diagnóstico" valor={fu.diagnostico} />
+                  <Campo label="Tratamento" valor={fu.tratamento} />
+                </Grid2>
+              </div>
+            ))}
+          </Card>
+        )}
+
         {/* BOTÕES */}
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 40 }}>
-          <button onClick={() => navigate('/consultar')} style={{
-            padding: '12px 24px', borderRadius: 10, border: '1px solid #ddd',
-            background: 'white', color: '#555', fontSize: 14, cursor: 'pointer'
-          }}>← Voltar à pesquisa</button>
-          <button onClick={() => navigate(`/reavaliacao/${id}`)} style={{
-            padding: '12px 24px', borderRadius: 10, border: '1px solid #1D9E75',
-            background: '#E1F5EE', color: '#0F6E56', fontSize: 14, fontWeight: 500, cursor: 'pointer'
-          }}>➕ Adicionar reavaliação</button>
+          <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
+          <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar à pesquisa</button>
         </div>
 
       </div>
     </div>
   )
+}
+
+const btnNav = {
+  padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
+  background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
 }
 
 const thStyle = {
