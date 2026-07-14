@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
+import NovaConsulta from './pages/NovaConsulta'
 
 function Home({ session }) {
+  const navigate = useNavigate()
+
   async function handleLogout() {
     await supabase.auth.signOut()
   }
@@ -10,30 +14,53 @@ function Home({ session }) {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', background: '#f5f4fe'
+      justifyContent: 'center', background: '#f5f4fe', padding: 16
     }}>
       <div style={{
         background: 'white', borderRadius: 16, padding: '48px 40px',
-        width: 400, boxShadow: '0 4px 24px rgba(83,74,183,0.10)',
-        textAlign: 'center'
+        width: '100%', maxWidth: 420,
+        boxShadow: '0 4px 24px rgba(83,74,183,0.10)', textAlign: 'center'
       }}>
-        <div style={{ fontSize: 32, fontWeight: 700, color: '#534AB7', marginBottom: 8 }}>
+        <div style={{ fontSize: 32, fontWeight: 700, color: '#534AB7', marginBottom: 4 }}>
           írisvet
         </div>
-        <div style={{ fontSize: 14, color: '#555', marginBottom: 32 }}>
-          Bem-vinda, {session.user.email}
+        <div style={{ fontSize: 13, color: '#888', marginBottom: 40 }}>
+          Dra. Anna Clara · Oftalmologia Veterinária
         </div>
-        <div style={{
-          background: '#E1F5EE', borderRadius: 10, padding: '16px',
-          fontSize: 13, color: '#0F6E56', marginBottom: 32
-        }}>
-          ✓ Ligação ao Supabase estabelecida com sucesso
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 32 }}>
+          <button
+            onClick={() => navigate('/nova-consulta')}
+            style={{
+              padding: '20px 12px', borderRadius: 12,
+              border: '2px solid #534AB7', background: '#534AB7',
+              color: 'white', cursor: 'pointer', textAlign: 'center'
+            }}
+          >
+            <div style={{ fontSize: 24, marginBottom: 6 }}>📋</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>Nova consulta</div>
+            <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Criar nova ficha</div>
+          </button>
+
+          <button
+            onClick={() => {}}
+            style={{
+              padding: '20px 12px', borderRadius: 12,
+              border: '2px solid #eee', background: 'white',
+              color: '#333', cursor: 'not-allowed', textAlign: 'center', opacity: 0.5
+            }}
+          >
+            <div style={{ fontSize: 24, marginBottom: 6 }}>🔍</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>Consultar</div>
+            <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>Disponível na Fase 4</div>
+          </button>
         </div>
+
         <button
           onClick={handleLogout}
           style={{
-            padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd',
-            background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
+            padding: '8px 20px', borderRadius: 8, border: '1px solid #eee',
+            background: 'white', color: '#999', fontSize: 12, cursor: 'pointer'
           }}
         >
           Sair
@@ -43,22 +70,34 @@ function Home({ session }) {
   )
 }
 
-export default function App() {
+function AppInner() {
   const [session, setSession] = useState(undefined)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
-
     return () => subscription.unsubscribe()
   }, [])
 
   if (session === undefined) return null
   if (!session) return <Login />
-  return <Home session={session} />
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home session={session} />} />
+      <Route path="/nova-consulta" element={<NovaConsulta />} />
+    </Routes>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppInner />
+    </BrowserRouter>
+  )
 }

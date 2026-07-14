@@ -1,0 +1,20 @@
+
+SUPABASE
+Login: GitHub
+Senha de projeto "irisvet": @Nunoprincipe@1
+User para teste: luizfernandofz@gmail.com
+Senha de user: password123
+
+Anon public key (API): eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5icXZocnNqc2Rvem5taWx0dHB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwMTc0NzUsImV4cCI6MjA5OTU5MzQ3NX0.OqNpB17LPy4geCTG34fVNvSgd9hK0NvYXCCuLBfmvak
+
+Project ID (URL): 
+nbqvhrsjsdoznmilttpz  /  https://nbqvhrsjsdoznmilttpz.supabase.co
+
+http://localhost:5174/
+
+--------------------------------------------------------------------------------------------------------
+
+VERSEL
+
+Install Coding Agent Plugin:
+npx plugins add vercel/vercel-plugin
