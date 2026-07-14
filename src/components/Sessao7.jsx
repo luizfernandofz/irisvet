@@ -5,28 +5,38 @@ function UploadZona({ olho, imagens, onAdd, onRemove, consultationId }) {
   const inputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
 
-  async function handleFiles(files) {
-    if (!files || files.length === 0) return
-    setUploading(true)
+async function handleFiles(files) {
+  if (!files || files.length === 0) return
+  setUploading(true)
 
-    for (const file of Array.from(files)) {
-      try {
-        const ext = file.name.split('.').pop().toLowerCase()
-        const nomeUnico = `${consultationId || 'rascunho'}/${olho}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
+  for (const file of Array.from(files)) {
+    try {
+      const ext = file.name.split('.').pop().toLowerCase()
+      const nomeUnico = `${consultationId || 'rascunho'}/${olho}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
 
-        const { error } = await supabase.storage
-          .from('images')
-          .upload(nomeUnico, file, { upsert: false })
+      const { error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(nomeUnico, file, { upsert: false })
 
-        if (error) throw error
+      if (uploadError) throw uploadError
 
-        onAdd({ path: nomeUnico, nome: file.name, olho, preview: URL.createObjectURL(file), original: URL.createObjectURL(file) })
-      } catch (e) {
-        console.error('Erro ao fazer upload:', e)
+      if (consultationId) {
+        await supabase.from('images').insert({
+          consultation_id: consultationId,
+          olho: olho,
+          storage_path: nomeUnico,
+          ordem: 0,
+        })
       }
+
+      const preview = URL.createObjectURL(file)
+      onAdd({ path: nomeUnico, nome: file.name, olho, preview, original: preview })
+    } catch (e) {
+      console.error('Erro ao fazer upload:', e)
     }
-    setUploading(false)
   }
+  setUploading(false)
+}
 
   function handleDrop(e) {
     e.preventDefault()

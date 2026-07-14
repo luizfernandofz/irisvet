@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import NovaConsulta from './pages/NovaConsulta'
+import Consultar from './pages/Consultar'
+import VerFicha from './pages/VerFicha'
+import EditarFicha from './pages/EditarFicha'
 
 function Home({ session }) {
   const navigate = useNavigate()
@@ -43,7 +46,7 @@ function Home({ session }) {
           </button>
 
           <button
-            onClick={() => {}}
+            onClick={() => navigate('/consultar')}
             style={{
               padding: '20px 12px', borderRadius: 12,
               border: '2px solid #eee', background: 'white',
@@ -90,6 +93,9 @@ function AppInner() {
     <Routes>
       <Route path="/" element={<Home session={session} />} />
       <Route path="/nova-consulta" element={<NovaConsulta />} />
+      <Route path="/consultar" element={<Consultar />} />
+      <Route path="/consulta/:id" element={<VerFicha />} />
+      <Route path="/editar/:id" element={<EditarFicha />} />
     </Routes>
   )
 }
