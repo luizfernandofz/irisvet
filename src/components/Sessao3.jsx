@@ -7,6 +7,7 @@ const SINAIS = [
   'Blefarospasmo',
   'Prurido',
   'Fotofobia',
+  'Opacidade',
   'Sangramento',
   'Neoformação',
   'Bulbo ocular',
@@ -24,10 +25,7 @@ export default function Sessao3({ dados, onChange }) {
       ...dados,
       sinais: {
         ...sinais,
-        [sinal]: {
-          ...(sinais[sinal] || {}),
-          [olho]: valor
-        }
+        [sinal]: { ...(sinais[sinal] || {}), [olho]: valor }
       }
     })
   }
@@ -38,10 +36,7 @@ export default function Sessao3({ dados, onChange }) {
       ...dados,
       sinais: {
         ...sinais,
-        [sinal]: {
-          ...(sinais[sinal] || {}),
-          obs: valor
-        }
+        [sinal]: { ...(sinais[sinal] || {}), obs: valor }
       }
     })
   }
@@ -68,15 +63,15 @@ export default function Sessao3({ dados, onChange }) {
             <thead>
               <tr>
                 <th style={thStyle}>Sinal</th>
-                <th style={{ ...thStyle, textAlign: 'center', width: 60 }}>OD</th>
-                <th style={{ ...thStyle, textAlign: 'center', width: 60 }}>OE</th>
+                <th style={{ ...thStyle, textAlign: 'center', width: 50 }}>OD</th>
+                <th style={{ ...thStyle, textAlign: 'center', width: 50 }}>OE</th>
                 <th style={thStyle}>Observação</th>
               </tr>
             </thead>
             <tbody>
               {SINAIS.map((sinal, i) => (
                 <tr key={sinal} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
-                  <td style={tdStyle}>{sinal}</td>
+                  <td style={{ ...tdStyle, whiteSpace: 'nowrap', width: 140 }}>{sinal}</td>
                   <td style={{ ...tdStyle, textAlign: 'center' }}>
                     <input
                       type="checkbox"
@@ -93,16 +88,17 @@ export default function Sessao3({ dados, onChange }) {
                       style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#534AB7' }}
                     />
                   </td>
-                  <td style={tdStyle}>
-                    <input
-                      type="text"
+                  <td style={{ ...tdStyle, width: '100%' }}>
+                    <AutoTextarea
                       value={sinais[sinal]?.obs || ''}
                       onChange={e => setObs(sinal, e.target.value)}
                       placeholder="—"
                       style={{
-                        width: '100%', padding: '6px 10px', borderRadius: 6,
-                        border: '1px solid #eee', fontSize: 13, outline: 'none',
-                        boxSizing: 'border-box', background: 'transparent', fontFamily: 'inherit'
+                        border: '1px solid #eee',
+                        background: 'transparent',
+                        fontSize: 13,
+                        padding: '6px 10px',
+                        borderRadius: 6,
                       }}
                     />
                   </td>
@@ -153,5 +149,5 @@ const thStyle = {
 }
 
 const tdStyle = {
-  padding: '8px 12px', borderBottom: '1px solid #f0f0f0', verticalAlign: 'middle'
+  padding: '8px 12px', borderBottom: '1px solid #f0f0f0', verticalAlign: 'top'
 }

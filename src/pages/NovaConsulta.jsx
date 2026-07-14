@@ -5,6 +5,10 @@ import ProgressBar from '../components/ProgressBar'
 import Sessao1e2 from '../components/Sessao1e2'
 import Sessao3 from '../components/Sessao3'
 import Sessao4 from '../components/Sessao4'
+import Sessao5 from '../components/Sessao5'
+import Sessao6 from '../components/Sessao6'
+import Sessao7 from '../components/Sessao7'
+import Revisao from '../components/Revisao'
 
 export default function NovaConsulta() {
   const navigate = useNavigate()
@@ -12,9 +16,10 @@ export default function NovaConsulta() {
   const [saving, setSaving] = useState(false)
   const [consultationId, setConsultationId] = useState(null)
   const [erro, setErro] = useState(null)
+  const [revisao, setRevisao] = useState(false)
+  const [finalizing, setFinalizing] = useState(false)
 
   const [dados, setDados] = useState({
-    // Sessão 1+2
     data: new Date().toISOString().split('T')[0],
     local: '',
     tipo_atendimento: '',
@@ -28,26 +33,29 @@ export default function NovaConsulta() {
     paciente_raca: '',
     paciente_nascimento: '',
     paciente_genero: '',
-    // Sessão 3
     queixa_principal: '',
     sinais: {},
     trat_ocular_previo: '',
     diag_ocular_previo: '',
-    // Sessão 4
     aspecto_geral: '',
     doencas_pre: '',
     trat_sistemico: '',
     cirurgias: '',
-    alimentacao: '',
+    alimentacao: [],
     petisco: '',
     flags: {},
+    exame_oftalmologico: {},
+    diagnostico: '',
+    tratamento: '',
+    observacoes: '',
+    imagens_OD: [],
+    imagens_OE: [],
   })
 
   async function guardarRascunho(dadosActuais, idActual) {
     setSaving(true)
     setErro(null)
     try {
-      // 1. Criar ou actualizar tutor
       let tutor_id = null
       if (dadosActuais.tutor_nome) {
         const tutorPayload = {
@@ -66,7 +74,6 @@ export default function NovaConsulta() {
         tutor_id = tutor.id
       }
 
-      // 2. Criar ou actualizar paciente
       let patient_id = null
       if (dadosActuais.paciente_nome && tutor_id) {
         const pacientePayload = {
@@ -86,7 +93,6 @@ export default function NovaConsulta() {
         patient_id = paciente.id
       }
 
-      // 3. Criar ou actualizar consultation
       const consultationPayload = {
         patient_id,
         data: dadosActuais.data,
@@ -105,6 +111,10 @@ export default function NovaConsulta() {
           alimentacao: dadosActuais.alimentacao,
           petisco: dadosActuais.petisco,
         },
+        exame_oftalmologico: dadosActuais.exame_oftalmologico,
+        diagnostico: dadosActuais.diagnostico,
+        tratamento: dadosActuais.tratamento,
+        observacoes: dadosActuais.observacoes,
         status: 'rascunho',
       }
 
@@ -137,7 +147,7 @@ export default function NovaConsulta() {
   }
 
   async function avancar() {
-    const id = await guardarRascunho(dados, consultationId)
+    await guardarRascunho(dados, consultationId)
     if (sessao < 6) setSessao(s => s + 1)
   }
 
@@ -153,6 +163,20 @@ export default function NovaConsulta() {
     'Diagnóstico e tratamento',
     'Imagens',
   ]
+
+  if (revisao) return (
+    <Revisao
+      dados={dados}
+      onEditar={() => setRevisao(false)}
+      onFinalizar={async () => {
+        setFinalizing(true)
+        await guardarRascunho(dados, consultationId)
+        setFinalizing(false)
+        alert('Ficha guardada com sucesso!')
+      }}
+      finalizing={finalizing}
+    />
+  )
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
@@ -196,21 +220,9 @@ export default function NovaConsulta() {
           {sessao === 1 && <Sessao1e2 dados={dados} onChange={setDados} />}
           {sessao === 2 && <Sessao3 dados={dados} onChange={setDados} />}
           {sessao === 3 && <Sessao4 dados={dados} onChange={setDados} />}
-          {sessao === 4 && (
-            <div style={{ color: '#888', textAlign: 'center', padding: '40px 0' }}>
-              Sessão 4 — Exame oftalmológico (Fase 3)
-            </div>
-          )}
-          {sessao === 5 && (
-            <div style={{ color: '#888', textAlign: 'center', padding: '40px 0' }}>
-              Sessão 5 — Diagnóstico e tratamento (Fase 3)
-            </div>
-          )}
-          {sessao === 6 && (
-            <div style={{ color: '#888', textAlign: 'center', padding: '40px 0' }}>
-              Sessão 6 — Imagens (Fase 3)
-            </div>
-          )}
+          {sessao === 4 && <Sessao5 dados={dados} onChange={setDados} />}
+          {sessao === 5 && <Sessao6 dados={dados} onChange={setDados} />}
+          {sessao === 6 && <Sessao7 dados={dados} onChange={setDados} consultationId={consultationId} />}
 
           {/* ERRO */}
           {erro && (
@@ -244,7 +256,7 @@ export default function NovaConsulta() {
             </span>
 
             <button
-              onClick={avancar}
+              onClick={sessao === 6 ? () => setRevisao(true) : avancar}
               disabled={saving}
               style={{
                 padding: '10px 24px', borderRadius: 8, border: 'none',
@@ -253,7 +265,7 @@ export default function NovaConsulta() {
                 cursor: saving ? 'not-allowed' : 'pointer'
               }}
             >
-              {sessao === 6 ? '✓ Finalizar' : 'Próxima →'}
+              {sessao === 6 ? '👁 Rever ficha →' : 'Próxima →'}
             </button>
           </div>
         </div>

@@ -2,18 +2,41 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import AutoTextarea from './AutoTextarea'
 
+const TIPOS_ATENDIMENTO = [
+  'Consulta',
+  'Retorno/Reavaliação',
+  'Exame Complementar',
+  'Intervenção',
+]
+
 const ESPECIES = [
   { value: 'canino', label: '🐕 Canino' },
   { value: 'felino', label: '🐈 Felino' },
-  { value: 'coelho', label: '🐇 Coelho' },
+  { value: 'roedor', label: '🐇 Roedor' },
+  { value: 'equino', label: '🐴 Equino' },
+  { value: 'ave', label: '🦜 Ave' },
   { value: 'outro', label: 'Outro' },
 ]
 
 const GENEROS = [
   { value: 'macho', label: 'Macho' },
   { value: 'femea', label: 'Fêmea' },
-  { value: 'desconhecido', label: 'Desconhecido' },
 ]
+
+function calcularIdade(dataNasc) {
+  if (!dataNasc) return ''
+  const nasc = new Date(dataNasc)
+  const hoje = new Date()
+  let anos = hoje.getFullYear() - nasc.getFullYear()
+  let meses = hoje.getMonth() - nasc.getMonth()
+  if (meses < 0) { anos--; meses += 12 }
+  if (hoje.getDate() < nasc.getDate()) meses--
+  if (meses < 0) { anos--; meses += 12 }
+  if (anos === 0 && meses === 0) return 'Menos de 1 mês'
+  if (anos === 0) return `${meses} ${meses === 1 ? 'mês' : 'meses'}`
+  if (meses === 0) return `${anos} ${anos === 1 ? 'ano' : 'anos'}`
+  return `${anos} ${anos === 1 ? 'ano' : 'anos'} e ${meses} ${meses === 1 ? 'mês' : 'meses'}`
+}
 
 export default function Sessao1e2({ dados, onChange }) {
   const [clinicas, setClinicas] = useState([])
@@ -41,16 +64,13 @@ export default function Sessao1e2({ dados, onChange }) {
     c.toLowerCase().includes((dados.local || '').toLowerCase())
   )
 
+  const idade = calcularIdade(dados.paciente_nascimento)
+
   return (
     <div>
       {/* DATA E LOCAL */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{
-          fontSize: 11, fontWeight: 600, color: '#534AB7',
-          textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12
-        }}>
-          Consulta
-        </div>
+        <div style={sectionTitleStyle}>Consulta</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
             <label style={labelStyle}>Data</label>
@@ -81,10 +101,7 @@ export default function Sessao1e2({ dados, onChange }) {
                   <div
                     key={c}
                     onMouseDown={() => { set('local', c); setShowClinicas(false) }}
-                    style={{
-                      padding: '10px 12px', cursor: 'pointer', fontSize: 14,
-                      borderBottom: '1px solid #f0f0f0'
-                    }}
+                    style={{ padding: '10px 12px', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid #f0f0f0' }}
                     onMouseEnter={e => e.target.style.background = '#f5f4fe'}
                     onMouseLeave={e => e.target.style.background = 'white'}
                   >
@@ -96,13 +113,14 @@ export default function Sessao1e2({ dados, onChange }) {
           </div>
           <div>
             <label style={labelStyle}>Tipo de atendimento</label>
-            <input
-              type="text"
+            <select
               value={dados.tipo_atendimento || ''}
               onChange={e => set('tipo_atendimento', e.target.value)}
-              placeholder="Ex: Primeira consulta, Retorno..."
               style={inputStyle}
-            />
+            >
+              <option value="">Seleccionar...</option>
+              {TIPOS_ATENDIMENTO.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
           </div>
         </div>
       </div>
@@ -158,15 +176,27 @@ export default function Sessao1e2({ dados, onChange }) {
             <input type="text" value={dados.paciente_raca || ''} onChange={e => set('paciente_raca', e.target.value)} style={inputStyle} />
           </div>
           <div>
-            <label style={labelStyle}>Data de nascimento</label>
-            <input type="date" value={dados.paciente_nascimento || ''} onChange={e => set('paciente_nascimento', e.target.value)} style={inputStyle} />
-          </div>
-          <div>
             <label style={labelStyle}>Género</label>
             <select value={dados.paciente_genero || ''} onChange={e => set('paciente_genero', e.target.value)} style={inputStyle}>
               <option value="">Seleccionar...</option>
               {GENEROS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
             </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Data de nascimento</label>
+            <input type="date" value={dados.paciente_nascimento || ''} onChange={e => set('paciente_nascimento', e.target.value)} style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Idade (calculada)</label>
+            <div style={{
+              ...inputStyle,
+              background: '#f0f0f0',
+              color: idade ? '#1D9E75' : '#aaa',
+              fontWeight: idade ? 500 : 400,
+              cursor: 'default'
+            }}>
+              {idade || 'Preenche a data de nascimento'}
+            </div>
           </div>
         </div>
       </div>
@@ -175,14 +205,14 @@ export default function Sessao1e2({ dados, onChange }) {
 }
 
 const labelStyle = {
-  display: 'block', fontSize: 12, fontWeight: 500,
-  color: '#555', marginBottom: 6
+  display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6
 }
 
 const inputStyle = {
   width: '100%', padding: '10px 12px', borderRadius: 8,
   border: '1px solid #ddd', fontSize: 14, outline: 'none',
-  boxSizing: 'border-box', background: '#fafafa', fontFamily: 'inherit'
+  boxSizing: 'border-box', background: '#fafafa', fontFamily: 'inherit',
+  color: '#222'
 }
 
 const dividerStyle = {

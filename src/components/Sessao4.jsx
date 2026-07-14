@@ -1,9 +1,19 @@
 import AutoTextarea from './AutoTextarea'
 
+const ALIMENTACAO_OPCOES = [
+  'Ração Seca Comum',
+  'Ração de Tratamento',
+  'Ração Húmida',
+  'Alimentação Natural',
+  'Sobras de Comida',
+  'Petiscos',
+  'Outro',
+]
+
 const FLAGS = [
   { campo: 'esterelizacao', label: 'Esterelização' },
   { campo: 'vacinas', label: 'Vacinas em dia' },
-  { campo: 'ectoparasitas', label: 'Ectoparasitas' },
+  { campo: 'ectoparasitas', label: 'Presença de Ectoparasitas' },
 ]
 
 export default function Sessao4({ dados, onChange }) {
@@ -16,11 +26,25 @@ export default function Sessao4({ dados, onChange }) {
     onChange({ ...dados, flags: { ...flags, [campo]: valor } })
   }
 
+  function setFlagObs(campo, valor) {
+    const flags = dados.flags || {}
+    onChange({ ...dados, flags: { ...flags, [`${campo}_obs`]: valor } })
+  }
+
+  function toggleAlimentacao(opcao) {
+    const actual = dados.alimentacao || []
+    const nova = actual.includes(opcao)
+      ? actual.filter(a => a !== opcao)
+      : [...actual, opcao]
+    set('alimentacao', nova)
+  }
+
   const flags = dados.flags || {}
+  const alimentacao = dados.alimentacao || []
 
   return (
     <div>
-      {/* CAMPOS DE TEXTO */}
+      {/* SAÚDE GERAL */}
       <div style={{ marginBottom: 24 }}>
         <div style={sectionTitleStyle}>Saúde geral</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -56,6 +80,14 @@ export default function Sessao4({ dados, onChange }) {
               placeholder="Histórico cirúrgico..."
             />
           </div>
+          <div>
+            <label style={labelStyle}>Observações</label>
+            <AutoTextarea
+              value={dados.observacoes_historico || ''}
+              onChange={e => set('observacoes_historico', e.target.value)}
+              placeholder="Observações adicionais..."
+            />
+          </div>
         </div>
       </div>
 
@@ -64,45 +96,66 @@ export default function Sessao4({ dados, onChange }) {
       {/* ALIMENTAÇÃO */}
       <div style={{ marginBottom: 24 }}>
         <div style={sectionTitleStyle}>Alimentação</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          <div>
-            <label style={labelStyle}>Alimentação</label>
-            <AutoTextarea
-              value={dados.alimentacao || ''}
-              onChange={e => set('alimentacao', e.target.value)}
-              placeholder="Ex: Ração, comida húmida..."
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Petisco</label>
-            <AutoTextarea
-              value={dados.petisco || ''}
-              onChange={e => set('petisco', e.target.value)}
-              placeholder="Ex: Snacks, ossos..."
-            />
-          </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 16 }}>
+          {ALIMENTACAO_OPCOES.map(opcao => {
+            const selected = alimentacao.includes(opcao)
+            return (
+              <button
+                key={opcao}
+                onClick={() => toggleAlimentacao(opcao)}
+                style={{
+                  padding: '8px 14px', borderRadius: 20, fontSize: 13,
+                  border: selected ? '2px solid #534AB7' : '2px solid #ddd',
+                  background: selected ? '#EEEDFE' : 'white',
+                  color: selected ? '#534AB7' : '#555',
+                  fontWeight: selected ? 600 : 400,
+                  cursor: 'pointer', transition: 'all 0.15s'
+                }}
+              >
+                {selected ? '✓ ' : ''}{opcao}
+              </button>
+            )
+          })}
+        </div>
+        <div>
+          <label style={labelStyle}>Observações</label>
+          <AutoTextarea
+            value={dados.petisco || ''}
+            onChange={e => set('petisco', e.target.value)}
+            placeholder="Ex: Snacks, ossos, bifinho..."
+          />
         </div>
       </div>
 
       <div style={dividerStyle} />
 
-      {/* FLAGS / CHECKBOXES */}
+      {/* FLAGS */}
       <div>
         <div style={sectionTitleStyle}>Outros</div>
-        <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {FLAGS.map(({ campo, label }) => (
-            <label key={campo} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              fontSize: 14, color: '#333', cursor: 'pointer'
-            }}>
-              <input
-                type="checkbox"
-                checked={flags[campo] || false}
-                onChange={e => setFlag(campo, e.target.checked)}
-                style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#534AB7' }}
+            <div key={campo}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <input
+                  type="checkbox"
+                  checked={flags[campo] || false}
+                  onChange={e => setFlag(campo, e.target.checked)}
+                  style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#534AB7', flexShrink: 0 }}
+                />
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#333' }}>{label}</span>
+              </div>
+              <AutoTextarea
+                value={flags[`${campo}_obs`] || ''}
+                onChange={e => setFlagObs(campo, e.target.value)}
+                placeholder={`Detalhes sobre ${label.toLowerCase()}...`}
+                style={{
+                  marginLeft: 28,
+                  border: '1px solid #eee',
+                  background: '#fafafa',
+                  fontSize: 13,
+                }}
               />
-              {label}
-            </label>
+            </div>
           ))}
         </div>
       </div>
