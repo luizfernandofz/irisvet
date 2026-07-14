@@ -6,6 +6,7 @@ import NovaConsulta from './pages/NovaConsulta'
 import Consultar from './pages/Consultar'
 import VerFicha from './pages/VerFicha'
 import EditarFicha from './pages/EditarFicha'
+import ExportarFicha from './pages/ExportarFicha'
 
 function Home({ session }) {
   const navigate = useNavigate()
@@ -97,6 +98,7 @@ function AppInner() {
       <Route path="/consultar" element={<Consultar />} />
       <Route path="/consulta/:id" element={<VerFicha />} />
       <Route path="/editar/:id" element={<EditarFicha />} />
+      <Route path="/exportar/:id" element={<ExportarFicha />} />
     </Routes>
   )
 }
