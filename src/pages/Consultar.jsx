@@ -272,9 +272,14 @@ function PacienteRow({ paciente, ultimo, navigate, onRefresh }) {
                     }
                     style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #AFA9EC', background: '#EEEDFE', color: '#534AB7', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
                   >👁 Ver</button>
-                  {ficha.tabela === 'consultations' && (
+                  {ficha.tabela === 'consultations' ? (
                     <button
                       onClick={() => navigate(`/editar/${ficha.id}`)}
+                      style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 12, cursor: 'pointer' }}
+                    >✏️ Editar</button>
+                  ) : (
+                    <button
+                      onClick={() => navigate(`/editar-reav/${ficha.id}`)}
                       style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 12, cursor: 'pointer' }}
                     >✏️ Editar</button>
                   )}

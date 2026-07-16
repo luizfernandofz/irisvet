@@ -23,6 +23,7 @@ const SINAIS = [
 
 const PRINT_CSS = `
 @media print {
+* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .no-print { display: none !important; }
   body { background: white !important; margin: 0; padding: 0; }
   .ver-root { background: white !important; padding: 8px !important; }

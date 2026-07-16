@@ -349,6 +349,13 @@ export default function NovaConsulta() {
         }
       }
 
+      // Retorno/Reavaliação não usa a tabela consultations — guarda-se em
+      // follow_ups (ver FormularioReavaliacao). Criar/actualizar tutor e
+      // paciente é suficiente aqui.
+      if (dadosActuais.tipo_atendimento === 'Retorno/Reavaliação') {
+        return patient_id
+      }
+
       const consultationPayload = {
         patient_id,
         data: dadosActuais.data,

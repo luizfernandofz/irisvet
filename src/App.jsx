@@ -8,6 +8,7 @@ import VerFicha from './pages/VerFicha'
 import EditarFicha from './pages/EditarFicha'
 import VerReavaliacao from './pages/VerReavaliacao'
 import logo from './assets/logo.png'
+import EditarReavaliacao from './pages/EditarReavaliacao'
 
 function Home({ session }) {
   const navigate = useNavigate()
@@ -98,6 +99,7 @@ function AppInner() {
       <Route path="/consulta/:id" element={<VerFicha />} />
       <Route path="/editar/:id" element={<EditarFicha />} />
       <Route path="/ver-reav/:id" element={<VerReavaliacao />} />
+      <Route path="/editar-reav/:id" element={<EditarReavaliacao />} />
     </Routes>
   )
 }
