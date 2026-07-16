@@ -9,6 +9,7 @@ import Sessao5 from '../components/Sessao5'
 import Sessao6 from '../components/Sessao6'
 import Sessao7 from '../components/Sessao7'
 import Revisao from '../components/Revisao'
+import RevisaoReavaliacao from '../components/RevisaoReavaliacao'
 import Header from '../components/Header'
 
 // Formulário simplificado para Retorno/Reavaliação
@@ -19,6 +20,7 @@ const TIPOS_ATENDIMENTO = ['Consulta', 'Retorno/Reavaliação', 'Exame Complemen
 function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving, erro, navigate }) {
   const [sessao, setSessao] = useState(1)
   const [followUpId, setFollowUpId] = useState(null)
+  const [revisao, setRevisao] = useState(false)
 
   async function guardar() {
     const id = await onGuardar(followUpId)
@@ -38,6 +40,17 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
       navigate('/consultar')
     }
   }
+
+  if (revisao) return (
+    <RevisaoReavaliacao
+      dados={dados}
+      patientInfo={patientInfo}
+      onEditar={() => setRevisao(false)}
+      onFinalizar={finalizar}
+      finalizing={saving}
+      erro={erro}
+    />
+  )
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
@@ -148,7 +161,7 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
           {sessao === 3 && (
             <div>
               <div style={sectionTitle}>Imagens</div>
-              <Sessao7 dados={dados} onChange={setDados} consultationId={followUpId} />
+              <Sessao7 dados={dados} onChange={setDados} consultationId={followUpId} fkColumn="follow_up_id" />
             </div>
           )}
 
@@ -172,9 +185,9 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
                 Próxima →
               </button>
             ) : (
-              <button onClick={finalizar} disabled={saving}
-                style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: saving ? '#a9a4e8' : '#1D9E75', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-                ✓ Guardar
+              <button onClick={() => setRevisao(true)} disabled={saving}
+                style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: saving ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                👁 Rever ficha →
               </button>
             )}
           </div>

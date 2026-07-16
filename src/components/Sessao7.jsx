@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
-function UploadZona({ olho, imagens, onAdd, onRemove, consultationId }) {
+function UploadZona({ olho, imagens, onAdd, onRemove, consultationId, fkColumn }) {
   const inputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
 
@@ -22,7 +22,7 @@ async function handleFiles(files) {
 
       if (consultationId) {
         await supabase.from('images').insert({
-          consultation_id: consultationId,
+          [fkColumn]: consultationId,
           olho: olho,
           storage_path: nomeUnico,
           ordem: 0,
@@ -123,7 +123,7 @@ async function handleFiles(files) {
   )
 }
 
-export default function Sessao7({ dados, onChange, consultationId }) {
+export default function Sessao7({ dados, onChange, consultationId, fkColumn = 'consultation_id' }) {
   const imagensOD = dados.imagens_OD || []
   const imagensOE = dados.imagens_OE || []
 
@@ -148,6 +148,7 @@ export default function Sessao7({ dados, onChange, consultationId }) {
           onAdd={img => addImagem('OD', img)}
           onRemove={idx => removeImagem('OD', idx)}
           consultationId={consultationId}
+          fkColumn={fkColumn}
         />
         <UploadZona
           olho="OE"
@@ -155,6 +156,7 @@ export default function Sessao7({ dados, onChange, consultationId }) {
           onAdd={img => addImagem('OE', img)}
           onRemove={idx => removeImagem('OE', idx)}
           consultationId={consultationId}
+          fkColumn={fkColumn}
         />
       </div>
     </div>

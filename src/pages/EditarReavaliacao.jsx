@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import Header from '../components/Header'
 import AutoTextarea from '../components/AutoTextarea'
 import Sessao7 from '../components/Sessao7'
+import RevisaoReavaliacao from '../components/RevisaoReavaliacao'
 
 const TIPOS_ATENDIMENTO = ['Consulta', 'Retorno/Reavaliação', 'Exame Complementar', 'Intervenção']
 
@@ -15,6 +16,7 @@ export default function EditarReavaliacao() {
   const [erro, setErro] = useState(null)
   const [sessao, setSessao] = useState(1)
   const [patientInfo, setPatientInfo] = useState(null)
+  const [revisao, setRevisao] = useState(false)
 
   const [dados, setDados] = useState({
     data: '', local: '', tipo_atendimento: '',
@@ -77,6 +79,18 @@ export default function EditarReavaliacao() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
       <div style={{ fontSize: 14, color: '#888' }}>A carregar...</div>
     </div>
+  )
+
+  if (revisao) return (
+    <RevisaoReavaliacao
+      dados={dados}
+      patientInfo={patientInfo}
+      onEditar={() => setRevisao(false)}
+      onFinalizar={guardar}
+      finalizing={saving}
+      erro={erro}
+      labelFinalizar="✓ Guardar alterações"
+    />
   )
 
   const sessaoTitulos = ['Dados', 'Clínico', 'Imagens']
@@ -172,7 +186,7 @@ export default function EditarReavaliacao() {
           {sessao === 3 && (
             <div>
               <div style={sectionTitle}>Imagens</div>
-              <Sessao7 dados={dados} onChange={setDados} consultationId={id} />
+              <Sessao7 dados={dados} onChange={setDados} consultationId={id} fkColumn="follow_up_id" />
             </div>
           )}
 
@@ -192,9 +206,9 @@ export default function EditarReavaliacao() {
                 Próxima →
               </button>
             ) : (
-              <button onClick={guardar} disabled={saving}
-                style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: saving ? '#a9a4e8' : '#1D9E75', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-                ✓ Guardar alterações
+              <button onClick={() => setRevisao(true)} disabled={saving}
+                style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: saving ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                👁 Rever ficha →
               </button>
             )}
           </div>
