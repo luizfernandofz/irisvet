@@ -11,6 +11,11 @@ export default function VerConsentimento() {
   const [loading, setLoading] = useState(true)
   const [baixando, setBaixando] = useState(null)
   const [erro, setErro] = useState(null)
+  const [mostrarEnvio, setMostrarEnvio] = useState(false)
+  const [emailDestino, setEmailDestino] = useState('')
+  const [langEnvio, setLangEnvio] = useState('pt')
+  const [enviando, setEnviando] = useState(false)
+  const [envioMsg, setEnvioMsg] = useState(null)
 
   useEffect(() => {
     async function fetchDados() {
@@ -21,6 +26,7 @@ export default function VerConsentimento() {
         .single()
       if (error) { console.error(error); setLoading(false); return }
       setDados(data)
+      setEmailDestino(data?.patients?.tutors?.email || '')
       setLoading(false)
     }
     fetchDados()
@@ -52,6 +58,28 @@ export default function VerConsentimento() {
     }
   }
 
+  async function enviarEmail(e) {
+    e.preventDefault()
+    setEnviando(true)
+    setEnvioMsg(null)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/send-consent-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ id, lang: langEnvio, to: emailDestino }),
+      })
+      const body = await res.json()
+      if (!res.ok) throw new Error(body.error || 'Falha ao enviar')
+      setEnvioMsg({ tipo: 'sucesso', texto: `Email enviado para ${emailDestino}.` })
+    } catch (e) {
+      console.error(e)
+      setEnvioMsg({ tipo: 'erro', texto: 'Erro ao enviar o email. Verifica o endereço e tenta novamente.' })
+    } finally {
+      setEnviando(false)
+    }
+  }
+
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
       <div style={{ fontSize: 14, color: '#888' }}>A carregar termo...</div>
@@ -80,6 +108,9 @@ export default function VerConsentimento() {
             <button onClick={() => baixarPdf('en')} disabled={baixando !== null} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: baixando === 'en' ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 13, fontWeight: 600, cursor: baixando ? 'not-allowed' : 'pointer' }}>
               {baixando === 'en' ? 'A gerar...' : '🇬🇧 PDF (EN)'}
             </button>
+            <button onClick={() => { setMostrarEnvio(v => !v); setEnvioMsg(null) }} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: mostrarEnvio ? '#f0f0f0' : 'white', color: '#555', fontSize: 13, cursor: 'pointer' }}>
+              ✉️ Enviar por Email
+            </button>
             <button onClick={() => navigate('/consentimentos/lista')} style={btnNav}>← Voltar</button>
             <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
           </>}
@@ -88,6 +119,39 @@ export default function VerConsentimento() {
           <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>
             {erro}
           </div>
+        )}
+
+        {mostrarEnvio && (
+          <form onSubmit={enviarEmail} style={{ background: 'white', borderRadius: 16, padding: 24, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+            <div style={sectionTitle}>Enviar termo por email</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto', gap: 12, alignItems: 'end' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>Email do destinatário</label>
+                <input type="email" required value={emailDestino} onChange={e => setEmailDestino(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>Idioma</label>
+                <select value={langEnvio} onChange={e => setLangEnvio(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, boxSizing: 'border-box' }}>
+                  <option value="pt">Português</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <button type="submit" disabled={enviando} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: enviando ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: enviando ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}>
+                {enviando ? 'A enviar...' : 'Enviar'}
+              </button>
+            </div>
+            {envioMsg && (
+              <div style={{
+                marginTop: 12, borderRadius: 8, padding: '10px 12px', fontSize: 13,
+                background: envioMsg.tipo === 'sucesso' ? '#E1F5EE' : '#FAECE7',
+                color: envioMsg.tipo === 'sucesso' ? '#0F6E56' : '#993C1D',
+              }}>
+                {envioMsg.texto}
+              </div>
+            )}
+          </form>
         )}
 
         <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
