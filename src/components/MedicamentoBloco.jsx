@@ -16,7 +16,7 @@ export default function MedicamentoBloco({ med, onChange, onRemover, indice }) {
   const frase = composerFraseMedicamento(med)
 
   return (
-    <div style={{ background: '#fafafa', border: '1px solid #eee', borderRadius: 12, padding: 20, marginBottom: 16 }}>
+    <div data-testid={`medicamento-${indice}`} style={{ background: '#fafafa', border: '1px solid #eee', borderRadius: 12, padding: 20, marginBottom: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: '#534AB7' }}>Medicação {indice + 1}</div>
         <button type="button" onClick={onRemover} style={{ fontSize: 12, color: '#993C1D', background: 'none', border: 'none', cursor: 'pointer' }}>
