@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import AutoTextarea from './AutoTextarea'
+import { calcularIdade } from '../lib/utils'
 
 const TIPOS_ATENDIMENTO = [
   'Consulta',
@@ -22,21 +23,6 @@ const GENEROS = [
   { value: 'macho', label: 'Macho' },
   { value: 'femea', label: 'Fêmea' },
 ]
-
-function calcularIdade(dataNasc) {
-  if (!dataNasc) return ''
-  const nasc = new Date(dataNasc)
-  const hoje = new Date()
-  let anos = hoje.getFullYear() - nasc.getFullYear()
-  let meses = hoje.getMonth() - nasc.getMonth()
-  if (meses < 0) { anos--; meses += 12 }
-  if (hoje.getDate() < nasc.getDate()) meses--
-  if (meses < 0) { anos--; meses += 12 }
-  if (anos === 0 && meses === 0) return 'Menos de 1 mês'
-  if (anos === 0) return `${meses} ${meses === 1 ? 'mês' : 'meses'}`
-  if (meses === 0) return `${anos} ${anos === 1 ? 'ano' : 'anos'}`
-  return `${anos} ${anos === 1 ? 'ano' : 'anos'} e ${meses} ${meses === 1 ? 'mês' : 'meses'}`
-}
 
 export default function Sessao1e2({ dados, onChange, locked = false }) {
   const [clinicas, setClinicas] = useState([])

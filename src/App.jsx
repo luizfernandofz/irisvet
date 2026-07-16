@@ -10,6 +10,11 @@ import EditarFicha from './pages/EditarFicha'
 import VerReavaliacao from './pages/VerReavaliacao'
 import logo from './assets/logo.png'
 import EditarReavaliacao from './pages/EditarReavaliacao'
+import Consentimentos from './pages/Consentimentos'
+import NovoConsentimento from './pages/NovoConsentimento'
+import ConsultarConsentimentos from './pages/ConsultarConsentimentos'
+import VerConsentimento from './pages/VerConsentimento'
+import EditarConsentimento from './pages/EditarConsentimento'
 
 function Home({ session }) {
   const navigate = useNavigate()
@@ -60,6 +65,17 @@ function Home({ session }) {
             <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Pesquisar fichas</div>
           </button>
         </div>
+
+        <button
+          onClick={() => navigate('/consentimentos')}
+          style={{
+            width: '100%', padding: '14px 12px', borderRadius: 12, marginBottom: 32,
+            border: '2px solid #e0e0e0', background: '#e0e0e0',
+            color: '#333', cursor: 'pointer', textAlign: 'center'
+          }}
+        >
+          <div style={{ fontSize: 14, fontWeight: 600 }}>📄 Termos de Consentimento</div>
+        </button>
 
         <button
           onClick={handleLogout}
@@ -115,6 +131,12 @@ function AppInner() {
           <Route path="/editar/:id" element={<EditarFicha />} />
           <Route path="/ver-reav/:id" element={<VerReavaliacao />} />
           <Route path="/editar-reav/:id" element={<EditarReavaliacao />} />
+          <Route path="/consentimentos" element={<Consentimentos />} />
+          <Route path="/consentimentos/novo" element={<NovoConsentimento />} />
+          <Route path="/consentimentos/novo/:patientId" element={<NovoConsentimento />} />
+          <Route path="/consentimentos/lista" element={<ConsultarConsentimentos profile={profile} />} />
+          <Route path="/consentimentos/:id" element={<VerConsentimento />} />
+          <Route path="/consentimentos/editar/:id" element={<EditarConsentimento />} />
         </>
       )}
     </Routes>

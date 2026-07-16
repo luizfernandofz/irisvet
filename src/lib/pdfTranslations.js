@@ -66,6 +66,24 @@ export const EN_LABELS = {
   'Olho Esquerdo (OE)': 'Left Eye (OS)',
   'Sem imagens': 'No images',
 
+  // termo de consentimento
+  'TERMO DE CONSENTIMENTO CIRÚRGICO': 'SURGICAL CONSENT FORM',
+  'Dados da Clínica e Cirurgião': 'Clinic and Surgeon Details',
+  'Dados do Cliente': 'Client Details',
+  'Dados do Paciente': 'Patient Details',
+  'Dados da Cirurgia': 'Surgery Details',
+  'Veterinário': 'Veterinarian',
+  'Clínica': 'Clinic',
+  'CRMV': 'CRMV (Vet Reg. No.)',
+  'Endereço': 'Address',
+  'CPF': 'Tax ID',
+  'Idade': 'Age',
+  'Procedimento': 'Procedure',
+  'Valor': 'Amount',
+  'Termo de Autorização para Procedimento Cirúrgico, Anestésico e Exames':
+    'Authorization for Surgical, Anesthetic and Diagnostic Procedures',
+  'Assinatura do Responsável': "Responsible Party's Signature",
+
   // valores de enum
   'canino': 'Canine', 'felino': 'Feline', 'roedor': 'Rodent',
   'equino': 'Equine', 'ave': 'Bird', 'outro': 'Other',
