@@ -84,6 +84,23 @@ export const EN_LABELS = {
     'Authorization for Surgical, Anesthetic and Diagnostic Procedures',
   'Assinatura do Responsável': "Responsible Party's Signature",
 
+  // receituário
+  'RECEITUÁRIO': 'PRESCRIPTION',
+  'Dados do Responsável': 'Responsible Party Details',
+  'Nome do Paciente': 'Patient Name',
+  'Nome do Responsável': 'Responsible Party Name',
+  'NIF/CPF': 'Tax ID',
+  'Recomendações': 'Recommendations',
+  'Comentários Adicionais': 'Additional Comments',
+  'Uso Oral': 'Oral Use', 'Uso Tópico': 'Topical Use', 'Uso Oftálmico': 'Ophthalmic Use',
+  'Farmácia Humana': 'Human Pharmacy', 'Farmácia Veterinária': 'Veterinary Pharmacy',
+  'Farmácia de Manipulação': 'Compounding Pharmacy',
+  'Frasco': 'Bottle', 'Bisnaga': 'Tube', 'Caixa': 'Box',
+  'Aguarde 5 minutos de intervalo entre as aplicações': 'Wait 5 minutes between applications',
+  'Uso obrigatório do colar protetor durante todo o tratamento': 'Mandatory use of the protective (Elizabethan) collar throughout treatment',
+  'Realize a limpeza do local sempre que necessário': 'Clean the area whenever necessary',
+  'Siga a ordem das medicações da receita': 'Follow the order of medications as prescribed',
+
   // valores de enum
   'canino': 'Canine', 'felino': 'Feline', 'roedor': 'Rodent',
   'equino': 'Equine', 'ave': 'Bird', 'outro': 'Other',

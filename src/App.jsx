@@ -15,6 +15,12 @@ import NovoConsentimento from './pages/NovoConsentimento'
 import ConsultarConsentimentos from './pages/ConsultarConsentimentos'
 import VerConsentimento from './pages/VerConsentimento'
 import EditarConsentimento from './pages/EditarConsentimento'
+import MeuPerfil from './pages/MeuPerfil'
+import Receituarios from './pages/Receituarios'
+import NovoReceituario from './pages/NovoReceituario'
+import ConsultarReceituarios from './pages/ConsultarReceituarios'
+import VerReceituario from './pages/VerReceituario'
+import EditarReceituario from './pages/EditarReceituario'
 
 function Home({ session }) {
   const navigate = useNavigate()
@@ -66,26 +72,49 @@ function Home({ session }) {
           </button>
         </div>
 
-        <button
-          onClick={() => navigate('/consentimentos')}
-          style={{
-            width: '100%', padding: '14px 12px', borderRadius: 12, marginBottom: 32,
-            border: '2px solid #e0e0e0', background: '#e0e0e0',
-            color: '#333', cursor: 'pointer', textAlign: 'center'
-          }}
-        >
-          <div style={{ fontSize: 14, fontWeight: 600 }}>📄 Termos de Consentimento</div>
-        </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 32 }}>
+          <button
+            onClick={() => navigate('/consentimentos')}
+            style={{
+              padding: '14px 12px', borderRadius: 12,
+              border: '2px solid #e0e0e0', background: '#e0e0e0',
+              color: '#333', cursor: 'pointer', textAlign: 'center'
+            }}
+          >
+            <div style={{ fontSize: 14, fontWeight: 600 }}>📄 Termos de Consentimento</div>
+          </button>
+          <button
+            onClick={() => navigate('/receituarios')}
+            style={{
+              padding: '14px 12px', borderRadius: 12,
+              border: '2px solid #e0e0e0', background: '#e0e0e0',
+              color: '#333', cursor: 'pointer', textAlign: 'center'
+            }}
+          >
+            <div style={{ fontSize: 14, fontWeight: 600 }}>💊 Receituários</div>
+          </button>
+        </div>
 
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: '8px 20px', borderRadius: 8, border: '1px solid #eee',
-            background: 'white', color: '#999', fontSize: 12, cursor: 'pointer'
-          }}
-        >
-          Sair
-        </button>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+          <button
+            onClick={() => navigate('/meu-perfil')}
+            style={{
+              padding: '8px 20px', borderRadius: 8, border: '1px solid #eee',
+              background: 'white', color: '#999', fontSize: 12, cursor: 'pointer'
+            }}
+          >
+            👤 Meu Perfil
+          </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '8px 20px', borderRadius: 8, border: '1px solid #eee',
+              background: 'white', color: '#999', fontSize: 12, cursor: 'pointer'
+            }}
+          >
+            Sair
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -137,6 +166,13 @@ function AppInner() {
           <Route path="/consentimentos/lista" element={<ConsultarConsentimentos profile={profile} />} />
           <Route path="/consentimentos/:id" element={<VerConsentimento />} />
           <Route path="/consentimentos/editar/:id" element={<EditarConsentimento />} />
+          <Route path="/meu-perfil" element={<MeuPerfil />} />
+          <Route path="/receituarios" element={<Receituarios />} />
+          <Route path="/receituarios/novo" element={<NovoReceituario />} />
+          <Route path="/receituarios/novo/:patientId" element={<NovoReceituario />} />
+          <Route path="/receituarios/lista" element={<ConsultarReceituarios profile={profile} />} />
+          <Route path="/receituarios/:id" element={<VerReceituario />} />
+          <Route path="/receituarios/editar/:id" element={<EditarReceituario />} />
         </>
       )}
     </Routes>

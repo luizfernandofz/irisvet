@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import logo from '../assets/logo.png'
 
-const cardStyle = {
-  background: 'white', borderRadius: 16, padding: '48px 40px',
-  width: 360, boxShadow: '0 4px 24px rgba(83,74,183,0.10)'
+function cardStyle(wide) {
+  return {
+    background: 'white', borderRadius: 16, padding: '48px 40px',
+    width: wide ? 480 : 360, boxShadow: '0 4px 24px rgba(83,74,183,0.10)'
+  }
 }
 const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6 }
 const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', boxSizing: 'border-box' }
@@ -36,6 +38,13 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [titulo, setTitulo] = useState('')
+  const [registoProfissional, setRegistoProfissional] = useState('')
+  const [clinica, setClinica] = useState('')
+  const [telefone, setTelefone] = useState('')
+  const [emailContato, setEmailContato] = useState('')
+  const [site, setSite] = useState('')
+  const [redesSociais, setRedesSociais] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [info, setInfo] = useState(null)
@@ -64,7 +73,16 @@ export default function Login() {
     const { data, error } = await supabase.auth.signUp({
       email, password,
       options: {
-        data: { display_name: displayName.trim() },
+        data: {
+          display_name: displayName.trim(),
+          titulo: titulo.trim(),
+          registo_profissional: registoProfissional.trim(),
+          clinica: clinica.trim(),
+          telefone: telefone.trim(),
+          email_contato: emailContato.trim(),
+          site: site.trim(),
+          redes_sociais: redesSociais.trim(),
+        },
         emailRedirectTo: `${window.location.origin}/`,
       },
     })
@@ -95,7 +113,7 @@ export default function Login() {
       minHeight: '100vh', display: 'flex', alignItems: 'center',
       justifyContent: 'center', background: '#f5f4fe'
     }}>
-      <div style={cardStyle}>
+      <div style={cardStyle(mode === 'signup')}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <img src={logo} alt="írisvet" style={{ width: 180, marginBottom: 8 }} />
           <div style={{ fontSize: 12, color: '#888' }}>Portugal: OMV 10.122 | Brasil: CRMV MG:22.291 e SP:36.217</div>
@@ -140,10 +158,45 @@ export default function Login() {
               <label style={labelStyle}>Password</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} style={inputStyle} />
             </div>
-            <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 16 }}>
               <label style={labelStyle}>Confirmar password</label>
               <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required minLength={6} style={inputStyle} />
             </div>
+
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 1, margin: '20px 0 12px' }}>
+              Dados profissionais (aparecem nos documentos gerados — podes preencher ou editar depois em "Meu Perfil")
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+              <div>
+                <label style={labelStyle}>Título</label>
+                <input type="text" value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Ex: Ma. M.V" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Registo profissional</label>
+                <input type="text" value={registoProfissional} onChange={e => setRegistoProfissional(e.target.value)} placeholder="Ex: CRMV-SP: 36217" style={inputStyle} />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Clínica</label>
+                <input type="text" value={clinica} onChange={e => setClinica(e.target.value)} style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Telefone</label>
+                <input type="text" value={telefone} onChange={e => setTelefone(e.target.value)} style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Email de contacto</label>
+                <input type="email" value={emailContato} onChange={e => setEmailContato(e.target.value)} placeholder="Se diferente do email de login" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Site</label>
+                <input type="text" value={site} onChange={e => setSite(e.target.value)} style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Redes sociais</label>
+                <input type="text" value={redesSociais} onChange={e => setRedesSociais(e.target.value)} placeholder="Ex: @anna.oftalmovet" style={inputStyle} />
+              </div>
+            </div>
+
             {error && <div style={errorStyle}>{error}</div>}
             <button type="submit" disabled={loading} style={submitStyle(loading)}>
               {loading ? 'A criar conta...' : 'Criar conta'}
