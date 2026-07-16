@@ -37,8 +37,8 @@ function Home({ session }) {
             onClick={() => navigate('/nova-consulta')}
             style={{
               padding: '20px 12px', borderRadius: 12,
-              border: '2px solid #534AB7', background: '#534AB7',
-              color: 'white', cursor: 'pointer', textAlign: 'center'
+              border: '2px solid #e0e0e0', background: '#e0e0e0',
+              color: '#333', cursor: 'pointer', textAlign: 'center'
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 6 }}>📋</div>
@@ -50,13 +50,13 @@ function Home({ session }) {
             onClick={() => navigate('/consultar')}
             style={{
               padding: '20px 12px', borderRadius: 12,
-              border: '2px solid #eee', background: 'white',
+              border: '2px solid #e0e0e0', background: '#e0e0e0',
               color: '#333', cursor: 'pointer', textAlign: 'center'
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 6 }}>🔍</div>
             <div style={{ fontSize: 14, fontWeight: 600 }}>Localizar Paciente</div>
-            <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>Pesquisar fichas</div>
+            <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Pesquisar fichas</div>
           </button>
         </div>
 
