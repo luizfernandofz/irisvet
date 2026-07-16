@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
+import ResetPassword from './pages/ResetPassword'
 import NovaConsulta from './pages/NovaConsulta'
 import Consultar from './pages/Consultar'
 import VerFicha from './pages/VerFicha'
@@ -76,6 +77,7 @@ function Home({ session }) {
 
 function AppInner() {
   const [session, setSession] = useState(undefined)
+  const [profile, setProfile] = useState(undefined)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -87,19 +89,34 @@ function AppInner() {
     return () => subscription.unsubscribe()
   }, [])
 
+  useEffect(() => {
+    if (session === undefined) return
+    if (!session) { setProfile(null); return }
+    supabase.from('profiles').select('role, display_name').eq('id', session.user.id).single()
+      .then(({ data }) => setProfile(data ?? null))
+  }, [session])
+
   if (session === undefined) return null
-  if (!session) return <Login />
 
   return (
     <Routes>
-      <Route path="/" element={<Home session={session} />} />
-      <Route path="/nova-consulta" element={<NovaConsulta />} />
-      <Route path="/nova-consulta/:patientId" element={<NovaConsulta />} />
-      <Route path="/consultar" element={<Consultar />} />
-      <Route path="/consulta/:id" element={<VerFicha />} />
-      <Route path="/editar/:id" element={<EditarFicha />} />
-      <Route path="/ver-reav/:id" element={<VerReavaliacao />} />
-      <Route path="/editar-reav/:id" element={<EditarReavaliacao />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      {!session ? (
+        <Route path="/*" element={<Login />} />
+      ) : profile === undefined ? (
+        <Route path="/*" element={null} />
+      ) : (
+        <>
+          <Route path="/" element={<Home session={session} />} />
+          <Route path="/nova-consulta" element={<NovaConsulta />} />
+          <Route path="/nova-consulta/:patientId" element={<NovaConsulta />} />
+          <Route path="/consultar" element={<Consultar profile={profile} />} />
+          <Route path="/consulta/:id" element={<VerFicha />} />
+          <Route path="/editar/:id" element={<EditarFicha />} />
+          <Route path="/ver-reav/:id" element={<VerReavaliacao />} />
+          <Route path="/editar-reav/:id" element={<EditarReavaliacao />} />
+        </>
+      )}
     </Routes>
   )
 }

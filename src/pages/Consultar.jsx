@@ -44,8 +44,9 @@ function badgeStyle(tipo) {
   }
 }
 
-export default function Consultar() {
+export default function Consultar({ profile }) {
   const navigate = useNavigate()
+  const isGodMode = profile?.role === 'godmode'
   const [pacientes, setPacientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [filtroTutor, setFiltroTutor] = useState('')
@@ -54,6 +55,7 @@ export default function Consultar() {
   const [filtroEspecie, setFiltroEspecie] = useState('')
   const [filtroDataDe, setFiltroDataDe] = useState('')
   const [filtroDataAte, setFiltroDataAte] = useState('')
+  const [filtroVet, setFiltroVet] = useState('')
   const [resultados, setResultados] = useState([])
 
   async function fetchDados() {
@@ -62,6 +64,7 @@ export default function Consultar() {
       .from('patients')
       .select(`
         id, nome, especie, raca,
+        profiles ( display_name ),
         tutors ( id, nome, telefone ),
         consultations ( id, data, tipo_atendimento, status ),
         follow_ups ( id, data, tipo_atendimento )
@@ -83,6 +86,7 @@ export default function Consultar() {
         id: p.id, nome: p.nome || '', especie: p.especie || '',
         raca: p.raca || '', tutor_nome: p.tutors?.nome || '',
         tutor_telefone: p.tutors?.telefone || '', fichas: todasFichas, ultimaData,
+        vet_nome: p.profiles?.display_name || '',
         _nome_norm: normalizar(p.nome), _tutor_norm: normalizar(p.tutors?.nome),
         _telefone_norm: normalizar(p.tutors?.telefone),
       }
@@ -100,6 +104,7 @@ export default function Consultar() {
     if (filtroEspecie) lista = lista.filter(p => p.especie === filtroEspecie)
     if (filtroDataDe) lista = lista.filter(p => p.ultimaData >= filtroDataDe)
     if (filtroDataAte) lista = lista.filter(p => p.ultimaData <= filtroDataAte)
+    if (isGodMode && filtroVet) lista = lista.filter(p => p.vet_nome === filtroVet)
     if (filtroTutor.trim()) {
       const termo = normalizar(filtroTutor)
       const fuse = new Fuse(lista, { keys: ['_tutor_norm'], threshold: 0.4 })
@@ -117,11 +122,15 @@ export default function Consultar() {
       lista = r.length > 0 ? r.map(x => x.item) : lista.filter(p => p._nome_norm.includes(termo))
     }
     setResultados(lista)
-  }, [filtroTutor, filtroTelefone, filtroPet, filtroEspecie, filtroDataDe, filtroDataAte, pacientes])
+  }, [filtroTutor, filtroTelefone, filtroPet, filtroEspecie, filtroDataDe, filtroDataAte, filtroVet, isGodMode, pacientes])
+
+  const vetsDisponiveis = isGodMode
+    ? [...new Set(pacientes.map(p => p.vet_nome).filter(Boolean))].sort()
+    : []
 
   function limparFiltros() {
     setFiltroTutor(''); setFiltroTelefone(''); setFiltroPet('')
-    setFiltroEspecie(''); setFiltroDataDe(''); setFiltroDataAte('')
+    setFiltroEspecie(''); setFiltroDataDe(''); setFiltroDataAte(''); setFiltroVet('')
   }
 
   return (
@@ -166,6 +175,15 @@ export default function Consultar() {
                 <input type="date" value={filtroDataAte} onChange={e => setFiltroDataAte(e.target.value)} style={inputStyle} />
               </div>
             </div>
+            {isGodMode && (
+              <div>
+                <label style={labelStyle}>Veterinário</label>
+                <select value={filtroVet} onChange={e => setFiltroVet(e.target.value)} style={inputStyle}>
+                  <option value="">Todos os veterinários</option>
+                  {vetsDisponiveis.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </div>
+            )}
           </div>
           <button onClick={limparFiltros} style={{ marginTop: 12, padding: '7px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#888', fontSize: 12, cursor: 'pointer' }}>
             Limpar filtros
@@ -186,6 +204,7 @@ export default function Consultar() {
               ultimo={i === resultados.length - 1}
               navigate={navigate}
               onRefresh={fetchDados}
+              mostrarVet={isGodMode}
             />
           ))}
         </div>
@@ -195,7 +214,7 @@ export default function Consultar() {
   )
 }
 
-function PacienteRow({ paciente, ultimo, navigate, onRefresh }) {
+function PacienteRow({ paciente, ultimo, navigate, onRefresh, mostrarVet }) {
   const [aberto, setAberto] = useState(false)
   const emoji = ESPECIE_EMOJI[paciente.especie] || ''
 
@@ -229,6 +248,11 @@ function PacienteRow({ paciente, ultimo, navigate, onRefresh }) {
             {paciente.fichas.length > 0 && (
               <span style={{ marginLeft: 8, fontSize: 11, color: '#aaa' }}>
                 · {paciente.fichas.length} ficha{paciente.fichas.length !== 1 ? 's' : ''}
+              </span>
+            )}
+            {mostrarVet && paciente.vet_nome && (
+              <span style={{ marginLeft: 8, fontSize: 11, color: '#534AB7', fontWeight: 600 }}>
+                · {paciente.vet_nome}
               </span>
             )}
           </div>
