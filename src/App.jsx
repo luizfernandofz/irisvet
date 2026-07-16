@@ -7,7 +7,7 @@ import Consultar from './pages/Consultar'
 import VerFicha from './pages/VerFicha'
 import EditarFicha from './pages/EditarFicha'
 import VerReavaliacao from './pages/VerReavaliacao'
-
+import logo from './assets/logo.png'
 
 function Home({ session }) {
   const navigate = useNavigate()
@@ -26,11 +26,9 @@ function Home({ session }) {
         width: '100%', maxWidth: 420,
         boxShadow: '0 4px 24px rgba(83,74,183,0.10)', textAlign: 'center'
       }}>
-        <div style={{ fontSize: 32, fontWeight: 700, color: '#534AB7', marginBottom: 4 }}>
-          írisvet
-        </div>
-        <div style={{ fontSize: 13, color: '#888', marginBottom: 40 }}>
-          Dra. Anna Clara · Oftalmologia Veterinária
+        <img src={logo} alt="írisvet" style={{ width: 200, marginBottom: 8 }} />
+        <div style={{ fontSize: 11, color: '#aaa', marginBottom: 40 }}>
+          Portugal: OMV 10.122 | Brasil: CRMV MG:22.291 e SP:36.217
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 32 }}>

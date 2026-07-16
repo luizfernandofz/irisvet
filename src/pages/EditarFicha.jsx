@@ -9,6 +9,7 @@ import Sessao5 from '../components/Sessao5'
 import Sessao6 from '../components/Sessao6'
 import Sessao7 from '../components/Sessao7'
 import Revisao from '../components/Revisao'
+import Header from '../components/Header'
 
 export default function EditarFicha() {
   const { id } = useParams()
@@ -190,17 +191,13 @@ export default function EditarFicha() {
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }}
-              onClick={() => navigate('/')}>írisvet</div>
-            <div style={{ fontSize: 13, color: '#888' }}>Editar ficha</div>
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => navigate(`/consulta/${id}`)} style={btnNav}>← Voltar</button>
-            <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
-          </div>
-        </div>
+      <Header
+        subtitulo="Editar ficha"
+        botoes={<>
+          <button onClick={() => navigate(`/consulta/${id}`)} style={btnNav}>← Voltar</button>
+          <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
+        </>}
+      />
 
         <ProgressBar sessaoActual={sessao} total={6} />
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import Header from '../components/Header'
 
 const ESPECIE_EMOJI = {
   canino: '🐕', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
@@ -205,25 +206,18 @@ export default function VerFicha() {
         <div className="ver-inner" style={{ maxWidth: 800, margin: '0 auto' }}>
 
           {/* CABEÇALHO */}
-          <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-            <div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }}
-                onClick={() => navigate('/')}>írisvet</div>
-              <div style={{ fontSize: 13, color: '#888' }}>Ficha de atendimento</div>
-            </div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => navigate(`/editar/${id}`)} style={{
-                padding: '8px 16px', borderRadius: 8, border: '1px solid #534AB7',
-                background: '#EEEDFE', color: '#534AB7', fontSize: 13, cursor: 'pointer', fontWeight: 500
-              }}>✏️ Editar</button>
-              <button onClick={() => window.print()} style={{
-                padding: '8px 16px', borderRadius: 8, border: 'none',
-                background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer'
-              }}>🖨️ Exportar PDF</button>
+          <div className="no-print">
+          <Header
+            subtitulo="Ficha de atendimento"
+            botoes={<>
+              <button onClick={() => navigate(`/editar/${id}`)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #534AB7', background: '#EEEDFE', color: '#534AB7', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>✏️ Editar</button>
+              <button onClick={() => window.print()} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
               <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
               <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
-            </div>
-          </div>
+            </>}
+          />
+        </div>                                      
+        
 
           {/* CABEÇALHO DA FICHA — visível só na impressão */}
           <div style={{ display: 'none' }} id="print-header">

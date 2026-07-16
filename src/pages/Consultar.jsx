@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Fuse from 'fuse.js'
 import { supabase } from '../lib/supabase'
 import { formatarData } from '../lib/utils'
+import Header from '../components/Header'
 
 const ESPECIE_EMOJI = {
   canino: '🐕', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
@@ -127,17 +128,10 @@ export default function Consultar() {
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }}
-              onClick={() => navigate('/')}>írisvet</div>
-            <div style={{ fontSize: 13, color: '#888' }}>Localizar paciente</div>
-          </div>
-          <button onClick={() => navigate('/')} style={{
-            padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
-            background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
-          }}>🏠 Home</button>
-        </div>
+          <Header
+            subtitulo="Localizar paciente"
+            botoes={<button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>}
+          />
 
         <div style={{ background: 'white', borderRadius: 16, padding: 24, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: '#534AB7', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>
@@ -300,3 +294,7 @@ function PacienteRow({ paciente, ultimo, navigate, onRefresh }) {
 
 const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }
 const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', boxSizing: 'border-box', background: '#fafafa', fontFamily: 'inherit', color: '#222' }
+const btnNav = {
+  padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
+  background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
+}

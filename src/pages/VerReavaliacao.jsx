@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { formatarData } from '../lib/utils'
+import Header from '../components/Header'
 
 const PRINT_CSS = `
 @media print {
@@ -105,20 +106,17 @@ export default function VerReavaliacao() {
       <div className="ver-root" style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
         <div className="ver-inner" style={{ maxWidth: 800, margin: '0 auto' }}>
 
-          {/* CABEÇALHO */}
-          <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-            <div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }} onClick={() => navigate('/')}>írisvet</div>
-              <div style={{ fontSize: 13, color: '#888' }}>Ficha de retorno / reavaliação</div>
-            </div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => window.print()} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                🖨️ Exportar PDF
-              </button>
+        {/* CABEÇALHO */}
+        <div className="no-print">
+          <Header
+            subtitulo="Ficha de retorno / reavaliação"
+            botoes={<>
+              <button onClick={() => window.print()} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
               <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
               <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
-            </div>
-          </div>
+            </>}
+          />
+        </div>
 
           {/* INFO DO PACIENTE */}
           <Card>

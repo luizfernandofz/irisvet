@@ -12,9 +12,21 @@ nbqvhrsjsdoznmilttpz  /  https://nbqvhrsjsdoznmilttpz.supabase.co
 
 http://localhost:5174/
 
+cd C:\Users\luizf\irisvet
+npm run dev
+
 --------------------------------------------------------------------------------------------------------
 
 VERSEL
 
 Install Coding Agent Plugin:
 npx plugins add vercel/vercel-plugin
+
+---------------------------------------------------------------------
+
+TO DOS PARA A PROXIMA ETAPA:
+
+Ficha de Retorno está sem visualização antes de gravar, o que impede de editar fotos e visualizar como fica
+Ao gravar, está gerando 2 arquivos, um rascunho e outro não. 
+O rascunho está gerando a ficha completa (que é o que queremos alterar e impedir que aconteça).
+O outro está gerando a ficha de retorno ok, porém sem as imagens / e sem a opção de Editar.	

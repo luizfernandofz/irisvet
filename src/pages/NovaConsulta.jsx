@@ -9,6 +9,7 @@ import Sessao5 from '../components/Sessao5'
 import Sessao6 from '../components/Sessao6'
 import Sessao7 from '../components/Sessao7'
 import Revisao from '../components/Revisao'
+import Header from '../components/Header'
 
 // Formulário simplificado para Retorno/Reavaliação
 import AutoTextarea from '../components/AutoTextarea'
@@ -41,16 +42,13 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
   return (
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }} onClick={() => navigate('/')}>írisvet</div>
-            <div style={{ fontSize: 13, color: '#888' }}>Retorno / Reavaliação</div>
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
-            <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
-          </div>
-        </div>
+    <Header
+      subtitulo="Retorno / Reavaliação"
+      botoes={<>
+        <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
+        <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
+      </>}
+    />
 
         {patientInfo && (
           <div style={{ background: '#EEEDFE', borderRadius: 12, padding: '12px 20px', marginBottom: 20, fontSize: 13, color: '#534AB7' }}>
@@ -447,16 +445,13 @@ export default function NovaConsulta() {
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7', cursor: 'pointer' }} onClick={() => navigate('/')}>írisvet</div>
-            <div style={{ fontSize: 13, color: '#888' }}>{patientId ? 'Nova consulta' : 'Novo paciente'}</div>
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
-            <button onClick={() => navigate(patientId ? '/consultar' : '/')} style={btnNav}>← Voltar</button>
-          </div>
-        </div>
+        <Header
+      subtitulo={patientId ? 'Nova consulta' : 'Novo paciente'}
+      botoes={<>
+        <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
+        <button onClick={() => navigate(patientId ? '/consultar' : '/')} style={btnNav}>← Voltar</button>
+      </>}
+/>
 
         {patientInfo && (
           <div style={{ background: '#EEEDFE', borderRadius: 12, padding: '12px 20px', marginBottom: 20, fontSize: 13, color: '#534AB7' }}>
