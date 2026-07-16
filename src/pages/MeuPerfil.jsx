@@ -13,11 +13,21 @@ export default function MeuPerfil() {
     display_name: '', titulo: '', registo_profissional: '', clinica: '',
     telefone: '', email_contato: '', site: '', redes_sociais: '',
   })
+  const [userId, setUserId] = useState(null)
+  const [assinaturaUrl, setAssinaturaUrl] = useState(null)
+  const [enviandoAssinatura, setEnviandoAssinatura] = useState(false)
+  const [erroAssinatura, setErroAssinatura] = useState(null)
+
+  async function carregarAssinatura(uid) {
+    const { data, error } = await supabase.storage.from('signatures').createSignedUrl(`${uid}/assinatura.png`, 3600)
+    setAssinaturaUrl(error ? null : data.signedUrl)
+  }
 
   useEffect(() => {
     async function fetchPerfil() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { setLoading(false); return }
+      setUserId(session.user.id)
       const { data, error } = await supabase.from('profiles').select('*').eq('id', session.user.id).single()
       if (!error && data) {
         setDados({
@@ -27,10 +37,24 @@ export default function MeuPerfil() {
           site: data.site || '', redes_sociais: data.redes_sociais || '',
         })
       }
+      await carregarAssinatura(session.user.id)
       setLoading(false)
     }
     fetchPerfil()
   }, [])
+
+  async function handleAssinaturaUpload(e) {
+    const file = e.target.files?.[0]
+    if (!file || !userId) return
+    setEnviandoAssinatura(true)
+    setErroAssinatura(null)
+    const { error } = await supabase.storage.from('signatures')
+      .upload(`${userId}/assinatura.png`, file, { upsert: true, contentType: file.type })
+    setEnviandoAssinatura(false)
+    if (error) { setErroAssinatura('Erro ao enviar a imagem. Tenta novamente.'); return }
+    await carregarAssinatura(userId)
+    e.target.value = ''
+  }
 
   function set(campo, valor) {
     setDados(d => ({ ...d, [campo]: valor }))
@@ -114,11 +138,33 @@ export default function MeuPerfil() {
           <button type="submit" disabled={salvando} style={{
             width: '100%', padding: '14px', borderRadius: 10, border: 'none',
             background: salvando ? '#a9a4e8' : '#534AB7', color: 'white',
-            fontSize: 15, fontWeight: 600, cursor: salvando ? 'not-allowed' : 'pointer', marginBottom: 40,
+            fontSize: 15, fontWeight: 600, cursor: salvando ? 'not-allowed' : 'pointer', marginBottom: 16,
           }}>
             {salvando ? 'A guardar...' : '✓ Guardar'}
           </button>
         </form>
+
+        <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 40 }}>
+          <div style={sectionTitle}>
+            Assinatura pré-definida
+            <span style={{ fontSize: 10, fontWeight: 400, color: '#aaa', marginLeft: 8, textTransform: 'none', letterSpacing: 0 }}>
+              — guardada de forma privada, só usada nos teus próprios receituários; nunca fica pública
+            </span>
+          </div>
+          {assinaturaUrl ? (
+            <img src={assinaturaUrl} alt="Assinatura" style={{ maxWidth: 240, maxHeight: 120, border: '1px solid #eee', borderRadius: 8, padding: 8, marginBottom: 12, display: 'block' }} />
+          ) : (
+            <div style={{ fontSize: 13, color: '#bbb', marginBottom: 12 }}>Ainda não definiste uma assinatura.</div>
+          )}
+          <label style={{
+            display: 'inline-block', padding: '8px 16px', borderRadius: 8, border: '1px solid #534AB7',
+            background: '#EEEDFE', color: '#534AB7', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          }}>
+            {enviandoAssinatura ? 'A enviar...' : (assinaturaUrl ? 'Substituir imagem' : 'Enviar imagem')}
+            <input type="file" accept="image/png,image/jpeg" onChange={handleAssinaturaUpload} disabled={enviandoAssinatura} style={{ display: 'none' }} />
+          </label>
+          {erroAssinatura && <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 12 }}>{erroAssinatura}</div>}
+        </div>
       </div>
     </div>
   )

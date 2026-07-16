@@ -2,6 +2,7 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { translateLabel } from '../../src/lib/pdfTranslations.js'
 import { composerFraseMedicamento } from '../../src/lib/receituarioOptions.js'
 import { translateTexts } from './deepl.js'
+import { LOGO_PNG_BASE64 } from './logoBase64.js'
 
 const PAGE_WIDTH = 595.28
 const PAGE_HEIGHT = 841.89
@@ -74,6 +75,7 @@ export async function generateReceituarioPdfBytes(rec, lang = 'pt') {
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
   const fontItalic = await pdfDoc.embedFont(StandardFonts.HelveticaOblique)
+  const logoImg = await pdfDoc.embedPng(Buffer.from(LOGO_PNG_BASE64, 'base64'))
 
   let assinaturaImg = null
   if (rec.assinatura_base64) {
@@ -146,8 +148,10 @@ export async function generateReceituarioPdfBytes(rec, lang = 'pt') {
   }
 
   // cabeçalho
-  page.drawText('írisvet', { x: MARGIN, y: y - 20, size: 20, font: fontBold, color: PURPLE })
-  y -= 26
+  const logoH = 48
+  const logoW = (logoImg.width / logoImg.height) * logoH
+  page.drawImage(logoImg, { x: MARGIN, y: y - logoH, width: logoW, height: logoH })
+  y -= logoH + 10
   drawText(L('RECEITUÁRIO'), { size: 15, bold: true, gap: 14 })
 
   drawSectionTitle(L('Dados do Paciente'))
@@ -180,7 +184,6 @@ export async function generateReceituarioPdfBytes(rec, lang = 'pt') {
   medicamentos.forEach(m => { if (m.uso && !gruposOrdem.includes(m.uso)) gruposOrdem.push(m.uso) })
   if (medicamentos.some(m => !m.uso)) gruposOrdem.push('')
 
-  let contador = 0
   for (const grupo of gruposOrdem) {
     const itensDoGrupo = medicamentos
       .map((m, idx) => ({ m, idx }))
@@ -192,6 +195,7 @@ export async function generateReceituarioPdfBytes(rec, lang = 'pt') {
       drawText(L(grupo).toUpperCase(), { size: 10, bold: true, color: PURPLE, gap: 8 })
     }
 
+    let contador = 0
     for (const { idx } of itensDoGrupo) {
       contador += 1
       const nomeMed = medicacoesTraduzidas[idx] || '(sem nome)'

@@ -120,6 +120,19 @@ export default function NovoReceituario() {
     setRecomendacoes(r => r.includes(opcao) ? r.filter(x => x !== opcao) : [...r, opcao])
   }
 
+  async function usarAssinaturaPredefinida() {
+    setErro(null)
+    const { data: { session } } = await supabase.auth.getSession()
+    const { data, error } = await supabase.storage.from('signatures').download(`${session.user.id}/assinatura.png`)
+    if (error || !data) {
+      setErro('Ainda não definiste uma assinatura pré-definida. Podes criar uma em "Meu Perfil".')
+      return
+    }
+    const reader = new FileReader()
+    reader.onloadend = () => handleGravar(reader.result)
+    reader.readAsDataURL(data)
+  }
+
   async function handleGravar(assinaturaBase64) {
     setSalvando(true)
     setErro(null)
@@ -254,13 +267,22 @@ export default function NovoReceituario() {
             </div>
           )}
           {erro && <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>{erro}</div>}
-          <button onClick={() => setMostrarAssinatura(true)} disabled={salvando} style={{
-            width: '100%', padding: '14px', borderRadius: 10, border: 'none',
-            background: salvando ? '#a9a4e8' : '#1D9E75', color: 'white',
-            fontSize: 15, fontWeight: 600, cursor: salvando ? 'not-allowed' : 'pointer', marginBottom: 40,
-          }}>
-            {salvando ? 'A guardar...' : '✍️ Assinar e Gravar Receituário'}
-          </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 40 }}>
+            <button onClick={() => setMostrarAssinatura(true)} disabled={salvando} style={{
+              padding: '14px', borderRadius: 10, border: 'none',
+              background: salvando ? '#a9a4e8' : '#1D9E75', color: 'white',
+              fontSize: 15, fontWeight: 600, cursor: salvando ? 'not-allowed' : 'pointer',
+            }}>
+              ✍️ Assinar Manualmente
+            </button>
+            <button onClick={usarAssinaturaPredefinida} disabled={salvando} style={{
+              padding: '14px', borderRadius: 10, border: 'none',
+              background: salvando ? '#a9a4e8' : '#534AB7', color: 'white',
+              fontSize: 15, fontWeight: 600, cursor: salvando ? 'not-allowed' : 'pointer',
+            }}>
+              {salvando ? 'A guardar...' : '🖼️ Usar Assinatura Pré-definida'}
+            </button>
+          </div>
           {mostrarAssinatura && (
             <SignaturePad
               onCancel={() => setMostrarAssinatura(false)}

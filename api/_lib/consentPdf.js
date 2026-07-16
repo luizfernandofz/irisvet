@@ -1,6 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { translateLabel } from '../../src/lib/pdfTranslations.js'
 import { translateTexts } from './deepl.js'
+import { LOGO_PNG_BASE64 } from './logoBase64.js'
 
 const PAGE_WIDTH = 595.28
 const PAGE_HEIGHT = 841.89
@@ -85,6 +86,7 @@ export async function generateConsentPdfBytes(termo, lang = 'pt') {
   const pdfDoc = await PDFDocument.create()
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+  const logoImg = await pdfDoc.embedPng(Buffer.from(LOGO_PNG_BASE64, 'base64'))
 
   let page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
   let y = PAGE_HEIGHT - MARGIN
@@ -129,9 +131,11 @@ export async function generateConsentPdfBytes(termo, lang = 'pt') {
   }
 
   // Cabeçalho
-  page.drawText('írisvet', { x: MARGIN, y: y - 22, size: 22, font: fontBold, color: PURPLE })
-  y -= 30
-  drawText('Dra. Anna Clara B. Hussein Zanuto · OMV 10.122 · annaoftalmovet.com.pt', { size: 9, color: GRAY, gap: 16 })
+  const logoH = 48
+  const logoW = (logoImg.width / logoImg.height) * logoH
+  page.drawImage(logoImg, { x: MARGIN, y: y - logoH, width: logoW, height: logoH })
+  y -= logoH + 6
+  drawText('OMV 10.122 · annaoftalmovet.com.pt', { size: 9, color: GRAY, gap: 16 })
 
   drawText(L('TERMO DE CONSENTIMENTO CIRÚRGICO'), { size: 16, bold: true, gap: 4 })
   drawText('IrisVet - Oftalmologia Veterinária', { size: 10, color: GRAY, gap: 20 })
