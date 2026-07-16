@@ -118,21 +118,27 @@ export async function generateReceituarioPdfBytes(rec, lang = 'pt') {
     y -= 18
   }
 
-  // linha compacta de campos lado a lado (label pequeno em cima, valor por baixo)
+  // linha compacta de campos lado a lado (label pequeno em cima, valor por
+  // baixo) — quebra o valor até 2 linhas em vez de cortar texto se não
+  // couber na largura da coluna.
   function drawFieldRow(colWidths, fields) {
-    newPageIfNeeded(34)
+    const valueSize = 9
+    const linesPerField = fields.map((f, i) => {
+      const maxW = colWidths[i] - 12
+      return wrapText(f.value || '—', font, valueSize, maxW).slice(0, 2)
+    })
+    const maxLines = Math.max(...linesPerField.map(l => l.length))
+    const rowHeight = 16 + maxLines * (valueSize + 2)
+    newPageIfNeeded(rowHeight + 4)
+
     const rowTop = y
-    const rowHeight = 30
     page.drawRectangle({ x: MARGIN, y: rowTop - rowHeight, width: CONTENT_WIDTH, height: rowHeight, color: LIGHT_GRAY })
     let cx = MARGIN + 8
     fields.forEach((f, i) => {
       page.drawText(f.label.toUpperCase(), { x: cx, y: rowTop - 11, size: 6.5, font: fontBold, color: GRAY })
-      const val = f.value || '—'
-      const maxW = colWidths[i] - 12
-      const fitted = font.widthOfTextAtSize(val, 9) > maxW
-        ? wrapText(val, font, 9, maxW)[0]
-        : val
-      page.drawText(fitted, { x: cx, y: rowTop - 24, size: 9, font, color: BLACK })
+      linesPerField[i].forEach((line, li) => {
+        page.drawText(line, { x: cx, y: rowTop - 24 - li * (valueSize + 2), size: valueSize, font, color: BLACK })
+      })
       cx += colWidths[i]
     })
     page.drawLine({ start: { x: MARGIN, y: rowTop - rowHeight }, end: { x: MARGIN + CONTENT_WIDTH, y: rowTop - rowHeight }, thickness: 0.5, color: rgb(0.85, 0.85, 0.85) })
