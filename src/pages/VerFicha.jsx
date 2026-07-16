@@ -106,7 +106,7 @@ function CheckBox({ checked }) {
   )
 }
 
-function TabelaVer({ titulo, linhas, secao, lang }) {
+function TabelaVer({ titulo, linhas, secao, lang, V, keyPrefix }) {
   return (
     <div style={{ marginBottom: 20 }}>
       {titulo && (
@@ -131,8 +131,8 @@ function TabelaVer({ titulo, linhas, secao, lang }) {
           {linhas.map((l, i) => (
             <tr key={l} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
               <td style={{ ...tdStyle, fontSize: 13 }}>{translateLabel(lang, l)}</td>
-              <td style={tdStyle}>{secao?.[l]?.OD || ''}</td>
-              <td style={tdStyle}>{secao?.[l]?.OE || ''}</td>
+              <td style={tdStyle}>{V(`${keyPrefix}_${l}_OD`, secao?.[l]?.OD) || ''}</td>
+              <td style={tdStyle}>{V(`${keyPrefix}_${l}_OE`, secao?.[l]?.OE) || ''}</td>
             </tr>
           ))}
         </tbody>
@@ -242,6 +242,14 @@ export default function VerFicha() {
     }
     SINAIS.forEach(s => { fields[`sinal_obs_${s}`] = sinais[s]?.obs })
     REFLEXOS.forEach(r => { fields[`reflexo_obs_${r}`] = exame.reflexos?.[r]?.obs })
+    TESTES.forEach(t => {
+      fields[`testes_${t}_OD`] = exame.testes?.[t]?.OD
+      fields[`testes_${t}_OE`] = exame.testes?.[t]?.OE
+    })
+    SEGMENTAR.forEach(s => {
+      fields[`segmentar_${s}_OD`] = exame.segmentar?.[s]?.OD
+      fields[`segmentar_${s}_OE`] = exame.segmentar?.[s]?.OE
+    })
     return fields
   }
 
@@ -430,9 +438,9 @@ export default function VerFicha() {
               </tbody>
             </table>
             <Divider />
-            <TabelaVer titulo="Testes Oftálmicos" linhas={TESTES} secao={exame.testes} lang={lang} />
+            <TabelaVer titulo="Testes Oftálmicos" linhas={TESTES} secao={exame.testes} lang={lang} V={V} keyPrefix="testes" />
             <Divider />
-            <TabelaVer titulo="Avaliação Segmentar" linhas={SEGMENTAR} secao={exame.segmentar} lang={lang} />
+            <TabelaVer titulo="Avaliação Segmentar" linhas={SEGMENTAR} secao={exame.segmentar} lang={lang} V={V} keyPrefix="segmentar" />
             <Divider />
             <Campo label={L('Comentários')} valor={V('exame_comentarios', exame.comentarios)} />
           </Card>
