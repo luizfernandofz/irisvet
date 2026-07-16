@@ -91,6 +91,8 @@ export default function EditarReavaliacao() {
       finalizing={saving}
       erro={erro}
       labelFinalizar="✓ Guardar alterações"
+      consultationId={id}
+      fkColumn="follow_up_id"
     />
   )
 

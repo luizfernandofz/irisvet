@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 function UploadZona({ olho, imagens, onAdd, onRemove, consultationId, fkColumn }) {
   const inputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
+  const [apagandoIdx, setApagandoIdx] = useState(null)
 
 async function handleFiles(files) {
   if (!files || files.length === 0) return
@@ -20,23 +21,40 @@ async function handleFiles(files) {
 
       if (uploadError) throw uploadError
 
+      let novaLinhaId = null
       if (consultationId) {
-        await supabase.from('images').insert({
+        const { data: novaLinha, error: insertError } = await supabase.from('images').insert({
           [fkColumn]: consultationId,
           olho: olho,
           storage_path: nomeUnico,
           ordem: 0,
-        })
+        }).select().single()
+        if (insertError) throw insertError
+        novaLinhaId = novaLinha?.id
       }
 
       const preview = URL.createObjectURL(file)
-      onAdd({ path: nomeUnico, nome: file.name, olho, preview, original: preview })
+      onAdd({ id: novaLinhaId, storage_path: nomeUnico, nome: file.name, olho, preview, original: preview })
     } catch (e) {
       console.error('Erro ao fazer upload:', e)
     }
   }
   setUploading(false)
 }
+
+  async function handleRemove(i, img) {
+    setApagandoIdx(i)
+    try {
+      const path = img.storage_path || img.path
+      if (path) await supabase.storage.from('images').remove([path])
+      if (img.id) await supabase.from('images').delete().eq('id', img.id)
+      onRemove(i)
+    } catch (e) {
+      console.error('Erro ao apagar imagem:', e)
+    } finally {
+      setApagandoIdx(null)
+    }
+  }
 
   function handleDrop(e) {
     e.preventDefault()
@@ -87,7 +105,7 @@ async function handleFiles(files) {
             <div key={i} style={{
               display: 'flex', alignItems: 'center', gap: 10,
               border: '1px solid #eee', borderRadius: 10, padding: '8px 10px',
-              background: 'white'
+              background: 'white', opacity: apagandoIdx === i ? 0.5 : 1
             }}>
               {img.preview && (
                 <img
@@ -100,14 +118,15 @@ async function handleFiles(files) {
                 {img.nome}
               </div>
               <button
-                onClick={() => onRemove(i)}
+                onClick={() => handleRemove(i, img)}
+                disabled={apagandoIdx === i}
                 style={{
                   background: '#FAECE7', border: 'none', borderRadius: 6,
                   color: '#993C1D', fontSize: 12, padding: '4px 8px',
-                  cursor: 'pointer', flexShrink: 0
+                  cursor: apagandoIdx === i ? 'not-allowed' : 'pointer', flexShrink: 0
                 }}
               >
-                ✕
+                {apagandoIdx === i ? 'A apagar...' : '🗑 Apagar'}
               </button>
             </div>
           ))}

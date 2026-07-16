@@ -50,6 +50,8 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
       onFinalizar={finalizar}
       finalizing={saving}
       erro={erro}
+      consultationId={followUpId}
+      fkColumn="follow_up_id"
     />
   )
 
