@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { formatarData } from '../lib/utils'
 import Header from '../components/Header'
+import { translateLabel, translateFreeTextFields } from '../lib/pdfTranslations'
 
 const PRINT_CSS = `
 @media print {
@@ -56,6 +57,23 @@ export default function VerReavaliacao() {
   const [dados, setDados] = useState(null)
   const [imagens, setImagens] = useState([])
   const [loading, setLoading] = useState(true)
+  const [lang, setLang] = useState('pt')
+  const [translated, setTranslated] = useState({})
+  const [translating, setTranslating] = useState(false)
+  const [translateError, setTranslateError] = useState(null)
+  const [printRequested, setPrintRequested] = useState(false)
+
+  useEffect(() => {
+    function handleAfterPrint() { setLang('pt') }
+    window.addEventListener('afterprint', handleAfterPrint)
+    return () => window.removeEventListener('afterprint', handleAfterPrint)
+  }, [])
+
+  useEffect(() => {
+    if (!printRequested) return
+    window.print()
+    setPrintRequested(false)
+  }, [printRequested])
 
   useEffect(() => {
     async function fetchDados() {
@@ -100,6 +118,37 @@ export default function VerReavaliacao() {
   const imagensOD = imagens.filter(i => i.olho === 'OD')
   const imagensOE = imagens.filter(i => i.olho === 'OE')
 
+  const L = (texto) => translateLabel(lang, texto)
+  const V = (chave, original) => (lang === 'en' ? (translated[chave] ?? original) : original)
+
+  async function exportarPT() {
+    setLang('pt')
+    setPrintRequested(true)
+  }
+
+  async function exportarEN() {
+    setTranslateError(null)
+    if (Object.keys(translated).length === 0) {
+      setTranslating(true)
+      try {
+        const result = await translateFreeTextFields({
+          motivo: dados.motivo,
+          avaliacao: dados.avaliacao,
+          diagnostico: dados.diagnostico,
+          tratamento: dados.tratamento,
+        })
+        setTranslated(result)
+      } catch (e) {
+        setTranslateError('Erro ao traduzir. Verifica a ligação e tenta novamente.')
+        setTranslating(false)
+        return
+      }
+      setTranslating(false)
+    }
+    setLang('en')
+    setPrintRequested(true)
+  }
+
   return (
     <>
       <style>{PRINT_CSS}</style>
@@ -111,50 +160,58 @@ export default function VerReavaliacao() {
           <Header
             subtitulo="Ficha de retorno / reavaliação"
             botoes={<>
-              <button onClick={() => window.print()} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
+              <button onClick={exportarPT} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
+              <button onClick={exportarEN} disabled={translating} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: translating ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 13, fontWeight: 600, cursor: translating ? 'not-allowed' : 'pointer' }}>
+                {translating ? 'A traduzir...' : '🇬🇧 Exportar PDF (EN)'}
+              </button>
               <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
               <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
             </>}
           />
+          {translateError && (
+            <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 12 }}>
+              {translateError}
+            </div>
+          )}
         </div>
 
           {/* INFO DO PACIENTE */}
           <Card>
-            <SeccaoTitulo>Consulta</SeccaoTitulo>
+            <SeccaoTitulo>{L('Consulta')}</SeccaoTitulo>
             <Grid2>
-              <Campo label="Data" valor={formatarData(dados.data)} />
-              <Campo label="Local / Clínica" valor={dados.local} />
-              <Campo label="Tipo de atendimento" valor={dados.tipo_atendimento} />
+              <Campo label={L('Data')} valor={formatarData(dados.data)} />
+              <Campo label={L('Local / Clínica')} valor={dados.local} />
+              <Campo label={L('Tipo de atendimento')} valor={L(dados.tipo_atendimento)} />
             </Grid2>
             <div style={{ height: 1, background: '#f0f0f0', margin: '16px 0' }} />
-            <SeccaoTitulo>Paciente</SeccaoTitulo>
+            <SeccaoTitulo>{L('Paciente')}</SeccaoTitulo>
             <Grid2>
-              <Campo label="Nome do animal" valor={paciente.nome} />
-              <Campo label="Raça" valor={paciente.raca} />
-              <Campo label="Tutor" valor={tutor.nome} />
+              <Campo label={L('Nome do animal')} valor={paciente.nome} />
+              <Campo label={L('Raça')} valor={paciente.raca} />
+              <Campo label={L('Tutor')} valor={tutor.nome} />
             </Grid2>
           </Card>
 
           {/* CLÍNICO */}
           <Card>
-            <SeccaoTitulo>Avaliação clínica</SeccaoTitulo>
-            <Campo label="Motivo" valor={dados.motivo} />
-            <Campo label="Avaliação" valor={dados.avaliacao} />
-            <Campo label="Diagnóstico" valor={dados.diagnostico} />
-            <Campo label="Tratamento" valor={dados.tratamento} />
+            <SeccaoTitulo>{L('Avaliação clínica')}</SeccaoTitulo>
+            <Campo label={L('Motivo')} valor={V('motivo', dados.motivo)} />
+            <Campo label={L('Avaliação')} valor={V('avaliacao', dados.avaliacao)} />
+            <Campo label={L('Diagnóstico')} valor={V('diagnostico', dados.diagnostico)} />
+            <Campo label={L('Tratamento')} valor={V('tratamento', dados.tratamento)} />
           </Card>
 
           {/* IMAGENS */}
           <Card>
-            <SeccaoTitulo>Imagens</SeccaoTitulo>
+            <SeccaoTitulo>{L('Imagens')}</SeccaoTitulo>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[{ imagens: imagensOD, label: 'Olho Direito (OD)' }, { imagens: imagensOE, label: 'Olho Esquerdo (OE)' }].map(({ imagens, label }) => (
                 <div key={label}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 10, textAlign: 'center' }}>{label}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 10, textAlign: 'center' }}>{L(label)}</div>
                   {imagens.length > 0 ? imagens.map((img, i) => (
                     <img key={i} src={img.preview} alt="" style={{ width: '100%', borderRadius: 10, marginBottom: 10, objectFit: 'cover', border: '1px solid #eee' }} />
                   )) : (
-                    <div style={{ border: '2px dashed #eee', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: '#ccc' }}>Sem imagens</div>
+                    <div style={{ border: '2px dashed #eee', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: '#ccc' }}>{L('Sem imagens')}</div>
                   )}
                 </div>
               ))}

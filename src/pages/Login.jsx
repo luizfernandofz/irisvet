@@ -26,6 +26,7 @@ function friendlyError(message) {
   if (message.includes('Invalid login credentials')) return 'Email ou password incorrectos. Tenta novamente.'
   if (message.includes('User already registered')) return 'Já existe uma conta com este email.'
   if (message.includes('Password should be at least')) return 'A password deve ter pelo menos 6 caracteres.'
+  if (message.includes('email rate limit exceeded')) return 'Foram enviados demasiados emails em pouco tempo. Tenta novamente daqui a uma hora.'
   return message
 }
 
