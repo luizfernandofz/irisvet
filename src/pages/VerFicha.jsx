@@ -396,32 +396,6 @@ export default function VerFicha() {
             </div>
           </Card>
 
-          {/* REAVALIAÇÕES */}
-          {followUps.length > 0 && (
-            <Card>
-              <SeccaoTitulo>Reavaliações ({followUps.length})</SeccaoTitulo>
-              {followUps.map((fu, i) => (
-                <div key={fu.id} style={{
-                  borderBottom: i < followUps.length - 1 ? '1px solid #f0f0f0' : 'none',
-                  paddingBottom: i < followUps.length - 1 ? 24 : 0,
-                  marginBottom: i < followUps.length - 1 ? 24 : 0,
-                }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#534AB7', background: '#EEEDFE', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>
-                    Reavaliação {i + 1} — {fu.data}
-                    {fu.local ? ` · ${fu.local}` : ''}
-                    {fu.tipo_atendimento ? ` · ${fu.tipo_atendimento}` : ''}
-                  </div>
-                  <Grid2>
-                    <Campo label="Motivo" valor={fu.motivo} />
-                    <Campo label="Avaliação" valor={fu.avaliacao} />
-                    <Campo label="Diagnóstico" valor={fu.diagnostico} />
-                    <Campo label="Tratamento" valor={fu.tratamento} />
-                  </Grid2>
-                </div>
-              ))}
-            </Card>
-          )}
-
           {/* BOTÕES */}
           <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 40 }}>
             <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>

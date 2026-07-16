@@ -161,10 +161,12 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
           )}
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, paddingTop: 24, borderTop: '1px solid #f0f0f0' }}>
-            <button onClick={() => setSessao(s => s - 1)} disabled={sessao === 1}
-              style={{ padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: sessao === 1 ? '#ccc' : '#555', fontSize: 14, cursor: sessao === 1 ? 'not-allowed' : 'pointer' }}>
-              ← Anterior
-            </button>
+            <button
+            onClick={() => sessao === 1 ? navigate(-1) : setSessao(s => s - 1)}
+            style={{ padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 14, cursor: 'pointer' }}
+          >
+            ← Anterior
+          </button>
             <span style={{ fontSize: 12, color: '#aaa' }}>{saving ? '💾 A guardar...' : ''}</span>
             {sessao < 3 ? (
               <button onClick={avancar} disabled={saving}
