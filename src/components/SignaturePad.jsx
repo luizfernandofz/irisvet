@@ -8,20 +8,18 @@ export default function SignaturePad({ onConfirm, onCancel }) {
 
   useEffect(() => {
     const canvas = canvasRef.current
-    function resize() {
-      const ratio = Math.max(window.devicePixelRatio || 1, 1)
-      const rect = canvas.getBoundingClientRect()
-      canvas.width = rect.width * ratio
-      canvas.height = rect.height * ratio
-      canvas.getContext('2d').scale(ratio, ratio)
-      padRef.current?.clear()
-    }
+    // dimensiona o canvas UMA vez ao montar — não voltamos a mexer nisto
+    // depois, para não arriscar apagar uma assinatura já desenhada por
+    // causa de um resize da janela (ex: teclado a abrir em mobile).
+    const ratio = Math.max(window.devicePixelRatio || 1, 1)
+    const rect = canvas.getBoundingClientRect()
+    canvas.width = rect.width * ratio
+    canvas.height = rect.height * ratio
+    canvas.getContext('2d').scale(ratio, ratio)
+
     padRef.current = new SignaturePadLib(canvas, { backgroundColor: 'rgb(255,255,255)', penColor: 'rgb(20,20,20)' })
     padRef.current.addEventListener('endStroke', () => setVazio(padRef.current.isEmpty()))
-    resize()
-    window.addEventListener('resize', resize)
     return () => {
-      window.removeEventListener('resize', resize)
       padRef.current?.off()
     }
   }, [])
