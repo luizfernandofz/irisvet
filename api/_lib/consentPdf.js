@@ -67,14 +67,16 @@ export async function generateConsentPdfBytes(termo, lang = 'pt') {
 
   let procedimento = termo.procedimento || ''
   let observacoes = termo.observacoes || ''
+  let idade = termo.idade_no_termo || ''
 
   if (lang === 'en') {
-    const toTranslate = [procedimento, observacoes].filter(t => t && t.trim())
+    const toTranslate = [procedimento, observacoes, idade].filter(t => t && t.trim())
     if (toTranslate.length > 0) {
       const translated = await translateTexts(toTranslate, 'EN-US')
       let i = 0
       if (procedimento && procedimento.trim()) procedimento = translated[i++]
       if (observacoes && observacoes.trim()) observacoes = translated[i++]
+      if (idade && idade.trim()) idade = translated[i++]
     }
   }
 
@@ -154,7 +156,7 @@ export async function generateConsentPdfBytes(termo, lang = 'pt') {
   drawField(L('Espécie'), L(paciente.especie))
   drawField(L('Raça'), paciente.raca)
   drawField(L('Género'), L(paciente.genero))
-  drawField(L('Idade'), termo.idade_no_termo)
+  drawField(L('Idade'), idade)
   y -= 8
 
   drawSectionTitle(L('Dados da Cirurgia'))
