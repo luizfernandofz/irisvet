@@ -1,3 +1,77 @@
+import { useState, useCallback } from 'react'
+import Cropper from 'react-easy-crop'
+
+async function urlToBlob(url) {
+  try {
+    const response = await fetch(url)
+    const blob = await response.blob()
+    return URL.createObjectURL(blob)
+  } catch {
+    return url
+  }
+}
+
+async function getCroppedImg(imageSrc, pixelCrop, rotation = 0) {
+  const image = await new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.addEventListener('load', () => resolve(img))
+    img.addEventListener('error', reject)
+    img.src = imageSrc
+  })
+  const rotCanvas = document.createElement('canvas')
+  const rad = (rotation * Math.PI) / 180
+  const sin = Math.abs(Math.sin(rad))
+  const cos = Math.abs(Math.cos(rad))
+  rotCanvas.width = image.width * cos + image.height * sin
+  rotCanvas.height = image.width * sin + image.height * cos
+  const rotCtx = rotCanvas.getContext('2d')
+  rotCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2)
+  rotCtx.rotate(rad)
+  rotCtx.drawImage(image, -image.width / 2, -image.height / 2)
+  const finalCanvas = document.createElement('canvas')
+  finalCanvas.width = pixelCrop.width
+  finalCanvas.height = pixelCrop.height
+  const finalCtx = finalCanvas.getContext('2d')
+  finalCtx.drawImage(rotCanvas, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height)
+  return finalCanvas.toDataURL('image/jpeg', 0.92)
+}
+
+function CropModal({ imagem, onConfirm, onCancel }) {
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(0.5)
+  const [rotation, setRotation] = useState(0)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+  const onCropComplete = useCallback((_, cap) => setCroppedAreaPixels(cap), [])
+
+  async function handleConfirm() {
+    const cropped = await getCroppedImg(imagem.preview, croppedAreaPixels, rotation)
+    onConfirm(cropped)
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+      <div style={{ background: 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 560 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: '#222', marginBottom: 16 }}>Recortar imagem — {imagem.nome}</div>
+        <div style={{ position: 'relative', width: '100%', height: 320, background: '#111', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
+          <Cropper image={imagem.preview} crop={crop} zoom={zoom} rotation={rotation} aspect={4 / 3} minZoom={0.3} restrictPosition={false} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 12, fontWeight: 500, color: '#555', display: 'block', marginBottom: 6 }}>Zoom</label>
+          <input type="range" min={0.3} max={3} step={0.05} value={zoom} onChange={e => setZoom(Number(e.target.value))} style={{ width: '100%', accentColor: '#534AB7' }} />
+        </div>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'space-between', alignItems: 'center' }}>
+          <button onClick={() => setRotation(r => (r + 90) % 360)} style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid #ddd', background: '#f5f4fe', color: '#534AB7', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>↻ Rodar 90°</button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={onCancel} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 14, cursor: 'pointer' }}>Cancelar</button>
+            <button onClick={handleConfirm} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>✓ Aplicar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Card({ children }) {
   return (
     <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
@@ -31,13 +105,37 @@ function Grid2({ children }) {
 
 const btnNav = { padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 14, cursor: 'pointer' }
 
-export default function RevisaoReavaliacao({ dados, patientInfo, onEditar, onFinalizar, finalizing, erro, labelFinalizar = '✓ Finalizar e guardar ficha' }) {
+export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEditar, onFinalizar, finalizing, erro, labelFinalizar = '✓ Finalizar e guardar ficha' }) {
   const imagensOD = dados.imagens_OD || []
   const imagensOE = dados.imagens_OE || []
+  const [cropTarget, setCropTarget] = useState(null)
+
+  async function abrirCrop(olho, idx, img) {
+    const localUrl = await urlToBlob(img.original || img.preview)
+    setCropTarget({ olho, idx, imagem: { ...img, preview: localUrl } })
+  }
+
+  function handleCropConfirm(croppedDataUrl) {
+    const { olho, idx } = cropTarget
+    const campo = `imagens_${olho}`
+    const lista = dados[campo] || []
+    const novas = [...lista]
+    novas[idx] = { ...novas[idx], preview: croppedDataUrl }
+    onChange?.({ ...dados, [campo]: novas })
+    setCropTarget(null)
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
+
+        {cropTarget && (
+          <CropModal
+            imagem={cropTarget.imagem}
+            onConfirm={handleCropConfirm}
+            onCancel={() => setCropTarget(null)}
+          />
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
@@ -75,11 +173,16 @@ export default function RevisaoReavaliacao({ dados, patientInfo, onEditar, onFin
         <Card>
           <SeccaoTitulo>Imagens</SeccaoTitulo>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            {[{ imagens: imagensOD, label: 'Olho Direito (OD)' }, { imagens: imagensOE, label: 'Olho Esquerdo (OE)' }].map(({ imagens, label }) => (
+            {[{ olho: 'OD', imagens: imagensOD, label: 'Olho Direito (OD)' }, { olho: 'OE', imagens: imagensOE, label: 'Olho Esquerdo (OE)' }].map(({ olho, imagens, label }) => (
               <div key={label}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 10, textAlign: 'center' }}>{label}</div>
                 {imagens.length > 0 ? imagens.map((img, i) => (
-                  <img key={i} src={img.preview} alt={img.nome || ''} style={{ width: '100%', borderRadius: 10, marginBottom: 10, objectFit: 'cover', border: '1px solid #eee' }} />
+                  <div key={i} style={{ position: 'relative', marginBottom: 10 }}>
+                    <img src={img.preview} alt={img.nome || ''} style={{ width: '100%', borderRadius: 10, objectFit: 'cover', border: '1px solid #eee', display: 'block' }} />
+                    <button onClick={() => abrirCrop(olho, i, img)} style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(83,74,183,0.85)', color: 'white', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                      ✂️ Recortar / Rodar
+                    </button>
+                  </div>
                 )) : (
                   <div style={{ border: '2px dashed #eee', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: '#ccc' }}>Sem imagens</div>
                 )}

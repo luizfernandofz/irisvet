@@ -84,6 +84,7 @@ export default function EditarReavaliacao() {
   if (revisao) return (
     <RevisaoReavaliacao
       dados={dados}
+      onChange={setDados}
       patientInfo={patientInfo}
       onEditar={() => setRevisao(false)}
       onFinalizar={guardar}

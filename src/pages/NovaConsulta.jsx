@@ -44,6 +44,7 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
   if (revisao) return (
     <RevisaoReavaliacao
       dados={dados}
+      onChange={setDados}
       patientInfo={patientInfo}
       onEditar={() => setRevisao(false)}
       onFinalizar={finalizar}
