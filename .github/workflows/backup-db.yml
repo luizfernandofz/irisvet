@@ -1,0 +1,33 @@
+name: Backup do banco (mensal)
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'   # dia 1 de cada mês, 03:00 UTC
+  workflow_dispatch: {}    # permite disparar manualmente pela aba Actions
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump do Postgres (Supabase)
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          docker run --rm postgres:16 \
+            pg_dump "$SUPABASE_DB_URL" --no-owner --no-acl -F c \
+            > backup.dump
+
+      - name: Enviar dump para o repositório privado de backups
+        env:
+          BACKUP_REPO_TOKEN: ${{ secrets.BACKUP_REPO_TOKEN }}
+        run: |
+          FILENAME="irisvet_$(date -u +%Y-%m-%d).dump"
+          git clone "https://x-access-token:${BACKUP_REPO_TOKEN}@github.com/luizfernandofz/irisvet-backups.git" backups-repo
+          mkdir -p backups-repo/backups
+          mv backup.dump "backups-repo/backups/$FILENAME"
+          cd backups-repo
+          git config user.name "irisvet-backup-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add "backups/$FILENAME"
+          git commit -m "Backup automático: $FILENAME"
+          git push
