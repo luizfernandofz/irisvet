@@ -12,6 +12,7 @@ const SINAIS = [
   'Neoformação',
   'Bulbo ocular',
   'Déficit visual',
+  'Midríase/Miose',
 ]
 
 export default function Sessao3({ dados, onChange }) {

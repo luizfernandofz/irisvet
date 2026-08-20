@@ -27,7 +27,7 @@ const SEGMENTAR = [
   { nome: 'Câmara Anterior', atalhos: ['NDN', 'NV'] },
   { nome: 'Íris e Pupila', atalhos: ['NDN', 'NV'] },
   { nome: 'Lente', atalhos: ['NDN', 'NV'] },
-  { nome: 'Retina e Vítreo', atalhos: ['NDN', 'RF+'] },
+  { nome: 'Retina e Vítreo', atalhos: ['NDN', 'NV', 'RF+'] },
 ]
 
 const ATALHO_TEXTO = {
@@ -79,24 +79,12 @@ function TabelaOftalmologica({ titulo, linhas, secao, onChange, dados }) {
     })
   }
 
-  function setAtalho(campo, atalho) {
+  function setAtalho(campo, olho, atalho) {
     const texto = ATALHO_TEXTO[atalho] || atalho
     const actual = dados.exame_oftalmologico || {}
     const campoActual = (actual[secao] || {})[campo] || {}
-    const jaPreenchido = campoActual.OD === texto && campoActual.OE === texto
-    onChange({
-      ...dados,
-      exame_oftalmologico: {
-        ...actual,
-        [secao]: {
-          ...(actual[secao] || {}),
-          [campo]: {
-            OD: jaPreenchido ? '' : texto,
-            OE: jaPreenchido ? '' : texto
-          }
-        }
-      }
-    })
+    const jaPreenchido = campoActual[olho] === texto
+    setValor(campo, olho, jaPreenchido ? '' : texto)
   }
 
   const secaoData = (dados.exame_oftalmologico || {})[secao] || {}
@@ -111,7 +99,6 @@ function TabelaOftalmologica({ titulo, linhas, secao, onChange, dados }) {
               <th style={thStyle}>Parâmetro</th>
               <th style={thStyle}>OD</th>
               <th style={thStyle}>OE</th>
-              <th style={{ ...thStyle, width: 100 }}>Atalhos</th>
             </tr>
           </thead>
           <tbody>
@@ -125,6 +112,11 @@ function TabelaOftalmologica({ titulo, linhas, secao, onChange, dados }) {
                     placeholder="—"
                     style={{ border: '1px solid #eee', background: 'transparent', fontSize: 12, padding: '5px 8px', borderRadius: 6 }}
                   />
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
+                    {atalhos.map(a => (
+                      <BtnRapido key={a} label={a} onClick={() => setAtalho(nome, 'OD', a)} />
+                    ))}
+                  </div>
                 </td>
                 <td style={tdStyle}>
                   <AutoTextarea
@@ -133,11 +125,9 @@ function TabelaOftalmologica({ titulo, linhas, secao, onChange, dados }) {
                     placeholder="—"
                     style={{ border: '1px solid #eee', background: 'transparent', fontSize: 12, padding: '5px 8px', borderRadius: 6 }}
                   />
-                </td>
-                <td style={tdStyle}>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
                     {atalhos.map(a => (
-                      <BtnRapido key={a} label={a} onClick={() => setAtalho(nome, a)} />
+                      <BtnRapido key={a} label={a} onClick={() => setAtalho(nome, 'OE', a)} />
                     ))}
                   </div>
                 </td>

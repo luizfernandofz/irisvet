@@ -7,12 +7,12 @@ import { formatarData } from '../lib/utils'
 import Header from '../components/Header'
 
 const ESPECIE_EMOJI = {
-  canino: '🐕', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
+  canino: '🐶', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
 }
 
 const ESPECIES = [
   { value: '', label: 'Todas as espécies' },
-  { value: 'canino', label: '🐕 Canino' },
+  { value: 'canino', label: '🐶 Canino' },
   { value: 'felino', label: '🐈 Felino' },
   { value: 'roedor', label: '🐇 Roedor' },
   { value: 'equino', label: '🐴 Equino' },

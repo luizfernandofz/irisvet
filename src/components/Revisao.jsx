@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 
 const ESPECIE_EMOJI = {
-  canino: '🐕', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
+  canino: '🐶', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
 }
 
 const REFLEXOS = [
@@ -17,6 +17,7 @@ const SEGMENTAR = [
 const SINAIS = [
   'Hiperemia', 'Secreção', 'Lacrimejamento', 'Blefarospasmo', 'Prurido',
   'Fotofobia', 'Sangramento', 'Neoformação', 'Bulbo ocular', 'Déficit visual',
+  'Midríase/Miose',
 ]
 
 const PRINT_CSS = `

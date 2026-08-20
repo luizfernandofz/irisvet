@@ -113,7 +113,7 @@ export const EN_LABELS = {
   'Hiperemia': 'Hyperemia', 'Secreção': 'Discharge', 'Lacrimejamento': 'Epiphora',
   'Blefarospasmo': 'Blepharospasm', 'Prurido': 'Pruritus', 'Fotofobia': 'Photophobia',
   'Sangramento': 'Bleeding', 'Neoformação': 'Mass/growth', 'Bulbo ocular': 'Globe',
-  'Déficit visual': 'Visual deficit',
+  'Déficit visual': 'Visual deficit', 'Midríase/Miose': 'Mydriasis/Miosis',
 
   // reflexos
   'Ofuscamento': 'Dazzle reflex', 'Resposta à Ameaça': 'Menace response',

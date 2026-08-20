@@ -6,7 +6,7 @@ import { calcularIdade } from '../lib/utils'
 import Header from '../components/Header'
 
 const ESPECIES = [
-  { value: 'canino', label: '🐕 Canino' },
+  { value: 'canino', label: '🐶 Canino' },
   { value: 'felino', label: '🐈 Felino' },
   { value: 'roedor', label: '🐇 Roedor' },
   { value: 'equino', label: '🐴 Equino' },

@@ -11,7 +11,7 @@ const TIPOS_ATENDIMENTO = [
 ]
 
 const ESPECIES = [
-  { value: 'canino', label: '🐕 Canino' },
+  { value: 'canino', label: '🐶 Canino' },
   { value: 'felino', label: '🐈 Felino' },
   { value: 'roedor', label: '🐇 Roedor' },
   { value: 'equino', label: '🐴 Equino' },

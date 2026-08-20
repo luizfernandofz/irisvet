@@ -11,7 +11,7 @@ import {
 } from '../lib/receituarioOptions'
 
 const ESPECIES = [
-  { value: 'canino', label: '🐕 Canino' }, { value: 'felino', label: '🐈 Felino' },
+  { value: 'canino', label: '🐶 Canino' }, { value: 'felino', label: '🐈 Felino' },
   { value: 'roedor', label: '🐇 Roedor' }, { value: 'equino', label: '🐴 Equino' },
   { value: 'ave', label: '🦜 Ave' }, { value: 'outro', label: 'Outro' },
 ]

@@ -5,7 +5,7 @@ import Header from '../components/Header'
 import { translateLabel, translateFreeTextFields } from '../lib/pdfTranslations'
 
 const ESPECIE_EMOJI = {
-  canino: '🐕', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
+  canino: '🐶', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
 }
 
 const REFLEXOS = [
@@ -20,6 +20,7 @@ const SEGMENTAR = [
 const SINAIS = [
   'Hiperemia', 'Secreção', 'Lacrimejamento', 'Blefarospasmo', 'Prurido',
   'Fotofobia', 'Sangramento', 'Neoformação', 'Bulbo ocular', 'Déficit visual',
+  'Midríase/Miose',
 ]
 
 const PRINT_CSS = `
@@ -155,7 +156,7 @@ export default function VerFicha() {
   const [printRequested, setPrintRequested] = useState(false)
 
   useEffect(() => {
-    function handleAfterPrint() { setLang('pt') }
+    function handleAfterPrint() { setLang('pt'); document.title = 'irisvet' }
     window.addEventListener('afterprint', handleAfterPrint)
     return () => window.removeEventListener('afterprint', handleAfterPrint)
   }, [])
@@ -218,6 +219,14 @@ export default function VerFicha() {
   const paciente = dados.patients || {}
   const tutor = paciente.tutors || {}
 
+  function nomeArquivo() {
+    const sanitizar = s => (s || '').replace(/[\\/:*?"<>|]/g, '').trim()
+    const nomePaciente = sanitizar(paciente.nome) || 'Paciente'
+    const primeiroNomeTutor = sanitizar((tutor.nome || '').trim().split(/\s+/)[0]) || 'Tutor'
+    const data = sanitizar(dados.data)
+    return [nomePaciente, primeiroNomeTutor, data].filter(Boolean).join('_')
+  }
+
   const L = (texto) => translateLabel(lang, texto)
   const V = (chave, original) => (lang === 'en' ? (translated[chave] ?? original) : original)
 
@@ -255,6 +264,7 @@ export default function VerFicha() {
 
   async function exportarPT() {
     setLang('pt')
+    document.title = nomeArquivo()
     setPrintRequested(true)
   }
 
@@ -273,6 +283,7 @@ export default function VerFicha() {
       setTranslating(false)
     }
     setLang('en')
+    document.title = nomeArquivo()
     setPrintRequested(true)
   }
 
