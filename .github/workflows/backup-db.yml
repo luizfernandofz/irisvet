@@ -13,7 +13,7 @@ jobs:
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
-          docker run --rm postgres:16 \
+          docker run --rm postgres:17 \
             pg_dump "$SUPABASE_DB_URL" --no-owner --no-acl -F c \
             > backup.dump
 
