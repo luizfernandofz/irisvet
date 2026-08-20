@@ -5,8 +5,7 @@ import Header from '../components/Header'
 import AutoTextarea from '../components/AutoTextarea'
 import Sessao7 from '../components/Sessao7'
 import RevisaoReavaliacao from '../components/RevisaoReavaliacao'
-
-const TIPOS_ATENDIMENTO = ['Consulta', 'Retorno/Reavaliação', 'Exame Complementar', 'Intervenção']
+import { TIPOS_ATENDIMENTO, configSimplificado } from '../lib/tiposAtendimento'
 
 export default function EditarReavaliacao() {
   const { id } = useParams()
@@ -20,9 +19,10 @@ export default function EditarReavaliacao() {
 
   const [dados, setDados] = useState({
     data: '', local: '', tipo_atendimento: '',
-    motivo: '', avaliacao: '', diagnostico: '', tratamento: '',
+    motivo: '', avaliacao: '', diagnostico: '', tratamento: '', observacoes: '',
     imagens_OD: [], imagens_OE: [],
   })
+  const config = configSimplificado(dados.tipo_atendimento)
 
   useEffect(() => {
     async function fetchDados() {
@@ -48,6 +48,7 @@ export default function EditarReavaliacao() {
         avaliacao: fu.avaliacao || '',
         diagnostico: fu.diagnostico || '',
         tratamento: fu.tratamento || '',
+        observacoes: fu.observacoes || '',
         imagens_OD: imagensComUrl.filter(i => i.olho === 'OD'),
         imagens_OE: imagensComUrl.filter(i => i.olho === 'OE'),
       })
@@ -64,6 +65,7 @@ export default function EditarReavaliacao() {
         data: dados.data, local: dados.local, tipo_atendimento: dados.tipo_atendimento,
         motivo: dados.motivo, avaliacao: dados.avaliacao,
         diagnostico: dados.diagnostico, tratamento: dados.tratamento,
+        observacoes: dados.observacoes,
       }).eq('id', id)
       alert('Ficha actualizada com sucesso!')
       navigate(`/ver-reav/${id}`)
@@ -102,7 +104,7 @@ export default function EditarReavaliacao() {
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
         <Header
-          subtitulo="Editar retorno / reavaliação"
+          subtitulo={`Editar ${dados.tipo_atendimento || 'retorno / reavaliação'}`}
           botoes={<>
             <button onClick={() => navigate(`/ver-reav/${id}`)} style={btnNav}>← Voltar</button>
             <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
@@ -160,8 +162,8 @@ export default function EditarReavaliacao() {
                 </div>
               </div>
               <div>
-                <label style={labelStyle}>Motivo</label>
-                <AutoTextarea value={dados.motivo} onChange={e => setDados(d => ({ ...d, motivo: e.target.value }))} placeholder="Motivo do retorno..." />
+                <label style={labelStyle}>{config.labelMotivo}</label>
+                <AutoTextarea value={dados.motivo} onChange={e => setDados(d => ({ ...d, motivo: e.target.value }))} placeholder={config.placeholderMotivo} />
               </div>
             </div>
           )}
@@ -170,18 +172,12 @@ export default function EditarReavaliacao() {
             <div>
               <div style={sectionTitle}>Avaliação clínica</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div>
-                  <label style={labelStyle}>Avaliação</label>
-                  <AutoTextarea value={dados.avaliacao} onChange={e => setDados(d => ({ ...d, avaliacao: e.target.value }))} placeholder="Avaliação clínica..." />
-                </div>
-                <div>
-                  <label style={labelStyle}>Diagnóstico</label>
-                  <AutoTextarea value={dados.diagnostico} onChange={e => setDados(d => ({ ...d, diagnostico: e.target.value }))} placeholder="Diagnóstico actualizado..." />
-                </div>
-                <div>
-                  <label style={labelStyle}>Tratamento</label>
-                  <AutoTextarea value={dados.tratamento} onChange={e => setDados(d => ({ ...d, tratamento: e.target.value }))} placeholder="Plano terapêutico..." />
-                </div>
+                {config.campos.map(({ campo, label, placeholder }) => (
+                  <div key={campo}>
+                    <label style={labelStyle}>{label}</label>
+                    <AutoTextarea value={dados[campo]} onChange={e => setDados(d => ({ ...d, [campo]: e.target.value }))} placeholder={placeholder} />
+                  </div>
+                ))}
               </div>
             </div>
           )}

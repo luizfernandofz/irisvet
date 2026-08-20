@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { formatarData } from '../lib/utils'
 import Header from '../components/Header'
 import { translateLabel, translateFreeTextFields } from '../lib/pdfTranslations'
+import { configSimplificado } from '../lib/tiposAtendimento'
 
 const PRINT_CSS = `
 @media print {
@@ -115,6 +116,7 @@ export default function VerReavaliacao() {
 
   const paciente = dados.patients || {}
   const tutor = paciente.tutors || {}
+  const config = configSimplificado(dados.tipo_atendimento)
   const imagensOD = imagens.filter(i => i.olho === 'OD')
   const imagensOE = imagens.filter(i => i.olho === 'OE')
 
@@ -136,6 +138,7 @@ export default function VerReavaliacao() {
           avaliacao: dados.avaliacao,
           diagnostico: dados.diagnostico,
           tratamento: dados.tratamento,
+          observacoes: dados.observacoes,
         })
         setTranslated(result)
       } catch (e) {
@@ -158,7 +161,7 @@ export default function VerReavaliacao() {
         {/* CABEÇALHO */}
         <div className="no-print">
           <Header
-            subtitulo="Ficha de retorno / reavaliação"
+            subtitulo={`Ficha de ${dados.tipo_atendimento || 'retorno / reavaliação'}`}
             botoes={<>
               <button onClick={exportarPT} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
               <button onClick={exportarEN} disabled={translating} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: translating ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 13, fontWeight: 600, cursor: translating ? 'not-allowed' : 'pointer' }}>
@@ -195,10 +198,10 @@ export default function VerReavaliacao() {
           {/* CLÍNICO */}
           <Card>
             <SeccaoTitulo>{L('Avaliação clínica')}</SeccaoTitulo>
-            <Campo label={L('Motivo')} valor={V('motivo', dados.motivo)} />
-            <Campo label={L('Avaliação')} valor={V('avaliacao', dados.avaliacao)} />
-            <Campo label={L('Diagnóstico')} valor={V('diagnostico', dados.diagnostico)} />
-            <Campo label={L('Tratamento')} valor={V('tratamento', dados.tratamento)} />
+            <Campo label={L(config.labelMotivo)} valor={V('motivo', dados.motivo)} />
+            {config.campos.map(({ campo, label }) => (
+              <Campo key={campo} label={L(label)} valor={V(campo, dados[campo])} />
+            ))}
           </Card>
 
           {/* IMAGENS */}

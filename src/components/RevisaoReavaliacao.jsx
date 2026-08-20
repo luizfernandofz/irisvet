@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import { supabase } from '../lib/supabase'
+import { configSimplificado } from '../lib/tiposAtendimento'
 
 async function urlToBlob(url) {
   try {
@@ -111,6 +112,7 @@ const btnNav = { padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd'
 export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEditar, onFinalizar, finalizing, erro, labelFinalizar = '✓ Finalizar e guardar ficha', consultationId, fkColumn = 'follow_up_id' }) {
   const imagensOD = dados.imagens_OD || []
   const imagensOE = dados.imagens_OE || []
+  const config = configSimplificado(dados.tipo_atendimento)
   const [cropTarget, setCropTarget] = useState(null)
   const [salvandoCrop, setSalvandoCrop] = useState(false)
   const [apagando, setApagando] = useState(null)
@@ -194,7 +196,7 @@ export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEdi
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
             <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7' }}>írisvet</div>
-            <div style={{ fontSize: 13, color: '#888' }}>Revisão do retorno / reavaliação</div>
+            <div style={{ fontSize: 13, color: '#888' }}>Revisão de {dados.tipo_atendimento || 'retorno / reavaliação'}</div>
           </div>
           <button onClick={onEditar} style={btnNav}>← Voltar a editar</button>
         </div>
@@ -214,14 +216,14 @@ export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEdi
             <Campo label="Local / Clínica" valor={dados.local} />
             <Campo label="Tipo de atendimento" valor={dados.tipo_atendimento} />
           </Grid2>
-          <Campo label="Motivo" valor={dados.motivo} />
+          <Campo label={config.labelMotivo} valor={dados.motivo} />
         </Card>
 
         <Card>
           <SeccaoTitulo>Avaliação clínica</SeccaoTitulo>
-          <Campo label="Avaliação" valor={dados.avaliacao} />
-          <Campo label="Diagnóstico" valor={dados.diagnostico} />
-          <Campo label="Tratamento" valor={dados.tratamento} />
+          {config.campos.map(({ campo, label }) => (
+            <Campo key={campo} label={label} valor={dados[campo]} />
+          ))}
         </Card>
 
         <Card>

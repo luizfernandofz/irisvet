@@ -12,15 +12,15 @@ import Revisao from '../components/Revisao'
 import RevisaoReavaliacao from '../components/RevisaoReavaliacao'
 import Header from '../components/Header'
 
-// Formulário simplificado para Retorno/Reavaliação
+// Formulário simplificado para Retorno/Reavaliação, Exame Complementar e Intervenção
 import AutoTextarea from '../components/AutoTextarea'
-
-const TIPOS_ATENDIMENTO = ['Consulta', 'Retorno/Reavaliação', 'Exame Complementar', 'Intervenção']
+import { TIPOS_ATENDIMENTO, TIPOS_SIMPLIFICADOS, configSimplificado } from '../lib/tiposAtendimento'
 
 function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving, erro, navigate }) {
   const [sessao, setSessao] = useState(1)
   const [followUpId, setFollowUpId] = useState(null)
   const [revisao, setRevisao] = useState(false)
+  const config = configSimplificado(dados.tipo_atendimento)
 
   async function guardar() {
     const id = await onGuardar(followUpId)
@@ -59,7 +59,7 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
     <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
     <Header
-      subtitulo="Retorno / Reavaliação"
+      subtitulo={dados.tipo_atendimento || 'Retorno / Reavaliação'}
       botoes={<>
         <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
         <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
@@ -127,10 +127,10 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
                 </div>
               </div>
               <div>
-                <label style={labelStyle}>Motivo da consulta</label>
+                <label style={labelStyle}>{config.labelMotivo}</label>
                 <AutoTextarea value={dados.motivo}
                   onChange={e => setDados(d => ({ ...d, motivo: e.target.value }))}
-                  placeholder="Motivo do retorno..." />
+                  placeholder={config.placeholderMotivo} />
               </div>
             </div>
           )}
@@ -139,24 +139,14 @@ function FormularioReavaliacao({ dados, setDados, patientInfo, onGuardar, saving
             <div>
               <div style={sectionTitle}>Avaliação clínica</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div>
-                  <label style={labelStyle}>Avaliação</label>
-                  <AutoTextarea value={dados.avaliacao}
-                    onChange={e => setDados(d => ({ ...d, avaliacao: e.target.value }))}
-                    placeholder="Avaliação clínica..." />
-                </div>
-                <div>
-                  <label style={labelStyle}>Diagnóstico</label>
-                  <AutoTextarea value={dados.diagnostico}
-                    onChange={e => setDados(d => ({ ...d, diagnostico: e.target.value }))}
-                    placeholder="Diagnóstico actualizado..." />
-                </div>
-                <div>
-                  <label style={labelStyle}>Tratamento</label>
-                  <AutoTextarea value={dados.tratamento}
-                    onChange={e => setDados(d => ({ ...d, tratamento: e.target.value }))}
-                    placeholder="Plano terapêutico..." />
-                </div>
+                {config.campos.map(({ campo, label, placeholder }) => (
+                  <div key={campo}>
+                    <label style={labelStyle}>{label}</label>
+                    <AutoTextarea value={dados[campo]}
+                      onChange={e => setDados(d => ({ ...d, [campo]: e.target.value }))}
+                      placeholder={placeholder} />
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -286,9 +276,9 @@ export default function NovaConsulta() {
     fetchPatient()
   }, [patientId])
 
-  const isReavaliacao = dados.tipo_atendimento === 'Retorno/Reavaliação'
+  const isSimplificado = TIPOS_SIMPLIFICADOS.includes(dados.tipo_atendimento)
 
-  // Guardar reavaliação (follow_up)
+  // Guardar retorno/reavaliação, exame complementar ou intervenção (follow_up)
   async function guardarReavaliacao(followUpId) {
     setSaving(true)
     setErro(null)
@@ -303,6 +293,7 @@ export default function NovaConsulta() {
         avaliacao: dados.avaliacao,
         diagnostico: dados.diagnostico,
         tratamento: dados.tratamento,
+        observacoes: dados.observacoes,
       }
       if (!followUpId) {
         const { data: fu, error } = await supabase.from('follow_ups').insert(payload).select().single()
@@ -365,10 +356,11 @@ export default function NovaConsulta() {
         }
       }
 
-      // Retorno/Reavaliação não usa a tabela consultations — guarda-se em
-      // follow_ups (ver FormularioReavaliacao). Criar/actualizar tutor e
-      // paciente é suficiente aqui.
-      if (dadosActuais.tipo_atendimento === 'Retorno/Reavaliação') {
+      // Retorno/Reavaliação, Exame Complementar e Intervenção não usam a
+      // tabela consultations — guardam-se em follow_ups (ver
+      // FormularioReavaliacao). Criar/actualizar tutor e paciente é
+      // suficiente aqui.
+      if (TIPOS_SIMPLIFICADOS.includes(dadosActuais.tipo_atendimento)) {
         return patient_id
       }
 
@@ -433,9 +425,9 @@ export default function NovaConsulta() {
     'Imagens',
   ]
 
-  // Se for reavaliação, mostrar formulário simplificado
-  // (só após escolher o tipo na sessão 1)
-  if (isReavaliacao && sessao > 1) {
+  // Se for retorno/reavaliação, exame complementar ou intervenção, mostrar
+  // formulário simplificado (só após escolher o tipo na sessão 1)
+  if (isSimplificado && sessao > 1) {
     return (
       <FormularioReavaliacao
         dados={dados}

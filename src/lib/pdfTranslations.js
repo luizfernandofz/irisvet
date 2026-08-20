@@ -42,7 +42,7 @@ export const EN_LABELS = {
   'Cirurgias gerais': 'General surgeries',
   'Observações': 'Notes',
   'Comentários': 'Comments',
-  'Diagnóstico': 'Diagnosis',
+  'Diagnóstico': 'Diagnosis', 'Descrição': 'Description',
   'Tratamento / Receituário': 'Treatment / Prescription',
   'Observações e procedimentos realizados': 'Notes and procedures performed',
   'Tutor': 'Owner',
