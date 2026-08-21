@@ -322,7 +322,17 @@ export default function NovaConsulta() {
       }
     } catch (e) {
       setErro('Erro ao guardar. Verifica a ligação.')
-      console.error(e)
+      console.error('[guardarReavaliacao] falha ao guardar follow_up', {
+        message: e?.message,
+        code: e?.code,
+        details: e?.details,
+        hint: e?.hint,
+        status: e?.status,
+        online: typeof navigator !== 'undefined' ? navigator.onLine : null,
+        followUpId,
+        tipo_atendimento: dados.tipo_atendimento,
+        timestamp: new Date().toISOString(),
+      }, e)
       return null
     } finally {
       setSaving(false)
@@ -423,16 +433,28 @@ export default function NovaConsulta() {
       return newId
     } catch (e) {
       setErro('Erro ao guardar. Verifica a ligação.')
-      console.error(e)
-      return idActual
+      console.error('[guardarRascunho] falha ao guardar ficha', {
+        message: e?.message,
+        code: e?.code,
+        details: e?.details,
+        hint: e?.hint,
+        status: e?.status,
+        online: typeof navigator !== 'undefined' ? navigator.onLine : null,
+        idActual,
+        tutor_id: dadosActuais.tutor_id,
+        paciente_id: dadosActuais.paciente_id,
+        tipo_atendimento: dadosActuais.tipo_atendimento,
+        timestamp: new Date().toISOString(),
+      }, e)
+      return null
     } finally {
       setSaving(false)
     }
   }
 
   async function avancar() {
-    await guardarRascunho(dados, consultationId)
-    if (sessao < 6) setSessao(s => s + 1)
+    const id = await guardarRascunho(dados, consultationId)
+    if (id && sessao < 6) setSessao(s => s + 1)
   }
 
   const sessaoTitulos = [
@@ -466,12 +488,15 @@ export default function NovaConsulta() {
       onEditar={() => setRevisao(false)}
       onFinalizar={async () => {
         setFinalizing(true)
-        await guardarRascunho({ ...dados, status: 'finalizada' }, consultationId)
+        const id = await guardarRascunho({ ...dados, status: 'finalizada' }, consultationId)
         setFinalizing(false)
-        alert('Ficha guardada com sucesso!')
-        navigate('/consultar')
+        if (id) {
+          alert('Ficha guardada com sucesso!')
+          navigate('/consultar')
+        }
       }}
       finalizing={finalizing}
+      erro={erro}
     />
   )
 

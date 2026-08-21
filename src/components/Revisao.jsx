@@ -22,6 +22,7 @@ const SINAIS = [
 
 const PRINT_CSS = `
 @media print {
+* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .no-print { display: none !important; }
   body { background: white !important; margin: 0; padding: 0; }
   .revisao-root { background: white !important; padding: 0 !important; }
@@ -179,7 +180,7 @@ function TabelaRevisao({ titulo, linhas, secao }) {
   )
 }
 
-export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
+export default function Revisao({ dados, onEditar, onFinalizar, finalizing, erro }) {
   const exame = dados.exame_oftalmologico || {}
   const sinais = dados.sinais || {}
   const flags = dados.flags || {}
@@ -203,6 +204,19 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
     setCropTarget({ olho, idx, imagem: { ...img, preview: localUrl } })
   }
 
+  function nomeArquivo() {
+    const sanitizar = s => (s || '').replace(/[\\/:*?"<>|]/g, '').trim()
+    const nomePaciente = sanitizar(dados.paciente_nome) || 'Paciente'
+    const primeiroNomeTutor = sanitizar((dados.tutor_nome || '').trim().split(/\s+/)[0]) || 'Tutor'
+    const data = sanitizar(dados.data)
+    return [nomePaciente, primeiroNomeTutor, data].filter(Boolean).join('_')
+  }
+
+  function exportarPDF() {
+    document.title = nomeArquivo()
+    window.print()
+  }
+
   return (
     <>
       <style>{PRINT_CSS}</style>
@@ -222,11 +236,10 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
           </div>
 
           {/* CABEÇALHO DA FICHA — só aparece na impressão */}
-          <div style={{ display: 'none' }} className="print-header">
-            <div style={{ textAlign: 'center', marginBottom: 16, paddingBottom: 12, borderBottom: '2px solid var(--iv-sage)' }}>
-              <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 24, fontWeight: 500, color: 'var(--iv-sage)' }}>írisvet</div>
-              <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)' }}>Dra. Anna Clara B. Hussein Zanuto · OMV 10.122 · PT: +351 916720461</div>
-            </div>
+          <div style={{ display: 'none' }} id="print-header">
+            <style>{`#print-header { display: none; } @media print { #print-header { display: block !important; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--iv-sage); } }`}</style>
+            <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 24, fontWeight: 500, color: 'var(--iv-sage)' }}>írisvet</div>
+            <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)' }}>Dra. Anna Clara B. Hussein Zanuto · OMV 10.122 · PT: +351 916720461 · annaoftalmovet.com.pt</div>
           </div>
 
           {/* SESSÃO 1+2 */}
@@ -394,11 +407,15 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
             </div>
           </Card>
 
+          {erro && (
+            <div className="no-print" style={{ background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>{erro}</div>
+          )}
+
           {/* BOTÕES FINAIS */}
           <div className="revisao-botoes no-print" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 40 }}>
             <button onClick={onEditar} style={{ padding: '12px 24px', borderRadius: 10, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 14, cursor: 'pointer' }}>← Voltar a editar</button>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => window.print()} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', background: 'var(--iv-sage)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
+              <button onClick={exportarPDF} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', background: 'var(--iv-sage)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
               <button onClick={onFinalizar} disabled={finalizing} style={{ padding: '12px 32px', borderRadius: 10, border: 'none', background: 'var(--iv-sage)', opacity: finalizing ? 0.55 : 1, color: 'white', fontSize: 14, fontWeight: 600, cursor: finalizing ? 'not-allowed' : 'pointer' }}>
                 {finalizing ? 'A guardar...' : '✓ Finalizar e guardar ficha'}
               </button>
