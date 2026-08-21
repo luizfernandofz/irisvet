@@ -10,6 +10,16 @@ const ESPECIE_EMOJI = {
   canino: '🐶', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
 }
 
+function nomeArquivoFicha(dados) {
+  const sanitizar = s => (s || '').replace(/[\\/:*?"<>|]/g, '').trim()
+  const paciente = dados.patients || {}
+  const tutor = paciente.tutors || {}
+  const nomePaciente = sanitizar(paciente.nome) || 'Paciente'
+  const primeiroNomeTutor = sanitizar((tutor.nome || '').trim().split(/\s+/)[0]) || 'Tutor'
+  const data = sanitizar(dados.data)
+  return [nomePaciente, primeiroNomeTutor, data].filter(Boolean).join('_')
+}
+
 const REFLEXOS = [
   'Blefarospasmo', 'Ofuscamento', 'Resposta à Ameaça',
   'RPL Direto', 'RPL Consensual', 'RPL Vermelho', 'RPL Azul',
@@ -43,6 +53,10 @@ const PRINT_CSS = `
   img { page-break-inside: avoid; max-width: 100%; }
   .print-stack { display: block !important; }
   .print-stack > * { margin-bottom: 10px; }
+  .print-cols-2 { display: block !important; }
+  .print-cols-2::after { content: ''; display: table; clear: both; }
+  .print-cols-2 > * { float: left !important; width: 48% !important; box-sizing: border-box; }
+  .print-cols-2 > *:first-child { margin-right: 4%; }
 }
 `
 
@@ -171,13 +185,19 @@ export default function VerFicha() {
   useEffect(() => {
     if (!printRequested) return
     let cancelado = false
-    waitForImagesToLoad().then(() => {
-      if (cancelado) return
-      window.print()
-      setPrintRequested(false)
-    })
+    waitForImagesToLoad()
+      .then(() => new Promise(resolve => setTimeout(resolve, 60)))
+      .then(() => {
+        if (cancelado) return
+        window.print()
+        setPrintRequested(false)
+      })
     return () => { cancelado = true }
   }, [printRequested])
+
+  useEffect(() => {
+    if (dados) document.title = nomeArquivoFicha(dados)
+  }, [dados])
 
   useEffect(() => {
     async function fetchDados() {
@@ -231,14 +251,6 @@ export default function VerFicha() {
   const paciente = dados.patients || {}
   const tutor = paciente.tutors || {}
 
-  function nomeArquivo() {
-    const sanitizar = s => (s || '').replace(/[\\/:*?"<>|]/g, '').trim()
-    const nomePaciente = sanitizar(paciente.nome) || 'Paciente'
-    const primeiroNomeTutor = sanitizar((tutor.nome || '').trim().split(/\s+/)[0]) || 'Tutor'
-    const data = sanitizar(dados.data)
-    return [nomePaciente, primeiroNomeTutor, data].filter(Boolean).join('_')
-  }
-
   const L = (texto) => translateLabel(lang, texto)
   const V = (chave, original) => (lang === 'en' ? (translated[chave] ?? original) : original)
 
@@ -276,7 +288,6 @@ export default function VerFicha() {
 
   async function exportarPT() {
     setLang('pt')
-    document.title = nomeArquivo()
     setPrintRequested(true)
   }
 
@@ -295,7 +306,6 @@ export default function VerFicha() {
       setTranslating(false)
     }
     setLang('en')
-    document.title = nomeArquivo()
     setPrintRequested(true)
   }
 
@@ -482,7 +492,7 @@ export default function VerFicha() {
           {/* IMAGENS */}
           <Card>
             <SeccaoTitulo>{L('Imagens')}</SeccaoTitulo>
-            <div className="print-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="print-cols-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[{ olho: 'OD', imagens: imagensOD, label: 'Olho Direito (OD)' },
                 { olho: 'OE', imagens: imagensOE, label: 'Olho Esquerdo (OE)' }
               ].map(({ imagens, label }) => (

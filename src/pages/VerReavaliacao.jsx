@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { formatarData } from '../lib/utils'
+import { formatarData, waitForImagesToLoad } from '../lib/utils'
 import Header from '../components/Header'
 import { translateLabel, translateFreeTextFields } from '../lib/pdfTranslations'
 import { configSimplificado } from '../lib/tiposAtendimento'
-import { waitForImagesToLoad } from '../lib/utils'
+
+function nomeArquivoReavaliacao(dados) {
+  const sanitizar = s => (s || '').replace(/[\\/:*?"<>|]/g, '').trim()
+  const paciente = dados.patients || {}
+  const tutor = paciente.tutors || {}
+  const nomePaciente = sanitizar(paciente.nome) || 'Paciente'
+  const primeiroNomeTutor = sanitizar((tutor.nome || '').trim().split(/\s+/)[0]) || 'Tutor'
+  const data = sanitizar(dados.data)
+  return [nomePaciente, primeiroNomeTutor, data].filter(Boolean).join('_')
+}
 
 const PRINT_CSS = `
 @media print {
@@ -17,6 +26,10 @@ const PRINT_CSS = `
   img { page-break-inside: avoid; max-width: 100%; }
   .print-stack { display: block !important; }
   .print-stack > * { margin-bottom: 10px; }
+  .print-cols-2 { display: block !important; }
+  .print-cols-2::after { content: ''; display: table; clear: both; }
+  .print-cols-2 > * { float: left !important; width: 48% !important; box-sizing: border-box; }
+  .print-cols-2 > *:first-child { margin-right: 4%; }
 }
 `
 
@@ -71,19 +84,28 @@ export default function VerReavaliacao() {
   useEffect(() => {
     function handleAfterPrint() { setLang('pt') }
     window.addEventListener('afterprint', handleAfterPrint)
-    return () => window.removeEventListener('afterprint', handleAfterPrint)
+    return () => {
+      window.removeEventListener('afterprint', handleAfterPrint)
+      document.title = 'irisvet'
+    }
   }, [])
 
   useEffect(() => {
     if (!printRequested) return
     let cancelado = false
-    waitForImagesToLoad().then(() => {
-      if (cancelado) return
-      window.print()
-      setPrintRequested(false)
-    })
+    waitForImagesToLoad()
+      .then(() => new Promise(resolve => setTimeout(resolve, 60)))
+      .then(() => {
+        if (cancelado) return
+        window.print()
+        setPrintRequested(false)
+      })
     return () => { cancelado = true }
   }, [printRequested])
+
+  useEffect(() => {
+    if (dados) document.title = nomeArquivoReavaliacao(dados)
+  }, [dados])
 
   useEffect(() => {
     async function fetchDados() {
@@ -216,7 +238,7 @@ export default function VerReavaliacao() {
           {/* IMAGENS */}
           <Card>
             <SeccaoTitulo>{L('Imagens')}</SeccaoTitulo>
-            <div className="print-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="print-cols-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[{ imagens: imagensOD, label: 'Olho Direito (OD)' }, { imagens: imagensOE, label: 'Olho Esquerdo (OE)' }].map(({ imagens, label }) => (
                 <div key={label}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--iv-ink-muted)', marginBottom: 10, textAlign: 'center' }}>{L(label)}</div>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Cropper from 'react-easy-crop'
 import logoIrisvet from '../assets/Logo-sem-fundo-menor.png'
 import { waitForImagesToLoad } from '../lib/utils'
@@ -40,6 +40,10 @@ const PRINT_CSS = `
   .revisao-botoes { display: none !important; }
   .print-stack { display: block !important; }
   .print-stack > * { margin-bottom: 10px; }
+  .print-cols-2 { display: block !important; }
+  .print-cols-2::after { content: ''; display: table; clear: both; }
+  .print-cols-2 > * { float: left !important; width: 48% !important; box-sizing: border-box; }
+  .print-cols-2 > *:first-child { margin-right: 4%; }
 }
 `
 
@@ -216,9 +220,16 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing, erro
     return [nomePaciente, primeiroNomeTutor, data].filter(Boolean).join('_')
   }
 
+  useEffect(() => {
+    document.title = nomeArquivo()
+    return () => { document.title = 'irisvet' }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dados])
+
   async function exportarPDF() {
     document.title = nomeArquivo()
     await waitForImagesToLoad()
+    await new Promise(resolve => setTimeout(resolve, 60))
     window.print()
   }
 
@@ -393,7 +404,7 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing, erro
           {/* SESSÃO 6 — IMAGENS */}
           <Card>
             <SeccaoTitulo>Imagens</SeccaoTitulo>
-            <div className="print-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="print-cols-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[
                 { olho: 'OD', imagens: imagensOD, label: 'Olho Direito (OD)' },
                 { olho: 'OE', imagens: imagensOE, label: 'Olho Esquerdo (OE)' }
