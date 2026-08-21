@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
+import logoIrisvet from '../assets/Logo-sem-fundo-menor.png'
 
 const ESPECIE_EMOJI = {
   canino: '🐶', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
@@ -237,9 +238,12 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing, erro
 
           {/* CABEÇALHO DA FICHA — só aparece na impressão */}
           <div style={{ display: 'none' }} id="print-header">
-            <style>{`#print-header { display: none; } @media print { #print-header { display: block !important; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--iv-sage); } }`}</style>
-            <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 24, fontWeight: 500, color: 'var(--iv-sage)' }}>írisvet</div>
-            <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)' }}>Dra. Anna Clara B. Hussein Zanuto · OMV 10.122 · PT: +351 916720461 · annaoftalmovet.com.pt</div>
+            <style>{`#print-header { display: none; } @media print { #print-header { display: flex !important; align-items: center; gap: 14px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--iv-sage); } }`}</style>
+            <img src={logoIrisvet} alt="írisvet" style={{ height: 44, width: 'auto' }} />
+            <div>
+              <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 18, fontWeight: 500, color: 'var(--iv-sage)' }}>Dra. Anna Clara B. Hussein Zanuto</div>
+              <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)' }}>OMV 10.122 · PT: +351 916720461 · annaoftalmovet.com.pt</div>
+            </div>
           </div>
 
           {/* SESSÃO 1+2 */}
