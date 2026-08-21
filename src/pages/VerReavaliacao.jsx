@@ -29,8 +29,9 @@ const PRINT_CSS = `
   thead { display: table-header-group; }
   h1, h2, h3, .print-titulo { page-break-after: avoid; break-after: avoid; }
   img { page-break-inside: avoid; max-width: 100%; }
-  .print-stack { display: block !important; }
-  .print-stack > * { margin-bottom: 10px; }
+  /* Os grids de campos mantem as colunas originais da ficha na impressao;
+     so precisam ter permissao para partir entre paginas. */
+  .print-grid { page-break-inside: auto; break-inside: auto; }
   .print-cols-2 { display: block !important; }
   .print-cols-2::after { content: ''; display: table; clear: both; }
   .print-cols-2 > * { float: left !important; width: 48% !important; box-sizing: border-box; }
@@ -66,7 +67,7 @@ function Campo({ label, valor }) {
 }
 
 function Grid2({ children }) {
-  return <div className="print-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>{children}</div>
+  return <div className="print-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>{children}</div>
 }
 
 const btnNav = {
