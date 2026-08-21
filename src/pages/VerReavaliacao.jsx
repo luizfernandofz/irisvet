@@ -22,7 +22,12 @@ const PRINT_CSS = `
   body { background: white !important; margin: 0; padding: 0; }
   .ver-root { background: white !important; padding: 8px !important; }
   .ver-inner { max-width: 100% !important; }
-  .ver-card { box-shadow: none !important; border-radius: 4px !important; margin-bottom: 8px !important; padding: 16px !important; border: 0.5px solid var(--iv-line) !important; page-break-inside: avoid; }
+  .ver-card { box-shadow: none !important; border-radius: 4px !important; margin-bottom: 8px !important; padding: 16px !important; border: 0.5px solid var(--iv-line) !important; }
+  /* Os cards podem partir entre paginas; proteger so as unidades pequenas,
+     senao um card grande e empurrado inteiro e deixa a pagina anterior vazia. */
+  tr, .print-keep { page-break-inside: avoid; break-inside: avoid; }
+  thead { display: table-header-group; }
+  h1, h2, h3, .print-titulo { page-break-after: avoid; break-after: avoid; }
   img { page-break-inside: avoid; max-width: 100%; }
   .print-stack { display: block !important; }
   .print-stack > * { margin-bottom: 10px; }
@@ -43,7 +48,7 @@ function Card({ children }) {
 
 function SeccaoTitulo({ children }) {
   return (
-    <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, background: 'var(--iv-line)', borderRadius: 6, padding: '6px 10px', marginBottom: 16 }}>
+    <div className="print-titulo" style={{ fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, background: 'var(--iv-line)', borderRadius: 6, padding: '6px 10px', marginBottom: 16 }}>
       {children}
     </div>
   )
@@ -51,7 +56,7 @@ function SeccaoTitulo({ children }) {
 
 function Campo({ label, valor }) {
   return (
-    <div style={{ marginBottom: 12 }}>
+    <div className="print-keep" style={{ marginBottom: 12 }}>
       <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 4 }}>{label}</label>
       <div style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, boxSizing: 'border-box', background: 'var(--iv-bg)', color: valor ? 'var(--iv-ink)' : 'var(--iv-line)', whiteSpace: 'pre-wrap', lineHeight: 1.6, wordBreak: 'break-word', overflowWrap: 'break-word', minHeight: 40 }}>
         {valor || '—'}
