@@ -10,6 +10,7 @@ import Sessao6 from '../components/Sessao6'
 import Sessao7 from '../components/Sessao7'
 import Revisao from '../components/Revisao'
 import Header from '../components/Header'
+import { paraNumero } from '../lib/financeiro'
 
 export default function EditarFicha() {
   const { id } = useParams()
@@ -53,6 +54,9 @@ export default function EditarFicha() {
         data: cons.data || '',
         local: cons.local || '',
         tipo_atendimento: cons.tipo_atendimento || '',
+        moeda: cons.moeda || '',
+        valor: cons.valor ?? '',
+        deslocamento: cons.deslocamento ?? '',
         tutor_nome: tutor.nome || '',
         tutor_telefone: tutor.telefone || '',
         tutor_nif: tutor.nif || '',
@@ -124,6 +128,9 @@ export default function EditarFicha() {
         data: dadosActuais.data,
         local: dadosActuais.local,
         tipo_atendimento: dadosActuais.tipo_atendimento,
+        moeda: dadosActuais.moeda || null,
+        valor: paraNumero(dadosActuais.valor),
+        deslocamento: paraNumero(dadosActuais.deslocamento),
         queixa_principal: dadosActuais.queixa_principal,
         sinais: dadosActuais.sinais,
         trat_ocular_previo: dadosActuais.trat_ocular_previo,
@@ -162,14 +169,14 @@ export default function EditarFicha() {
   ]
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
-      <div style={{ fontSize: 14, color: '#888' }}>A carregar ficha...</div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--iv-bg)' }}>
+      <div style={{ fontSize: 14, color: 'var(--iv-ink-muted)' }}>A carregar ficha...</div>
     </div>
   )
 
   if (!dados) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
-      <div style={{ fontSize: 14, color: '#888' }}>Ficha não encontrada.</div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--iv-bg)' }}>
+      <div style={{ fontSize: 14, color: 'var(--iv-ink-muted)' }}>Ficha não encontrada.</div>
     </div>
   )
 
@@ -188,7 +195,7 @@ export default function EditarFicha() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
 
       <Header
@@ -201,12 +208,12 @@ export default function EditarFicha() {
 
         <ProgressBar sessaoActual={sessao} total={6} />
 
-        <div style={{ background: 'white', borderRadius: 16, padding: '32px', boxShadow: '0 2px 16px rgba(83,74,183,0.08)' }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: '32px', boxShadow: '0 2px 16px rgba(91,110,88,0.08)' }}>
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--iv-ink-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>
               Sessão {sessao} de 6
             </div>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginTop: 4 }}>
+            <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 22, fontWeight: 500, color: 'var(--iv-ink)', marginTop: 4 }}>
               {sessaoTitulos[sessao - 1]}
             </div>
           </div>
@@ -219,21 +226,21 @@ export default function EditarFicha() {
           {sessao === 6 && <Sessao7 dados={dados} onChange={setDados} consultationId={id} />}
 
           {erro && (
-            <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 16 }}>
+            <div style={{ background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 16 }}>
               {erro}
             </div>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, paddingTop: 24, borderTop: '1px solid #f0f0f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--iv-line)' }}>
             <button onClick={() => setSessao(s => s - 1)} disabled={sessao === 1}
-              style={{ padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: sessao === 1 ? '#ccc' : '#555', fontSize: 14, cursor: sessao === 1 ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '10px 24px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: sessao === 1 ? 'var(--iv-line)' : 'var(--iv-ink-muted)', fontSize: 14, cursor: sessao === 1 ? 'not-allowed' : 'pointer' }}>
               ← Anterior
             </button>
-            <span style={{ fontSize: 12, color: '#aaa' }}>{saving ? '💾 A guardar...' : ''}</span>
+            <span style={{ fontSize: 12, color: 'var(--iv-ink-muted)' }}>{saving ? '💾 A guardar...' : ''}</span>
             <button
               onClick={sessao === 6 ? () => setRevisao(true) : () => setSessao(s => s + 1)}
               disabled={saving}
-              style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: saving ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: saving ? 0.55 : 1, color: 'white', fontSize: 14, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
               {sessao === 6 ? '👁 Rever ficha →' : 'Próxima →'}
             </button>
           </div>
@@ -244,6 +251,6 @@ export default function EditarFicha() {
 }
 
 const btnNav = {
-  padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
-  background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
+  padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)',
+  background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer'
 }

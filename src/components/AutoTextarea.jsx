@@ -24,12 +24,12 @@ export default function AutoTextarea({ value, onChange, placeholder, style = {} 
         boxSizing: 'border-box',
         padding: '10px 12px',
         borderRadius: 8,
-        border: '1px solid #ddd',
+        border: '1px solid var(--iv-line)',
         fontSize: 14,
         fontFamily: 'inherit',
         lineHeight: 1.5,
         outline: 'none',
-        background: '#fafafa',
+        background: 'var(--iv-bg)',
         ...style
       }}
     />

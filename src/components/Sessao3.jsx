@@ -71,14 +71,14 @@ export default function Sessao3({ dados, onChange }) {
             </thead>
             <tbody>
               {SINAIS.map((sinal, i) => (
-                <tr key={sinal} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+                <tr key={sinal} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
                   <td style={{ ...tdStyle, whiteSpace: 'nowrap', width: 140 }}>{sinal}</td>
                   <td style={{ ...tdStyle, textAlign: 'center' }}>
                     <input
                       type="checkbox"
                       checked={sinais[sinal]?.OD || false}
                       onChange={e => setSinal(sinal, 'OD', e.target.checked)}
-                      style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#534AB7' }}
+                      style={{ width: 18, height: 18, cursor: 'pointer', accentColor: 'var(--iv-sage)' }}
                     />
                   </td>
                   <td style={{ ...tdStyle, textAlign: 'center' }}>
@@ -86,7 +86,7 @@ export default function Sessao3({ dados, onChange }) {
                       type="checkbox"
                       checked={sinais[sinal]?.OE || false}
                       onChange={e => setSinal(sinal, 'OE', e.target.checked)}
-                      style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#534AB7' }}
+                      style={{ width: 18, height: 18, cursor: 'pointer', accentColor: 'var(--iv-sage)' }}
                     />
                   </td>
                   <td style={{ ...tdStyle, width: '100%' }}>
@@ -95,7 +95,7 @@ export default function Sessao3({ dados, onChange }) {
                       onChange={e => setObs(sinal, e.target.value)}
                       placeholder="—"
                       style={{
-                        border: '1px solid #eee',
+                        border: '1px solid var(--iv-line)',
                         background: 'transparent',
                         fontSize: 13,
                         padding: '6px 10px',
@@ -135,20 +135,20 @@ export default function Sessao3({ dados, onChange }) {
 }
 
 const sectionTitleStyle = {
-  fontSize: 11, fontWeight: 600, color: '#534AB7',
+  fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)',
   textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12
 }
 
 const labelStyle = {
-  display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6
+  display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 6
 }
 
 const thStyle = {
   textAlign: 'left', padding: '10px 12px', fontSize: 12,
-  fontWeight: 600, color: '#555', borderBottom: '2px solid #eee',
-  background: '#f5f4fe'
+  fontWeight: 600, color: 'var(--iv-ink-muted)', borderBottom: '2px solid var(--iv-line)',
+  background: 'var(--iv-bg)'
 }
 
 const tdStyle = {
-  padding: '8px 12px', borderBottom: '1px solid #f0f0f0', verticalAlign: 'top'
+  padding: '8px 12px', borderBottom: '1px solid var(--iv-line)', verticalAlign: 'top'
 }

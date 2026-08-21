@@ -16,10 +16,10 @@ export default function MedicamentoBloco({ med, onChange, onRemover, indice }) {
   const frase = composerFraseMedicamento(med)
 
   return (
-    <div data-testid={`medicamento-${indice}`} style={{ background: '#fafafa', border: '1px solid #eee', borderRadius: 12, padding: 20, marginBottom: 16 }}>
+    <div data-testid={`medicamento-${indice}`} style={{ background: 'var(--iv-bg)', border: '1px solid var(--iv-line)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#534AB7' }}>Medicação {indice + 1}</div>
-        <button type="button" onClick={onRemover} style={{ fontSize: 12, color: '#993C1D', background: 'none', border: 'none', cursor: 'pointer' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--iv-sage)' }}>Medicação {indice + 1}</div>
+        <button type="button" onClick={onRemover} style={{ fontSize: 12, color: 'var(--iv-plum-dark)', background: 'none', border: 'none', cursor: 'pointer' }}>
           🗑 Remover
         </button>
       </div>
@@ -53,7 +53,7 @@ export default function MedicamentoBloco({ med, onChange, onRemover, indice }) {
         <input type="text" value={med.medicacao} onChange={e => set('medicacao', e.target.value)} placeholder="Ex: Tobramicina col." style={inputStyle} />
       </div>
 
-      <div style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 1, margin: '16px 0 8px' }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--iv-ink-muted)', textTransform: 'uppercase', letterSpacing: 1, margin: '16px 0 8px' }}>
         Posologia
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
@@ -79,10 +79,10 @@ export default function MedicamentoBloco({ med, onChange, onRemover, indice }) {
 
       <div style={{ marginBottom: 12 }}>
         <label style={labelStyle}>Local da aplicação</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, background: 'white', border: '1px solid #ddd', borderRadius: 8, padding: 12 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, background: 'var(--iv-surface)', border: '1px solid var(--iv-line)', borderRadius: 8, padding: 12 }}>
           {LOCAIS_GRUPOS.map(g => (
             <div key={g.grupo}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#aaa', marginBottom: 6 }}>{g.grupo}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--iv-ink-muted)', marginBottom: 6 }}>{g.grupo}</div>
               {g.opcoes.map(o => (
                 <label key={o} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, marginBottom: 4, cursor: 'pointer' }}>
                   <input type="checkbox" checked={(med.locais || []).includes(o)} onChange={() => toggleLocal(o)} />
@@ -119,7 +119,7 @@ export default function MedicamentoBloco({ med, onChange, onRemover, indice }) {
       </div>
 
       {frase && (
-        <div style={{ background: '#EEEDFE', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: '#534AB7', fontStyle: 'italic' }}>
+        <div style={{ background: 'var(--iv-sage-light)', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: 'var(--iv-sage)', fontStyle: 'italic' }}>
           Pré-visualização: "{frase}"
         </div>
       )}
@@ -127,9 +127,9 @@ export default function MedicamentoBloco({ med, onChange, onRemover, indice }) {
   )
 }
 
-const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6 }
+const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 6 }
 const inputStyle = {
-  width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd',
-  fontSize: 14, outline: 'none', boxSizing: 'border-box', background: '#fafafa',
-  fontFamily: 'inherit', color: '#222',
+  width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)',
+  fontSize: 14, outline: 'none', boxSizing: 'border-box', background: 'var(--iv-bg)',
+  fontFamily: 'inherit', color: 'var(--iv-ink)',
 }

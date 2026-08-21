@@ -24,16 +24,17 @@ const SEGMENTAR = [
   { nome: 'Pálpebras', atalhos: ['NDN'] },
   { nome: 'Conjuntiva e Esclera', atalhos: ['NDN'] },
   { nome: 'Córnea', atalhos: ['NDN'] },
-  { nome: 'Câmara Anterior', atalhos: ['NDN', 'NV'] },
-  { nome: 'Íris e Pupila', atalhos: ['NDN', 'NV'] },
-  { nome: 'Lente', atalhos: ['NDN', 'NV'] },
-  { nome: 'Retina e Vítreo', atalhos: ['NDN', 'NV', 'RF+'] },
+  { nome: 'Câmara Anterior', atalhos: ['NDN', 'PV', 'NV'] },
+  { nome: 'Íris e Pupila', atalhos: ['NDN', 'PV', 'NV'] },
+  { nome: 'Lente', atalhos: ['NDN', 'PV', 'NV'] },
+  { nome: 'Retina e Vítreo', atalhos: ['NDN', 'RF+', 'PV', 'NV'] },
 ]
 
 const ATALHO_TEXTO = {
   NDN: 'Nada Digno de Nota',
   NR: 'Não Realizado',
   NV: 'Não Visualizado',
+  PV: 'Pouco Visualizado',
   'RF+': 'Reflexo de Fundo Positivo',
 }
 
@@ -41,11 +42,12 @@ const ATALHO_COR = {
   NDN:  { bg: '#69dfaa7c', color: '#8b8b8b', border: '#478f7faf' },
   NR:   { bg: '#af585842', color: '#8b8b8b', border: '#bd838377' },
   NV:   { bg: '#cccccc80', color: '#8b8b8b', border: '#1414147e' },
+  PV:   { bg: '#e7d15680', color: '#8b8b8b', border: '#b89f2d7e' },
   'RF+': { bg: '#d4895d5e', color: '#8b8b8b', border: '#ad77447e' },
 }
 
 function BtnRapido({ label, onClick }) {
-  const cor = ATALHO_COR[label] || { bg: '#f5f4fe', color: '#534AB7', border: '#ddd' }
+  const cor = ATALHO_COR[label] || { bg: 'var(--iv-bg)', color: 'var(--iv-sage)', border: 'var(--iv-line)' }
   return (
     <button
       onClick={onClick}
@@ -103,14 +105,14 @@ function TabelaOftalmologica({ titulo, linhas, secao, onChange, dados }) {
           </thead>
           <tbody>
             {linhas.map(({ nome, atalhos }, i) => (
-              <tr key={nome} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+              <tr key={nome} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
                 <td style={{ ...tdStyle, whiteSpace: 'nowrap', width: 160, fontSize: 13 }}>{nome}</td>
                 <td style={tdStyle}>
                   <AutoTextarea
                     value={secaoData[nome]?.OD || ''}
                     onChange={e => setValor(nome, 'OD', e.target.value)}
                     placeholder="—"
-                    style={{ border: '1px solid #eee', background: 'transparent', fontSize: 12, padding: '5px 8px', borderRadius: 6 }}
+                    style={{ border: '1px solid var(--iv-line)', background: 'transparent', fontSize: 12, padding: '5px 8px', borderRadius: 6 }}
                   />
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
                     {atalhos.map(a => (
@@ -123,7 +125,7 @@ function TabelaOftalmologica({ titulo, linhas, secao, onChange, dados }) {
                     value={secaoData[nome]?.OE || ''}
                     onChange={e => setValor(nome, 'OE', e.target.value)}
                     placeholder="—"
-                    style={{ border: '1px solid #eee', background: 'transparent', fontSize: 12, padding: '5px 8px', borderRadius: 6 }}
+                    style={{ border: '1px solid var(--iv-line)', background: 'transparent', fontSize: 12, padding: '5px 8px', borderRadius: 6 }}
                   />
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
                     {atalhos.map(a => (
@@ -192,14 +194,14 @@ export default function Sessao5({ dados, onChange }) {
             </thead>
             <tbody>
               {REFLEXOS.map((r, i) => (
-                <tr key={r} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+                <tr key={r} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
                   <td style={{ ...tdStyle, whiteSpace: 'nowrap', width: 160, fontSize: 13 }}>{r}</td>
                   <td style={{ ...tdStyle, textAlign: 'center' }}>
                     <input
                       type="checkbox"
                       checked={reflexos[r]?.OD || false}
                       onChange={e => setReflexo(r, 'OD', e.target.checked)}
-                      style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#534AB7' }}
+                      style={{ width: 18, height: 18, cursor: 'pointer', accentColor: 'var(--iv-sage)' }}
                     />
                   </td>
                   <td style={{ ...tdStyle, textAlign: 'center' }}>
@@ -207,7 +209,7 @@ export default function Sessao5({ dados, onChange }) {
                       type="checkbox"
                       checked={reflexos[r]?.OE || false}
                       onChange={e => setReflexo(r, 'OE', e.target.checked)}
-                      style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#534AB7' }}
+                      style={{ width: 18, height: 18, cursor: 'pointer', accentColor: 'var(--iv-sage)' }}
                     />
                   </td>
                   <td style={tdStyle}>
@@ -215,7 +217,7 @@ export default function Sessao5({ dados, onChange }) {
                       value={reflexos[r]?.obs || ''}
                       onChange={e => setReflexoObs(r, e.target.value)}
                       placeholder="—"
-                      style={{ border: '1px solid #eee', background: 'transparent', fontSize: 12, padding: '5px 8px', borderRadius: 6 }}
+                      style={{ border: '1px solid var(--iv-line)', background: 'transparent', fontSize: 12, padding: '5px 8px', borderRadius: 6 }}
                     />
                   </td>
                 </tr>
@@ -258,16 +260,16 @@ export default function Sessao5({ dados, onChange }) {
 }
 
 const sectionTitleStyle = {
-  fontSize: 11, fontWeight: 600, color: '#534AB7',
+  fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)',
   textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12
 }
 
 const thStyle = {
   textAlign: 'left', padding: '10px 12px', fontSize: 12,
-  fontWeight: 600, color: '#555', borderBottom: '2px solid #eee',
-  background: '#f5f4fe'
+  fontWeight: 600, color: 'var(--iv-ink-muted)', borderBottom: '2px solid var(--iv-line)',
+  background: 'var(--iv-bg)'
 }
 
 const tdStyle = {
-  padding: '8px 12px', borderBottom: '1px solid #f0f0f0', verticalAlign: 'top'
+  padding: '8px 12px', borderBottom: '1px solid var(--iv-line)', verticalAlign: 'top'
 }

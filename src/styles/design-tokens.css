@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap');
+
+:root {
+  --iv-bg: #FAF8F3;        /* fundo geral, off-white quente */
+  --iv-surface: #FFFFFF;   /* cards e superfícies elevadas */
+  --iv-sage: #5B6E58;      /* cor primária — botões de ação, links ativos */
+  --iv-sage-dark: #374232; /* hover/texto sobre fundo sálvia claro */
+  --iv-plum: #8A6B78;      /* cor secundária — botões outline, destaques */
+  --iv-plum-dark: #4F3A42; /* texto sobre fundo ameixa claro */
+  --iv-amber: #C79552;     /* acento pontual — badges, ícones, foco (tema da íris) */
+  --iv-amber-dark: #6B4A22;
+  --iv-ink: #312E29;       /* texto principal, cinza-chumbo quente (não preto puro) */
+  --iv-ink-muted: #726C61; /* texto secundário/labels */
+  --iv-line: #E7E2D7;      /* bordas e divisores */
+
+  /* fundos tonais claros derivados, para badges de status */
+  --iv-sage-light: #E7EBE5;
+  --iv-plum-light: #EFE7E9;
+  --iv-amber-light: #F7EEE1;
+
+  --iv-font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --iv-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}

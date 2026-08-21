@@ -179,23 +179,23 @@ export default function NovoReceituario() {
     }
   }
 
-  const lockedStyle = { ...inputStyle, background: '#f0f0f0', color: '#888', cursor: 'not-allowed' }
+  const lockedStyle = { ...inputStyle, background: 'var(--iv-line)', color: 'var(--iv-ink-muted)', cursor: 'not-allowed' }
 
   if (modo === 'escolha') {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
           <Header subtitulo="Novo receituário" botoes={<button onClick={() => navigate('/receituarios')} style={btnNav}>← Voltar</button>} />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <button onClick={() => { setLocked(false); setModo('form') }} style={cardBtnStyle}>
               <div style={{ fontSize: 32, marginBottom: 10 }}>🐾</div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#222' }}>Novo Paciente</div>
-              <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>Preencher tudo do zero</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--iv-ink)' }}>Novo Paciente</div>
+              <div style={{ fontSize: 12, color: 'var(--iv-ink-muted)', marginTop: 4 }}>Preencher tudo do zero</div>
             </button>
             <button onClick={buscarPacientesExistentes} style={cardBtnStyle}>
               <div style={{ fontSize: 32, marginBottom: 10 }}>📋</div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#222' }}>Paciente já Cadastrado</div>
-              <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>Pré-preencher com dados existentes</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--iv-ink)' }}>Paciente já Cadastrado</div>
+              <div style={{ fontSize: 12, color: 'var(--iv-ink-muted)', marginTop: 4 }}>Pré-preencher com dados existentes</div>
             </button>
           </div>
         </div>
@@ -205,19 +205,19 @@ export default function NovoReceituario() {
 
   if (modo === 'busca') {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
           <Header subtitulo="Seleccionar paciente" botoes={<button onClick={() => setModo('escolha')} style={btnNav}>← Voltar</button>} />
           <input type="text" value={termoBusca} onChange={e => setTermoBusca(e.target.value)}
             placeholder="Pesquisar por nome do pet ou do tutor..." style={{ ...inputStyle, marginBottom: 16 }} />
-          <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', overflow: 'hidden' }}>
             {resultadosBusca.length === 0 && (
-              <div style={{ padding: 24, textAlign: 'center', color: '#bbb', fontSize: 14 }}>Nenhum paciente encontrado</div>
+              <div style={{ padding: 24, textAlign: 'center', color: 'var(--iv-ink-muted)', fontSize: 14 }}>Nenhum paciente encontrado</div>
             )}
             {resultadosBusca.map((p, i) => (
-              <div key={p.id} onClick={() => selecionarPaciente(p)} style={{ padding: '14px 20px', cursor: 'pointer', borderBottom: i < resultadosBusca.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#222' }}>{p.nome}</div>
-                <div style={{ fontSize: 12, color: '#888' }}>{p.tutor_nome}{p.raca ? ` · ${p.raca}` : ''}</div>
+              <div key={p.id} onClick={() => selecionarPaciente(p)} style={{ padding: '14px 20px', cursor: 'pointer', borderBottom: i < resultadosBusca.length - 1 ? '1px solid var(--iv-line)' : 'none' }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--iv-ink)' }}>{p.nome}</div>
+                <div style={{ fontSize: 12, color: 'var(--iv-ink-muted)' }}>{p.tutor_nome}{p.raca ? ` · ${p.raca}` : ''}</div>
               </div>
             ))}
           </div>
@@ -228,32 +228,32 @@ export default function NovoReceituario() {
 
   if (revisao) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <Header subtitulo="Rever receituário" botoes={<button onClick={() => setRevisao(false)} style={btnNav}>← Voltar a editar</button>} />
-          <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+          <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 32, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
             <div style={sectionTitle}>Paciente e Responsável</div>
-            <div style={{ fontSize: 14, color: '#333', lineHeight: 1.8 }}>
+            <div style={{ fontSize: 14, color: 'var(--iv-ink)', lineHeight: 1.8 }}>
               <strong>{dados.paciente_nome}</strong> ({dados.paciente_especie}{dados.paciente_raca ? `, ${dados.paciente_raca}` : ''}) ·
               {' '}{calcularIdade(dados.paciente_nascimento) || 'idade não indicada'} · Tutor: {dados.tutor_nome}
             </div>
           </div>
-          <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+          <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 32, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
             <div style={sectionTitle}>Medicações</div>
             {medicamentos.map((med, i) => (
-              <div key={i} style={{ marginBottom: 12, paddingBottom: 12, borderBottom: i < medicamentos.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#534AB7' }}>{i + 1}) {med.medicacao || '(sem nome)'} {med.uso ? `— ${med.uso}` : ''}</div>
-                <div style={{ fontSize: 13, color: '#333', marginTop: 4 }}>{composerFraseMedicamento(med) || '(posologia incompleta)'}</div>
-                {med.comentario && <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>{med.comentario}</div>}
+              <div key={i} style={{ marginBottom: 12, paddingBottom: 12, borderBottom: i < medicamentos.length - 1 ? '1px solid var(--iv-line)' : 'none' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--iv-sage)' }}>{i + 1}) {med.medicacao || '(sem nome)'} {med.uso ? `— ${med.uso}` : ''}</div>
+                <div style={{ fontSize: 13, color: 'var(--iv-ink)', marginTop: 4 }}>{composerFraseMedicamento(med) || '(posologia incompleta)'}</div>
+                {med.comentario && <div style={{ fontSize: 12, color: 'var(--iv-ink-muted)', marginTop: 2 }}>{med.comentario}</div>}
               </div>
             ))}
           </div>
           {(recomendacoes.length > 0 || comentariosAdicionais) && (
-            <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+            <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 32, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
               {recomendacoes.length > 0 && (
                 <>
                   <div style={sectionTitle}>Recomendações</div>
-                  <ul style={{ fontSize: 13, color: '#333', paddingLeft: 20, marginBottom: 16 }}>
+                  <ul style={{ fontSize: 13, color: 'var(--iv-ink)', paddingLeft: 20, marginBottom: 16 }}>
                     {recomendacoes.map(r => <li key={r}>{r}</li>)}
                   </ul>
                 </>
@@ -261,23 +261,23 @@ export default function NovoReceituario() {
               {comentariosAdicionais && (
                 <>
                   <div style={sectionTitle}>Comentários Adicionais</div>
-                  <div style={{ fontSize: 13, color: '#333' }}>{comentariosAdicionais}</div>
+                  <div style={{ fontSize: 13, color: 'var(--iv-ink)' }}>{comentariosAdicionais}</div>
                 </>
               )}
             </div>
           )}
-          {erro && <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>{erro}</div>}
+          {erro && <div style={{ background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>{erro}</div>}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 40 }}>
             <button onClick={() => setMostrarAssinatura(true)} disabled={salvando} style={{
               padding: '14px', borderRadius: 10, border: 'none',
-              background: salvando ? '#a9a4e8' : '#1D9E75', color: 'white',
+              background: 'var(--iv-sage)', opacity: salvando ? 0.55 : 1, color: 'white',
               fontSize: 15, fontWeight: 600, cursor: salvando ? 'not-allowed' : 'pointer',
             }}>
               ✍️ Assinar Manualmente
             </button>
             <button onClick={usarAssinaturaPredefinida} disabled={salvando} style={{
               padding: '14px', borderRadius: 10, border: 'none',
-              background: salvando ? '#a9a4e8' : '#534AB7', color: 'white',
+              background: 'var(--iv-sage)', opacity: salvando ? 0.55 : 1, color: 'white',
               fontSize: 15, fontWeight: 600, cursor: salvando ? 'not-allowed' : 'pointer',
             }}>
               {salvando ? 'A guardar...' : '🖼️ Usar Assinatura Pré-definida'}
@@ -295,7 +295,7 @@ export default function NovoReceituario() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
         <Header
           subtitulo="Novo receituário"
@@ -305,9 +305,9 @@ export default function NovoReceituario() {
           </>}
         />
 
-        <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 32, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
           <div style={sectionTitle}>
-            Responsável {locked && <span style={{ fontSize: 10, fontWeight: 400, color: '#aaa', marginLeft: 8 }}>— campos bloqueados</span>}
+            Responsável {locked && <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--iv-ink-muted)', marginLeft: 8 }}>— campos bloqueados</span>}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
             <div>
@@ -329,7 +329,7 @@ export default function NovoReceituario() {
           </div>
 
           <div style={sectionTitle}>
-            Paciente {locked && <span style={{ fontSize: 10, fontWeight: 400, color: '#aaa', marginLeft: 8 }}>— campos bloqueados</span>}
+            Paciente {locked && <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--iv-ink-muted)', marginLeft: 8 }}>— campos bloqueados</span>}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
@@ -360,14 +360,14 @@ export default function NovoReceituario() {
             </div>
             <div>
               <label style={labelStyle}>Idade (calculada)</label>
-              <div style={{ ...inputStyle, background: '#f0f0f0', color: dados.paciente_nascimento ? '#1D9E75' : '#aaa' }}>
+              <div style={{ ...inputStyle, background: 'var(--iv-line)', color: dados.paciente_nascimento ? 'var(--iv-sage)' : 'var(--iv-ink-muted)' }}>
                 {calcularIdade(dados.paciente_nascimento) || 'Preenche a data de nascimento'}
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 32, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
           <div style={sectionTitle}>Medicações</div>
           {medicamentos.map((med, i) => (
             <MedicamentoBloco key={i} med={med} indice={i}
@@ -375,14 +375,14 @@ export default function NovoReceituario() {
               onRemover={() => removerMedicamento(i)} />
           ))}
           <button type="button" onClick={addMedicamento} style={{
-            padding: '10px 20px', borderRadius: 8, border: '1px solid #534AB7', background: '#EEEDFE',
-            color: '#534AB7', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            padding: '10px 20px', borderRadius: 8, border: '1px solid var(--iv-sage)', background: 'var(--iv-sage-light)',
+            color: 'var(--iv-sage)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
           }}>
             + Adicionar Medicação
           </button>
         </div>
 
-        <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 32, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
           <div style={sectionTitle}>Recomendações</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
             {RECOMENDACOES_OPCOES.map(o => (
@@ -397,7 +397,7 @@ export default function NovoReceituario() {
             style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} />
         </div>
 
-        {erro && <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>{erro}</div>}
+        {erro && <div style={{ background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>{erro}</div>}
 
         <button
           onClick={() => {
@@ -407,7 +407,7 @@ export default function NovoReceituario() {
           }}
           style={{
             width: '100%', padding: '14px', borderRadius: 10, border: 'none',
-            background: '#534AB7', color: 'white', fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 40,
+            background: 'var(--iv-sage)', color: 'white', fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 40,
           }}
         >
           👁 Visualizar Receituário
@@ -417,12 +417,12 @@ export default function NovoReceituario() {
   )
 }
 
-const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6 }
+const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 6 }
 const inputStyle = {
-  width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd',
-  fontSize: 14, outline: 'none', boxSizing: 'border-box', background: '#fafafa',
-  fontFamily: 'inherit', color: '#222',
+  width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)',
+  fontSize: 14, outline: 'none', boxSizing: 'border-box', background: 'var(--iv-bg)',
+  fontFamily: 'inherit', color: 'var(--iv-ink)',
 }
-const sectionTitle = { fontSize: 11, fontWeight: 600, color: '#534AB7', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }
-const btnNav = { padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 13, cursor: 'pointer' }
-const cardBtnStyle = { padding: '32px 20px', borderRadius: 16, border: 'none', background: 'white', boxShadow: '0 2px 16px rgba(83,74,183,0.08)', cursor: 'pointer', textAlign: 'center' }
+const sectionTitle = { fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }
+const btnNav = { padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer' }
+const cardBtnStyle = { padding: '32px 20px', borderRadius: 12, border: '0.5px solid var(--iv-line)', background: 'var(--iv-surface)', boxShadow: '0 2px 16px rgba(91,110,88,0.08)', cursor: 'pointer', textAlign: 'center' }

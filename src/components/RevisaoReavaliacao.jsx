@@ -53,20 +53,20 @@ function CropModal({ imagem, onConfirm, onCancel, saving }) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <div style={{ background: 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 560 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: '#222', marginBottom: 16 }}>Recortar imagem — {imagem.nome}</div>
-        <div style={{ position: 'relative', width: '100%', height: 320, background: '#111', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
+      <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 24, width: '100%', maxWidth: 560 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--iv-ink)', marginBottom: 16 }}>Recortar imagem — {imagem.nome}</div>
+        <div style={{ position: 'relative', width: '100%', height: 320, background: 'var(--iv-ink)', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
           <Cropper image={imagem.preview} crop={crop} zoom={zoom} rotation={rotation} aspect={4 / 3} minZoom={0.3} restrictPosition={false} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
         </div>
         <div style={{ marginBottom: 12 }}>
-          <label style={{ fontSize: 12, fontWeight: 500, color: '#555', display: 'block', marginBottom: 6 }}>Zoom</label>
-          <input type="range" min={0.3} max={3} step={0.05} value={zoom} onChange={e => setZoom(Number(e.target.value))} style={{ width: '100%', accentColor: '#534AB7' }} disabled={saving} />
+          <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', display: 'block', marginBottom: 6 }}>Zoom</label>
+          <input type="range" min={0.3} max={3} step={0.05} value={zoom} onChange={e => setZoom(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--iv-sage)' }} disabled={saving} />
         </div>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'space-between', alignItems: 'center' }}>
-          <button onClick={() => setRotation(r => (r + 90) % 360)} disabled={saving} style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid #ddd', background: '#f5f4fe', color: '#534AB7', fontSize: 14, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>↻ Rodar 90°</button>
+          <button onClick={() => setRotation(r => (r + 90) % 360)} disabled={saving} style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-bg)', color: 'var(--iv-sage)', fontSize: 14, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>↻ Rodar 90°</button>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={onCancel} disabled={saving} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer' }}>Cancelar</button>
-            <button onClick={handleConfirm} disabled={saving} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: saving ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
+            <button onClick={onCancel} disabled={saving} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer' }}>Cancelar</button>
+            <button onClick={handleConfirm} disabled={saving} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: saving ? 0.55 : 1, color: 'white', fontSize: 14, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
               {saving ? 'A guardar...' : '✓ Aplicar'}
             </button>
           </div>
@@ -78,7 +78,7 @@ function CropModal({ imagem, onConfirm, onCancel, saving }) {
 
 function Card({ children }) {
   return (
-    <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+    <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 32, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
       {children}
     </div>
   )
@@ -86,7 +86,7 @@ function Card({ children }) {
 
 function SeccaoTitulo({ children }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 700, color: '#534AB7', textTransform: 'uppercase', letterSpacing: 1, background: '#f0f0f0', borderRadius: 6, padding: '6px 10px', marginBottom: 16 }}>
+    <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, background: 'var(--iv-line)', borderRadius: 6, padding: '6px 10px', marginBottom: 16 }}>
       {children}
     </div>
   )
@@ -95,8 +95,8 @@ function SeccaoTitulo({ children }) {
 function Campo({ label, valor }) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>{label}</label>
-      <div style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, boxSizing: 'border-box', background: '#fafafa', color: valor ? '#222' : '#ccc', whiteSpace: 'pre-wrap', lineHeight: 1.6, wordBreak: 'break-word', overflowWrap: 'break-word', minHeight: 40 }}>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 4 }}>{label}</label>
+      <div style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, boxSizing: 'border-box', background: 'var(--iv-bg)', color: valor ? 'var(--iv-ink)' : 'var(--iv-line)', whiteSpace: 'pre-wrap', lineHeight: 1.6, wordBreak: 'break-word', overflowWrap: 'break-word', minHeight: 40 }}>
         {valor || '—'}
       </div>
     </div>
@@ -107,7 +107,7 @@ function Grid2({ children }) {
   return <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>{children}</div>
 }
 
-const btnNav = { padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 14, cursor: 'pointer' }
+const btnNav = { padding: '10px 24px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 14, cursor: 'pointer' }
 
 export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEditar, onFinalizar, finalizing, erro, labelFinalizar = '✓ Finalizar e guardar ficha', consultationId, fkColumn = 'follow_up_id' }) {
   const imagensOD = dados.imagens_OD || []
@@ -181,7 +181,7 @@ export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEdi
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
 
         {cropTarget && (
@@ -195,14 +195,14 @@ export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEdi
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7' }}>írisvet</div>
-            <div style={{ fontSize: 13, color: '#888' }}>Revisão de {dados.tipo_atendimento || 'retorno / reavaliação'}</div>
+            <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 22, fontWeight: 500, color: 'var(--iv-sage)' }}>írisvet</div>
+            <div style={{ fontSize: 13, color: 'var(--iv-ink-muted)' }}>Revisão de {dados.tipo_atendimento || 'retorno / reavaliação'}</div>
           </div>
           <button onClick={onEditar} style={btnNav}>← Voltar a editar</button>
         </div>
 
         {patientInfo && (
-          <div style={{ background: '#EEEDFE', borderRadius: 12, padding: '12px 20px', marginBottom: 20, fontSize: 13, color: '#534AB7' }}>
+          <div style={{ background: 'var(--iv-sage-light)', borderRadius: 12, padding: '12px 20px', marginBottom: 20, fontSize: 13, color: 'var(--iv-sage)' }}>
             <strong>{patientInfo.nome}</strong>
             {patientInfo.raca ? ` · ${patientInfo.raca}` : ''}
             {patientInfo.tutor ? ` · Tutor: ${patientInfo.tutor}` : ''}
@@ -231,25 +231,25 @@ export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEdi
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {[{ olho: 'OD', imagens: imagensOD, label: 'Olho Direito (OD)' }, { olho: 'OE', imagens: imagensOE, label: 'Olho Esquerdo (OE)' }].map(({ olho, imagens, label }) => (
               <div key={label}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 10, textAlign: 'center' }}>{label}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--iv-ink-muted)', marginBottom: 10, textAlign: 'center' }}>{label}</div>
                 {imagens.length > 0 ? imagens.map((img, i) => {
                   const chave = `${olho}-${i}`
                   const aApagar = apagando === chave
                   return (
                     <div key={i} style={{ position: 'relative', marginBottom: 10 }}>
-                      <img src={img.preview} alt={img.nome || ''} style={{ width: '100%', borderRadius: 10, objectFit: 'cover', border: '1px solid #eee', display: 'block', opacity: aApagar ? 0.4 : 1 }} />
+                      <img src={img.preview} alt={img.nome || ''} style={{ width: '100%', borderRadius: 10, objectFit: 'cover', border: '1px solid var(--iv-line)', display: 'block', opacity: aApagar ? 0.4 : 1 }} />
                       <div style={{ position: 'absolute', bottom: 8, right: 8, display: 'flex', gap: 6 }}>
-                        <button onClick={() => abrirCrop(olho, i, img)} disabled={aApagar} style={{ background: 'rgba(83,74,183,0.85)', color: 'white', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                        <button onClick={() => abrirCrop(olho, i, img)} disabled={aApagar} style={{ background: 'rgba(91,110,88,0.85)', color: 'white', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                           ✂️ Recortar / Rodar
                         </button>
-                        <button onClick={() => apagarImagem(olho, i, img)} disabled={aApagar} style={{ background: 'rgba(153,60,29,0.9)', color: 'white', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                        <button onClick={() => apagarImagem(olho, i, img)} disabled={aApagar} style={{ background: 'rgba(79,58,66,0.9)', color: 'white', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                           {aApagar ? 'A apagar...' : '🗑 Apagar'}
                         </button>
                       </div>
                     </div>
                   )
                 }) : (
-                  <div style={{ border: '2px dashed #eee', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: '#ccc' }}>Sem imagens</div>
+                  <div style={{ border: '2px dashed var(--iv-line)', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--iv-line)' }}>Sem imagens</div>
                 )}
               </div>
             ))}
@@ -257,13 +257,13 @@ export default function RevisaoReavaliacao({ dados, onChange, patientInfo, onEdi
         </Card>
 
         {erro && (
-          <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>{erro}</div>
+          <div style={{ background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>{erro}</div>
         )}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 40 }}>
           <button onClick={onEditar} style={btnNav}>← Voltar a editar</button>
           <button onClick={onFinalizar} disabled={finalizing}
-            style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: finalizing ? '#a9a4e8' : '#1D9E75', color: 'white', fontSize: 14, fontWeight: 600, cursor: finalizing ? 'not-allowed' : 'pointer' }}>
+            style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: finalizing ? 0.55 : 1, color: 'white', fontSize: 14, fontWeight: 600, cursor: finalizing ? 'not-allowed' : 'pointer' }}>
             {finalizing ? 'A guardar...' : labelFinalizar}
           </button>
         </div>

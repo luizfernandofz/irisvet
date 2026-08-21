@@ -21,10 +21,10 @@ const ESPECIES = [
 ]
 
 const TIPO_BADGE = {
-  'Consulta': { bg: '#EEEDFE', color: '#534AB7', border: '#AFA9EC' },
-  'Retorno/Reavaliação': { bg: '#E1F5EE', color: '#0F6E56', border: '#5DCAA5' },
-  'Exame Complementar': { bg: '#E6F1FB', color: '#185FA5', border: '#85B7EB' },
-  'Intervenção': { bg: '#FAEEDA', color: '#854F0B', border: '#FAC775' },
+  'Consulta': { bg: 'var(--iv-sage-light)', color: 'var(--iv-sage)', border: 'var(--iv-sage)' },
+  'Retorno/Reavaliação': { bg: 'var(--iv-sage-light)', color: 'var(--iv-sage-dark)', border: 'var(--iv-sage)' },
+  'Exame Complementar': { bg: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', border: 'var(--iv-plum)' },
+  'Intervenção': { bg: 'var(--iv-amber-light)', color: 'var(--iv-amber-dark)', border: 'var(--iv-amber)' },
 }
 
 function normalizar(str) {
@@ -36,7 +36,7 @@ function normalizar(str) {
 }
 
 function badgeStyle(tipo) {
-  const s = TIPO_BADGE[tipo] || { bg: '#f0f0f0', color: '#555', border: '#ccc' }
+  const s = TIPO_BADGE[tipo] || { bg: 'var(--iv-line)', color: 'var(--iv-ink-muted)', border: 'var(--iv-line)' }
   return {
     fontSize: 10, padding: '2px 8px', borderRadius: 20,
     background: s.bg, color: s.color, border: `1px solid ${s.border}`,
@@ -134,7 +134,7 @@ export default function Consultar({ profile }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
 
           <Header
@@ -142,8 +142,8 @@ export default function Consultar({ profile }) {
             botoes={<button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>}
           />
 
-        <div style={{ background: 'white', borderRadius: 16, padding: 24, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#534AB7', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 24, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
+          <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>
             Filtros de pesquisa
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -185,17 +185,17 @@ export default function Consultar({ profile }) {
               </div>
             )}
           </div>
-          <button onClick={limparFiltros} style={{ marginTop: 12, padding: '7px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#888', fontSize: 12, cursor: 'pointer' }}>
+          <button onClick={limparFiltros} style={{ marginTop: 12, padding: '7px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 12, cursor: 'pointer' }}>
             Limpar filtros
           </button>
         </div>
 
-        <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 24px', borderBottom: '1px solid #f0f0f0', fontSize: 13, color: '#888' }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', overflow: 'hidden' }}>
+          <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--iv-line)', fontSize: 13, color: 'var(--iv-ink-muted)' }}>
             {loading ? 'A carregar...' : `${resultados.length} paciente${resultados.length !== 1 ? 's' : ''} encontrado${resultados.length !== 1 ? 's' : ''}`}
           </div>
           {!loading && resultados.length === 0 && (
-            <div style={{ padding: 40, textAlign: 'center', color: '#bbb', fontSize: 14 }}>Nenhum paciente encontrado</div>
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--iv-ink-muted)', fontSize: 14 }}>Nenhum paciente encontrado</div>
           )}
           {resultados.map((paciente, i) => (
             <PacienteRow
@@ -236,22 +236,22 @@ function PacienteRow({ paciente, ultimo, navigate, onRefresh, mostrarVet }) {
   }
 
   return (
-    <div style={{ borderBottom: ultimo ? 'none' : '1px solid #f0f0f0' }}>
-      <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: aberto ? '#f9f8ff' : 'white' }}>
+    <div style={{ borderBottom: ultimo ? 'none' : '1px solid var(--iv-line)' }}>
+      <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: aberto ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
         <div onClick={() => setAberto(a => !a)} style={{ flex: 1, cursor: 'pointer' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#222', marginBottom: 3 }}>
+          <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 17, fontWeight: 500, color: 'var(--iv-ink)', marginBottom: 3 }}>
             {emoji} {paciente.nome || 'Sem nome'}
-            {paciente.raca ? <span style={{ fontSize: 13, fontWeight: 400, color: '#888' }}> · {paciente.raca}</span> : null}
+            {paciente.raca ? <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--iv-ink-muted)' }}> · {paciente.raca}</span> : null}
           </div>
-          <div style={{ fontSize: 13, color: '#888' }}>
+          <div style={{ fontSize: 13, color: 'var(--iv-ink-muted)' }}>
             {paciente.tutor_nome}
             {paciente.fichas.length > 0 && (
-              <span style={{ marginLeft: 8, fontSize: 11, color: '#aaa' }}>
+              <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--iv-ink-muted)' }}>
                 · {paciente.fichas.length} ficha{paciente.fichas.length !== 1 ? 's' : ''}
               </span>
             )}
             {mostrarVet && paciente.vet_nome && (
-              <span style={{ marginLeft: 8, fontSize: 11, color: '#534AB7', fontWeight: 600 }}>
+              <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--iv-sage)', fontWeight: 600 }}>
                 · {paciente.vet_nome}
               </span>
             )}
@@ -260,30 +260,30 @@ function PacienteRow({ paciente, ultimo, navigate, onRefresh, mostrarVet }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
             onClick={() => navigate(`/nova-consulta/${paciente.id}`)}
-            style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid #534AB7', background: '#EEEDFE', color: '#534AB7', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid var(--iv-sage)', background: 'var(--iv-sage-light)', color: 'var(--iv-sage)', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
           >+ Nova Consulta</button>
-          <div onClick={() => setAberto(a => !a)} style={{ fontSize: 18, color: '#aaa', cursor: 'pointer', padding: '0 4px' }}>
+          <div onClick={() => setAberto(a => !a)} style={{ fontSize: 18, color: 'var(--iv-ink-muted)', cursor: 'pointer', padding: '0 4px' }}>
             {aberto ? '▲' : '▼'}
           </div>
         </div>
       </div>
 
       {aberto && (
-        <div style={{ background: '#f9f8ff', borderTop: '1px solid #eee' }}>
+        <div style={{ background: 'var(--iv-bg)', borderTop: '1px solid var(--iv-line)' }}>
           {paciente.fichas.length === 0 ? (
-            <div style={{ padding: '16px 24px', fontSize: 13, color: '#bbb' }}>Sem fichas registadas</div>
+            <div style={{ padding: '16px 24px', fontSize: 13, color: 'var(--iv-ink-muted)' }}>Sem fichas registadas</div>
           ) : (
             paciente.fichas.map((ficha, i) => (
               <div key={ficha.id} style={{
                 padding: '12px 24px 12px 40px',
-                borderBottom: i < paciente.fichas.length - 1 ? '1px solid #eee' : 'none',
+                borderBottom: i < paciente.fichas.length - 1 ? '1px solid var(--iv-line)' : 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
                   <span style={badgeStyle(ficha.tipo)}>{ficha.tipo}</span>
-                  <span style={{ fontSize: 13, color: '#555' }}>{formatarData(ficha.data)}</span>
+                  <span style={{ fontSize: 13, color: 'var(--iv-ink-muted)' }}>{formatarData(ficha.data)}</span>
                   {ficha.status === 'rascunho' && (
-                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: '#FAEEDA', color: '#854F0B', fontWeight: 500 }}>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'var(--iv-amber-light)', color: 'var(--iv-amber-dark)', fontWeight: 500 }}>
                       rascunho
                     </span>
                   )}
@@ -294,22 +294,22 @@ function PacienteRow({ paciente, ultimo, navigate, onRefresh, mostrarVet }) {
                       ? navigate(`/consulta/${ficha.id}`)
                       : navigate(`/ver-reav/${ficha.id}`)
                     }
-                    style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #AFA9EC', background: '#EEEDFE', color: '#534AB7', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
+                    style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-sage)', background: 'var(--iv-sage-light)', color: 'var(--iv-sage)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
                   >👁 Ver</button>
                   {ficha.tabela === 'consultations' ? (
                     <button
                       onClick={() => navigate(`/editar/${ficha.id}`)}
-                      style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 12, cursor: 'pointer' }}
+                      style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 12, cursor: 'pointer' }}
                     >✏️ Editar</button>
                   ) : (
                     <button
                       onClick={() => navigate(`/editar-reav/${ficha.id}`)}
-                      style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 12, cursor: 'pointer' }}
+                      style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 12, cursor: 'pointer' }}
                     >✏️ Editar</button>
                   )}
                   <button
                     onClick={() => excluirFicha(ficha)}
-                    style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #F0997B', background: '#FAECE7', color: '#993C1D', fontSize: 12, cursor: 'pointer' }}
+                    style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-plum)', background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', fontSize: 12, cursor: 'pointer' }}
                   >🗑 Excluir</button>
                 </div>
               </div>
@@ -321,9 +321,9 @@ function PacienteRow({ paciente, ultimo, navigate, onRefresh, mostrarVet }) {
   )
 }
 
-const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }
-const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', boxSizing: 'border-box', background: '#fafafa', fontFamily: 'inherit', color: '#222' }
+const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 4 }
+const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, outline: 'none', boxSizing: 'border-box', background: 'var(--iv-bg)', fontFamily: 'inherit', color: 'var(--iv-ink)' }
 const btnNav = {
-  padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
-  background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
+  padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)',
+  background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer'
 }

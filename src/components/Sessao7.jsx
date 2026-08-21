@@ -64,7 +64,7 @@ async function handleFiles(files) {
   return (
     <div>
       <div style={{
-        fontSize: 12, fontWeight: 600, color: '#534AB7',
+        fontSize: 12, fontWeight: 600, color: 'var(--iv-sage)',
         textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, textAlign: 'center'
       }}>
         Olho {olho === 'OD' ? 'Direito (OD)' : 'Esquerdo (OE)'}
@@ -76,18 +76,18 @@ async function handleFiles(files) {
         onDrop={handleDrop}
         onDragOver={e => e.preventDefault()}
         style={{
-          border: '2px dashed #AFA9EC', borderRadius: 12, padding: '24px 16px',
-          textAlign: 'center', cursor: 'pointer', background: '#EEEDFE',
+          border: '2px dashed var(--iv-sage)', borderRadius: 12, padding: '24px 16px',
+          textAlign: 'center', cursor: 'pointer', background: 'var(--iv-sage-light)',
           marginBottom: 12, transition: 'background 0.15s'
         }}
-        onMouseEnter={e => e.currentTarget.style.background = '#e0dffe'}
-        onMouseLeave={e => e.currentTarget.style.background = '#EEEDFE'}
+        onMouseEnter={e => e.currentTarget.style.background = '#BDC6BB'}
+        onMouseLeave={e => e.currentTarget.style.background = 'var(--iv-sage-light)'}
       >
         <div style={{ fontSize: 28, marginBottom: 6 }}>📷</div>
-        <div style={{ fontSize: 13, color: '#534AB7', fontWeight: 500 }}>
+        <div style={{ fontSize: 13, color: 'var(--iv-sage)', fontWeight: 500 }}>
           {uploading ? 'A carregar...' : 'Clica ou arrasta imagens aqui'}
         </div>
-        <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>JPG, PNG, HEIC</div>
+        <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)', marginTop: 4 }}>JPG, PNG, HEIC</div>
         <input
           ref={inputRef}
           type="file"
@@ -104,8 +104,8 @@ async function handleFiles(files) {
           {imagens.map((img, i) => (
             <div key={i} style={{
               display: 'flex', alignItems: 'center', gap: 10,
-              border: '1px solid #eee', borderRadius: 10, padding: '8px 10px',
-              background: 'white', opacity: apagandoIdx === i ? 0.5 : 1
+              border: '1px solid var(--iv-line)', borderRadius: 10, padding: '8px 10px',
+              background: 'var(--iv-surface)', opacity: apagandoIdx === i ? 0.5 : 1
             }}>
               {img.preview && (
                 <img
@@ -114,15 +114,15 @@ async function handleFiles(files) {
                   style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }}
                 />
               )}
-              <div style={{ flex: 1, fontSize: 12, color: '#555', wordBreak: 'break-all' }}>
+              <div style={{ flex: 1, fontSize: 12, color: 'var(--iv-ink-muted)', wordBreak: 'break-all' }}>
                 {img.nome}
               </div>
               <button
                 onClick={() => handleRemove(i, img)}
                 disabled={apagandoIdx === i}
                 style={{
-                  background: '#FAECE7', border: 'none', borderRadius: 6,
-                  color: '#993C1D', fontSize: 12, padding: '4px 8px',
+                  background: 'var(--iv-plum-light)', border: 'none', borderRadius: 6,
+                  color: 'var(--iv-plum-dark)', fontSize: 12, padding: '4px 8px',
                   cursor: apagandoIdx === i ? 'not-allowed' : 'pointer', flexShrink: 0
                 }}
               >
@@ -134,7 +134,7 @@ async function handleFiles(files) {
       )}
 
       {imagens.length === 0 && (
-        <div style={{ fontSize: 12, color: '#bbb', textAlign: 'center' }}>
+        <div style={{ fontSize: 12, color: 'var(--iv-ink-muted)', textAlign: 'center' }}>
           Nenhuma imagem adicionada
         </div>
       )}

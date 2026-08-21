@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import AutoTextarea from './AutoTextarea'
+import CamposFinanceiros from './CamposFinanceiros'
 import { calcularIdade } from '../lib/utils'
 
 const TIPOS_ATENDIMENTO = [
@@ -54,8 +55,8 @@ export default function Sessao1e2({ dados, onChange, locked = false }) {
 
   const lockedStyle = {
     ...inputStyle,
-    background: '#f0f0f0',
-    color: '#888',
+    background: 'var(--iv-line)',
+    color: 'var(--iv-ink-muted)',
     cursor: 'not-allowed',
   }
 
@@ -87,15 +88,15 @@ export default function Sessao1e2({ dados, onChange, locked = false }) {
             {showClinicas && clinicasFiltradas.length > 0 && (
               <div style={{
                 position: 'absolute', top: '100%', left: 0, right: 0,
-                background: 'white', border: '1px solid #ddd', borderRadius: 8,
+                background: 'var(--iv-surface)', border: '1px solid var(--iv-line)', borderRadius: 8,
                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, marginTop: 2
               }}>
                 {clinicasFiltradas.map(c => (
                   <div
                     key={c}
                     onMouseDown={() => { set('local', c); setShowClinicas(false) }}
-                    style={{ padding: '10px 12px', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid #f0f0f0' }}
-                    onMouseEnter={e => e.target.style.background = '#f5f4fe'}
+                    style={{ padding: '10px 12px', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid var(--iv-line)' }}
+                    onMouseEnter={e => e.target.style.background = 'var(--iv-bg)'}
                     onMouseLeave={e => e.target.style.background = 'white'}
                   >
                     {c}
@@ -104,6 +105,8 @@ export default function Sessao1e2({ dados, onChange, locked = false }) {
               </div>
             )}
           </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr 1fr 1fr', gap: 16, marginTop: 16 }}>
           <div>
             <label style={labelStyle}>Tipo de atendimento</label>
             <select
@@ -115,6 +118,12 @@ export default function Sessao1e2({ dados, onChange, locked = false }) {
               {TIPOS_ATENDIMENTO.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
+          <CamposFinanceiros
+            moeda={dados.moeda}
+            valor={dados.valor}
+            deslocamento={dados.deslocamento}
+            onChange={set}
+          />
         </div>
       </div>
 
@@ -124,7 +133,7 @@ export default function Sessao1e2({ dados, onChange, locked = false }) {
       <div style={{ marginBottom: 24 }}>
         <div style={sectionTitleStyle}>
           Cliente (Tutor)
-          {locked && <span style={{ fontSize: 10, fontWeight: 400, color: '#aaa', marginLeft: 8 }}>— campos bloqueados</span>}
+          {locked && <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--iv-ink-muted)', marginLeft: 8 }}>— campos bloqueados</span>}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
@@ -161,7 +170,7 @@ export default function Sessao1e2({ dados, onChange, locked = false }) {
       <div>
         <div style={sectionTitleStyle}>
           Paciente
-          {locked && <span style={{ fontSize: 10, fontWeight: 400, color: '#aaa', marginLeft: 8 }}>— campos bloqueados</span>}
+          {locked && <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--iv-ink-muted)', marginLeft: 8 }}>— campos bloqueados</span>}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
@@ -199,8 +208,8 @@ export default function Sessao1e2({ dados, onChange, locked = false }) {
             <label style={labelStyle}>Idade (calculada)</label>
             <div style={{
               ...inputStyle,
-              background: '#f0f0f0',
-              color: idade ? '#1D9E75' : '#aaa',
+              background: 'var(--iv-line)',
+              color: idade ? 'var(--iv-sage)' : 'var(--iv-ink-muted)',
               fontWeight: idade ? 500 : 400,
               cursor: 'default'
             }}>
@@ -214,21 +223,21 @@ export default function Sessao1e2({ dados, onChange, locked = false }) {
 }
 
 const labelStyle = {
-  display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6
+  display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 6
 }
 
 const inputStyle = {
   width: '100%', padding: '10px 12px', borderRadius: 8,
-  border: '1px solid #ddd', fontSize: 14, outline: 'none',
-  boxSizing: 'border-box', background: '#fafafa', fontFamily: 'inherit',
-  color: '#222'
+  border: '1px solid var(--iv-line)', fontSize: 14, outline: 'none',
+  boxSizing: 'border-box', background: 'var(--iv-bg)', fontFamily: 'inherit',
+  color: 'var(--iv-ink)'
 }
 
 const dividerStyle = {
-  height: 1, background: '#f0f0f0', margin: '20px 0'
+  height: 1, background: 'var(--iv-line)', margin: '20px 0'
 }
 
 const sectionTitleStyle = {
-  fontSize: 11, fontWeight: 600, color: '#534AB7',
+  fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)',
   textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12
 }

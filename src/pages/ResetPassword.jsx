@@ -4,17 +4,17 @@ import { supabase } from '../lib/supabase'
 import logo from '../assets/logo.png'
 
 const cardStyle = {
-  background: 'white', borderRadius: 16, padding: '48px 40px',
-  width: 360, boxShadow: '0 4px 24px rgba(83,74,183,0.10)'
+  background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: '48px 40px',
+  width: 360, boxShadow: '0 4px 24px rgba(91,110,88,0.10)'
 }
-const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6 }
-const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', boxSizing: 'border-box' }
-const errorStyle = { background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }
+const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 6 }
+const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }
+const errorStyle = { background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }
 
 function submitStyle(loading) {
   return {
     width: '100%', padding: '11px', borderRadius: 8,
-    background: loading ? '#a9a4e8' : '#534AB7',
+    background: 'var(--iv-sage)', opacity: loading ? 0.55 : 1,
     color: 'white', fontWeight: 600, fontSize: 14,
     border: 'none', cursor: loading ? 'not-allowed' : 'pointer'
   }
@@ -51,7 +51,7 @@ export default function ResetPassword() {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', background: '#f5f4fe'
+      justifyContent: 'center', background: 'var(--iv-bg)'
     }}>
       <div style={cardStyle}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>

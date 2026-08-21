@@ -88,20 +88,20 @@ function CropModal({ imagem, onConfirm, onCancel }) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <div style={{ background: 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 560 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: '#222', marginBottom: 16 }}>Recortar imagem — {imagem.nome}</div>
-        <div style={{ position: 'relative', width: '100%', height: 320, background: '#111', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
+      <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 24, width: '100%', maxWidth: 560 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--iv-ink)', marginBottom: 16 }}>Recortar imagem — {imagem.nome}</div>
+        <div style={{ position: 'relative', width: '100%', height: 320, background: 'var(--iv-ink)', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
           <Cropper image={imagem.preview} crop={crop} zoom={zoom} rotation={rotation} aspect={4/3} minZoom={0.3} restrictPosition={false} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
         </div>
         <div style={{ marginBottom: 12 }}>
-          <label style={{ fontSize: 12, fontWeight: 500, color: '#555', display: 'block', marginBottom: 6 }}>Zoom</label>
-          <input type="range" min={0.3} max={3} step={0.05} value={zoom} onChange={e => setZoom(Number(e.target.value))} style={{ width: '100%', accentColor: '#534AB7' }} />
+          <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', display: 'block', marginBottom: 6 }}>Zoom</label>
+          <input type="range" min={0.3} max={3} step={0.05} value={zoom} onChange={e => setZoom(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--iv-sage)' }} />
         </div>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'space-between', alignItems: 'center' }}>
-          <button onClick={() => setRotation(r => (r + 90) % 360)} style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid #ddd', background: '#f5f4fe', color: '#534AB7', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>↻ Rodar 90°</button>
+          <button onClick={() => setRotation(r => (r + 90) % 360)} style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-bg)', color: 'var(--iv-sage)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>↻ Rodar 90°</button>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={onCancel} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 14, cursor: 'pointer' }}>Cancelar</button>
-            <button onClick={handleConfirm} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>✓ Aplicar</button>
+            <button onClick={onCancel} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 14, cursor: 'pointer' }}>Cancelar</button>
+            <button onClick={handleConfirm} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>✓ Aplicar</button>
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@ function CropModal({ imagem, onConfirm, onCancel }) {
 
 function Card({ children }) {
   return (
-    <div className="revisao-card" style={{ background: 'white', borderRadius: 16, padding: '32px', boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+    <div className="revisao-card" style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: '32px', boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
       {children}
     </div>
   )
@@ -119,7 +119,7 @@ function Card({ children }) {
 
 function SeccaoTitulo({ children }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 700, color: '#534AB7', textTransform: 'uppercase', letterSpacing: 1, background: '#f0f0f0', borderRadius: 6, padding: '6px 10px', marginBottom: 16 }}>
+    <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, background: 'var(--iv-line)', borderRadius: 6, padding: '6px 10px', marginBottom: 16 }}>
       {children}
     </div>
   )
@@ -128,8 +128,8 @@ function SeccaoTitulo({ children }) {
 function Campo({ label, valor }) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>{label}</label>
-      <div style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, boxSizing: 'border-box', background: '#fafafa', color: valor ? '#222' : '#ccc', whiteSpace: 'pre-wrap', lineHeight: 1.6, wordBreak: 'break-word', overflowWrap: 'break-word', minHeight: 40 }}>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 4 }}>{label}</label>
+      <div style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, boxSizing: 'border-box', background: 'var(--iv-bg)', color: valor ? 'var(--iv-ink)' : 'var(--iv-line)', whiteSpace: 'pre-wrap', lineHeight: 1.6, wordBreak: 'break-word', overflowWrap: 'break-word', minHeight: 40 }}>
         {valor || '—'}
       </div>
     </div>
@@ -141,12 +141,12 @@ function Grid2({ children }) {
 }
 
 function Divider() {
-  return <div style={{ height: 1, background: '#f0f0f0', margin: '20px 0' }} />
+  return <div style={{ height: 1, background: 'var(--iv-line)', margin: '20px 0' }} />
 }
 
 function CheckBox({ checked }) {
   return (
-    <div style={{ width: 18, height: 18, borderRadius: 4, background: checked ? '#534AB7' : 'white', border: '2px solid #534AB7', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+    <div style={{ width: 18, height: 18, borderRadius: 4, background: checked ? 'var(--iv-sage)' : 'var(--iv-surface)', border: '2px solid var(--iv-sage)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
       {checked && <span style={{ color: 'white', fontSize: 11, lineHeight: 1 }}>✓</span>}
     </div>
   )
@@ -155,7 +155,7 @@ function CheckBox({ checked }) {
 function TabelaRevisao({ titulo, linhas, secao }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      {titulo && <div style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>{titulo}</div>}
+      {titulo && <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--iv-ink-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>{titulo}</div>}
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, tableLayout: 'fixed' }}>
         <colgroup><col style={{ width: '50%' }} /><col style={{ width: '25%' }} /><col style={{ width: '25%' }} /></colgroup>
         <thead>
@@ -167,7 +167,7 @@ function TabelaRevisao({ titulo, linhas, secao }) {
         </thead>
         <tbody>
           {linhas.map((l, i) => (
-            <tr key={l} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+            <tr key={l} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
               <td style={{ ...tdStyle, fontSize: 13 }}>{l}</td>
               <td style={tdStyle}>{secao?.[l]?.OD || ''}</td>
               <td style={tdStyle}>{secao?.[l]?.OE || ''}</td>
@@ -209,23 +209,23 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
 
       {cropTarget && <CropModal imagem={cropTarget.imagem} onConfirm={handleCropConfirm} onCancel={() => setCropTarget(null)} />}
 
-      <div className="revisao-root" style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+      <div className="revisao-root" style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
         <div className="revisao-inner" style={{ maxWidth: 800, margin: '0 auto' }}>
 
           {/* CABEÇALHO — não imprime */}
           <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
             <div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#534AB7' }}>írisvet</div>
-              <div style={{ fontSize: 13, color: '#888' }}>Revisão da ficha</div>
+              <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 22, fontWeight: 500, color: 'var(--iv-sage)' }}>írisvet</div>
+              <div style={{ fontSize: 13, color: 'var(--iv-ink-muted)' }}>Revisão da ficha</div>
             </div>
-            <button onClick={onEditar} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 13, cursor: 'pointer' }}>← Voltar a editar</button>
+            <button onClick={onEditar} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer' }}>← Voltar a editar</button>
           </div>
 
           {/* CABEÇALHO DA FICHA — só aparece na impressão */}
           <div style={{ display: 'none' }} className="print-header">
-            <div style={{ textAlign: 'center', marginBottom: 16, paddingBottom: 12, borderBottom: '2px solid #534AB7' }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: '#534AB7' }}>írisvet</div>
-              <div style={{ fontSize: 11, color: '#888' }}>Dra. Anna Clara B. Hussein Zanuto · OMV 10.122 · PT: +351 916720461</div>
+            <div style={{ textAlign: 'center', marginBottom: 16, paddingBottom: 12, borderBottom: '2px solid var(--iv-sage)' }}>
+              <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 24, fontWeight: 500, color: 'var(--iv-sage)' }}>írisvet</div>
+              <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)' }}>Dra. Anna Clara B. Hussein Zanuto · OMV 10.122 · PT: +351 916720461</div>
             </div>
           </div>
 
@@ -274,7 +274,7 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
               </thead>
               <tbody>
                 {SINAIS.map((s, i) => (
-                  <tr key={s} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+                  <tr key={s} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
                     <td style={tdStyle}>{s}</td>
                     <td style={{ ...tdStyle, textAlign: 'center' }}><CheckBox checked={sinais[s]?.OD} /></td>
                     <td style={{ ...tdStyle, textAlign: 'center' }}><CheckBox checked={sinais[s]?.OE} /></td>
@@ -304,10 +304,10 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
             {alimentacao.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                 {alimentacao.map(a => (
-                  <span key={a} style={{ padding: '6px 14px', borderRadius: 20, fontSize: 13, border: '2px solid #534AB7', background: '#EEEDFE', color: '#534AB7', fontWeight: 600 }}>✓ {a}</span>
+                  <span key={a} style={{ padding: '6px 14px', borderRadius: 20, fontSize: 13, border: '2px solid var(--iv-sage)', background: 'var(--iv-sage-light)', color: 'var(--iv-sage)', fontWeight: 600 }}>✓ {a}</span>
                 ))}
               </div>
-            ) : <div style={{ fontSize: 13, color: '#ccc', marginBottom: 12 }}>—</div>}
+            ) : <div style={{ fontSize: 13, color: 'var(--iv-line)', marginBottom: 12 }}>—</div>}
             <Campo label="Observações" valor={dados.petisco} />
             <Divider />
             <SeccaoTitulo>Outros</SeccaoTitulo>
@@ -320,9 +320,9 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
                 <div key={campo}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                     <CheckBox checked={flags[campo]} />
-                    <span style={{ fontSize: 14, fontWeight: 500, color: '#333' }}>{label}</span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--iv-ink)' }}>{label}</span>
                   </div>
-                  <div style={{ marginLeft: 28, padding: '8px 12px', borderRadius: 8, border: '1px solid #eee', background: '#fafafa', fontSize: 13, color: flags[`${campo}_obs`] ? '#555' : '#ccc', minHeight: 36 }}>
+                  <div style={{ marginLeft: 28, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-bg)', fontSize: 13, color: flags[`${campo}_obs`] ? 'var(--iv-ink-muted)' : 'var(--iv-line)', minHeight: 36 }}>
                     {flags[`${campo}_obs`] || '—'}
                   </div>
                 </div>
@@ -344,7 +344,7 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
               </thead>
               <tbody>
                 {REFLEXOS.map((r, i) => (
-                  <tr key={r} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+                  <tr key={r} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
                     <td style={{ ...tdStyle, fontSize: 13 }}>{r}</td>
                     <td style={{ ...tdStyle, textAlign: 'center' }}><CheckBox checked={exame.reflexos?.[r]?.OD} /></td>
                     <td style={{ ...tdStyle, textAlign: 'center' }}><CheckBox checked={exame.reflexos?.[r]?.OE} /></td>
@@ -378,16 +378,16 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
                 { olho: 'OE', imagens: imagensOE, label: 'Olho Esquerdo (OE)' }
               ].map(({ olho, imagens, label }) => (
                 <div key={olho}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 10, textAlign: 'center' }}>{label}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--iv-ink-muted)', marginBottom: 10, textAlign: 'center' }}>{label}</div>
                   {imagens.length > 0 ? imagens.map((img, i) => (
                     <div key={i} style={{ position: 'relative', marginBottom: 10 }}>
-                      <img src={img.preview} alt={img.nome} style={{ width: '100%', borderRadius: 10, objectFit: 'cover', border: '1px solid #eee', display: 'block' }} />
-                      <button className="no-print" onClick={() => abrirCrop(olho, i, img)} style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(83,74,183,0.85)', color: 'white', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                      <img src={img.preview} alt={img.nome} style={{ width: '100%', borderRadius: 10, objectFit: 'cover', border: '1px solid var(--iv-line)', display: 'block' }} />
+                      <button className="no-print" onClick={() => abrirCrop(olho, i, img)} style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(91,110,88,0.85)', color: 'white', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                         ✂️ Recortar / Rodar
                       </button>
                     </div>
                   )) : (
-                    <div style={{ border: '2px dashed #eee', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: '#ccc' }}>Sem imagens</div>
+                    <div style={{ border: '2px dashed var(--iv-line)', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--iv-line)' }}>Sem imagens</div>
                   )}
                 </div>
               ))}
@@ -396,10 +396,10 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
 
           {/* BOTÕES FINAIS */}
           <div className="revisao-botoes no-print" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 40 }}>
-            <button onClick={onEditar} style={{ padding: '12px 24px', borderRadius: 10, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 14, cursor: 'pointer' }}>← Voltar a editar</button>
+            <button onClick={onEditar} style={{ padding: '12px 24px', borderRadius: 10, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 14, cursor: 'pointer' }}>← Voltar a editar</button>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => window.print()} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', background: '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
-              <button onClick={onFinalizar} disabled={finalizing} style={{ padding: '12px 32px', borderRadius: 10, border: 'none', background: finalizing ? '#a9a4e8' : '#1D9E75', color: 'white', fontSize: 14, fontWeight: 600, cursor: finalizing ? 'not-allowed' : 'pointer' }}>
+              <button onClick={() => window.print()} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', background: 'var(--iv-sage)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
+              <button onClick={onFinalizar} disabled={finalizing} style={{ padding: '12px 32px', borderRadius: 10, border: 'none', background: 'var(--iv-sage)', opacity: finalizing ? 0.55 : 1, color: 'white', fontSize: 14, fontWeight: 600, cursor: finalizing ? 'not-allowed' : 'pointer' }}>
                 {finalizing ? 'A guardar...' : '✓ Finalizar e guardar ficha'}
               </button>
             </div>
@@ -413,10 +413,10 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing }) {
 
 const thStyle = {
   textAlign: 'left', padding: '10px 12px', fontSize: 12,
-  fontWeight: 600, color: '#555', borderBottom: '2px solid #eee', background: '#f5f4fe'
+  fontWeight: 600, color: 'var(--iv-ink-muted)', borderBottom: '2px solid var(--iv-line)', background: 'var(--iv-bg)'
 }
 
 const tdStyle = {
-  padding: '8px 12px', borderBottom: '1px solid #f0f0f0',
-  fontSize: 13, color: '#222', verticalAlign: 'top'
+  padding: '8px 12px', borderBottom: '1px solid var(--iv-line)',
+  fontSize: 13, color: 'var(--iv-ink)', verticalAlign: 'top'
 }

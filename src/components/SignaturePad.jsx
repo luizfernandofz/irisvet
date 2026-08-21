@@ -39,26 +39,26 @@ export default function SignaturePad({ onConfirm, onCancel }) {
       position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16,
     }}>
-      <div style={{ background: 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 520 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: '#222', marginBottom: 4 }}>Assinatura</div>
-        <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>
+      <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 24, width: '100%', maxWidth: 520 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--iv-ink)', marginBottom: 4 }}>Assinatura</div>
+        <div style={{ fontSize: 12, color: 'var(--iv-ink-muted)', marginBottom: 12 }}>
           Desenha a tua assinatura na caixa abaixo (rato ou dedo/caneta em ecrã táctil).
         </div>
         <canvas
           ref={canvasRef}
-          style={{ width: '100%', height: 180, border: '1px solid #ddd', borderRadius: 8, background: 'white', touchAction: 'none' }}
+          style={{ width: '100%', height: 180, border: '1px solid var(--iv-line)', borderRadius: 8, background: 'var(--iv-surface)', touchAction: 'none' }}
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
-          <button type="button" onClick={limpar} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 13, cursor: 'pointer' }}>
+          <button type="button" onClick={limpar} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer' }}>
             Limpar
           </button>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button type="button" onClick={onCancel} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 13, cursor: 'pointer' }}>
+            <button type="button" onClick={onCancel} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer' }}>
               Cancelar
             </button>
             <button type="button" onClick={confirmar} disabled={vazio} style={{
               padding: '8px 20px', borderRadius: 8, border: 'none',
-              background: vazio ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 13, fontWeight: 600,
+              background: 'var(--iv-sage)', opacity: vazio ? 0.55 : 1, color: 'white', fontSize: 13, fontWeight: 600,
               cursor: vazio ? 'not-allowed' : 'pointer',
             }}>
               ✓ Confirmar Assinatura

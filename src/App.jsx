@@ -21,6 +21,7 @@ import NovoReceituario from './pages/NovoReceituario'
 import ConsultarReceituarios from './pages/ConsultarReceituarios'
 import VerReceituario from './pages/VerReceituario'
 import EditarReceituario from './pages/EditarReceituario'
+import Dashboard from './pages/Dashboard'
 
 function Home({ session }) {
   const navigate = useNavigate()
@@ -32,15 +33,15 @@ function Home({ session }) {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', background: '#f5f4fe', padding: 16
+      justifyContent: 'center', background: 'var(--iv-bg)', padding: 16
     }}>
       <div style={{
-        background: 'white', borderRadius: 16, padding: '48px 40px',
+        background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: '48px 40px',
         width: '100%', maxWidth: 420,
-        boxShadow: '0 4px 24px rgba(83,74,183,0.10)', textAlign: 'center'
+        boxShadow: '0 4px 24px rgba(91,110,88,0.10)', textAlign: 'center'
       }}>
         <img src={logo} alt="írisvet" style={{ width: 200, marginBottom: 8 }} />
-        <div style={{ fontSize: 11, color: '#aaa', marginBottom: 40 }}>
+        <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)', marginBottom: 40 }}>
           Portugal: OMV 10.122 | Brasil: CRMV MG:22.291 e SP:36.217
         </div>
 
@@ -49,8 +50,8 @@ function Home({ session }) {
             onClick={() => navigate('/nova-consulta')}
             style={{
               padding: '20px 12px', borderRadius: 12,
-              border: '2px solid #e0e0e0', background: '#e0e0e0',
-              color: '#333', cursor: 'pointer', textAlign: 'center'
+              border: '0.5px solid var(--iv-line)', background: 'var(--iv-surface)', boxShadow: '0 2px 16px rgba(91,110,88,0.08)',
+              color: 'var(--iv-ink)', cursor: 'pointer', textAlign: 'center'
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 6 }}>📋</div>
@@ -62,8 +63,8 @@ function Home({ session }) {
             onClick={() => navigate('/consultar')}
             style={{
               padding: '20px 12px', borderRadius: 12,
-              border: '2px solid #e0e0e0', background: '#e0e0e0',
-              color: '#333', cursor: 'pointer', textAlign: 'center'
+              border: '0.5px solid var(--iv-line)', background: 'var(--iv-surface)', boxShadow: '0 2px 16px rgba(91,110,88,0.08)',
+              color: 'var(--iv-ink)', cursor: 'pointer', textAlign: 'center'
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 6 }}>🔍</div>
@@ -77,8 +78,8 @@ function Home({ session }) {
             onClick={() => navigate('/consentimentos')}
             style={{
               padding: '14px 12px', borderRadius: 12,
-              border: '2px solid #e0e0e0', background: '#e0e0e0',
-              color: '#333', cursor: 'pointer', textAlign: 'center'
+              border: '0.5px solid var(--iv-line)', background: 'var(--iv-surface)', boxShadow: '0 2px 16px rgba(91,110,88,0.08)',
+              color: 'var(--iv-ink)', cursor: 'pointer', textAlign: 'center'
             }}
           >
             <div style={{ fontSize: 14, fontWeight: 600 }}>📄 Termos de Consentimento</div>
@@ -87,11 +88,24 @@ function Home({ session }) {
             onClick={() => navigate('/receituarios')}
             style={{
               padding: '14px 12px', borderRadius: 12,
-              border: '2px solid #e0e0e0', background: '#e0e0e0',
-              color: '#333', cursor: 'pointer', textAlign: 'center'
+              border: '0.5px solid var(--iv-line)', background: 'var(--iv-surface)', boxShadow: '0 2px 16px rgba(91,110,88,0.08)',
+              color: 'var(--iv-ink)', cursor: 'pointer', textAlign: 'center'
             }}
           >
             <div style={{ fontSize: 14, fontWeight: 600 }}>💊 Receituários</div>
+          </button>
+        </div>
+
+        <div style={{ marginBottom: 32 }}>
+          <button
+            onClick={() => navigate('/dashboard')}
+            style={{
+              width: '100%', padding: '14px 12px', borderRadius: 12,
+              border: '2px solid var(--iv-sage)', background: 'var(--iv-sage-light)',
+              color: 'var(--iv-sage)', cursor: 'pointer', textAlign: 'center'
+            }}
+          >
+            <div style={{ fontSize: 14, fontWeight: 600 }}>📊 Dashboard</div>
           </button>
         </div>
 
@@ -99,8 +113,8 @@ function Home({ session }) {
           <button
             onClick={() => navigate('/meu-perfil')}
             style={{
-              padding: '8px 20px', borderRadius: 8, border: '1px solid #eee',
-              background: 'white', color: '#999', fontSize: 12, cursor: 'pointer'
+              padding: '8px 20px', borderRadius: 8, border: '1px solid var(--iv-line)',
+              background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 12, cursor: 'pointer'
             }}
           >
             👤 Meu Perfil
@@ -108,8 +122,8 @@ function Home({ session }) {
           <button
             onClick={handleLogout}
             style={{
-              padding: '8px 20px', borderRadius: 8, border: '1px solid #eee',
-              background: 'white', color: '#999', fontSize: 12, cursor: 'pointer'
+              padding: '8px 20px', borderRadius: 8, border: '1px solid var(--iv-line)',
+              background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 12, cursor: 'pointer'
             }}
           >
             Sair
@@ -167,6 +181,7 @@ function AppInner() {
           <Route path="/consentimentos/:id" element={<VerConsentimento />} />
           <Route path="/consentimentos/editar/:id" element={<EditarConsentimento />} />
           <Route path="/meu-perfil" element={<MeuPerfil />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/receituarios" element={<Receituarios />} />
           <Route path="/receituarios/novo" element={<NovoReceituario />} />
           <Route path="/receituarios/novo/:patientId" element={<NovoReceituario />} />

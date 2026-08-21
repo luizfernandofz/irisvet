@@ -5,7 +5,9 @@ import Header from '../components/Header'
 import AutoTextarea from '../components/AutoTextarea'
 import Sessao7 from '../components/Sessao7'
 import RevisaoReavaliacao from '../components/RevisaoReavaliacao'
+import CamposFinanceiros from '../components/CamposFinanceiros'
 import { TIPOS_ATENDIMENTO, configSimplificado } from '../lib/tiposAtendimento'
+import { paraNumero } from '../lib/financeiro'
 
 export default function EditarReavaliacao() {
   const { id } = useParams()
@@ -19,6 +21,7 @@ export default function EditarReavaliacao() {
 
   const [dados, setDados] = useState({
     data: '', local: '', tipo_atendimento: '',
+    moeda: '', valor: '', deslocamento: '',
     motivo: '', avaliacao: '', diagnostico: '', tratamento: '', observacoes: '',
     imagens_OD: [], imagens_OE: [],
   })
@@ -44,6 +47,9 @@ export default function EditarReavaliacao() {
         data: fu.data || '',
         local: fu.local || '',
         tipo_atendimento: fu.tipo_atendimento || '',
+        moeda: fu.moeda || '',
+        valor: fu.valor ?? '',
+        deslocamento: fu.deslocamento ?? '',
         motivo: fu.motivo || '',
         avaliacao: fu.avaliacao || '',
         diagnostico: fu.diagnostico || '',
@@ -63,6 +69,7 @@ export default function EditarReavaliacao() {
     try {
       await supabase.from('follow_ups').update({
         data: dados.data, local: dados.local, tipo_atendimento: dados.tipo_atendimento,
+        moeda: dados.moeda || null, valor: paraNumero(dados.valor), deslocamento: paraNumero(dados.deslocamento),
         motivo: dados.motivo, avaliacao: dados.avaliacao,
         diagnostico: dados.diagnostico, tratamento: dados.tratamento,
         observacoes: dados.observacoes,
@@ -78,8 +85,8 @@ export default function EditarReavaliacao() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
-      <div style={{ fontSize: 14, color: '#888' }}>A carregar...</div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--iv-bg)' }}>
+      <div style={{ fontSize: 14, color: 'var(--iv-ink-muted)' }}>A carregar...</div>
     </div>
   )
 
@@ -101,7 +108,7 @@ export default function EditarReavaliacao() {
   const sessaoTitulos = ['Dados', 'Clínico', 'Imagens']
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
         <Header
           subtitulo={`Editar ${dados.tipo_atendimento || 'retorno / reavaliação'}`}
@@ -112,7 +119,7 @@ export default function EditarReavaliacao() {
         />
 
         {patientInfo && (
-          <div style={{ background: '#EEEDFE', borderRadius: 12, padding: '12px 20px', marginBottom: 20, fontSize: 13, color: '#534AB7' }}>
+          <div style={{ background: 'var(--iv-sage-light)', borderRadius: 12, padding: '12px 20px', marginBottom: 20, fontSize: 13, color: 'var(--iv-sage)' }}>
             <strong>{patientInfo.nome}</strong>
             {patientInfo.raca ? ` · ${patientInfo.raca}` : ''}
             {patientInfo.tutor ? ` · Tutor: ${patientInfo.tutor}` : ''}
@@ -128,18 +135,18 @@ export default function EditarReavaliacao() {
             return (
               <div key={num} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: done ? '#1D9E75' : active ? '#534AB7' : '#eee', color: done || active ? 'white' : '#999', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: done ? 'var(--iv-sage)' : active ? 'var(--iv-sage)' : 'var(--iv-line)', color: done || active ? 'white' : 'var(--iv-ink-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600 }}>
                     {done ? '✓' : num}
                   </div>
-                  <div style={{ fontSize: 10, color: active ? '#534AB7' : done ? '#1D9E75' : '#aaa' }}>{label}</div>
+                  <div style={{ fontSize: 10, color: active ? 'var(--iv-sage)' : done ? 'var(--iv-sage)' : 'var(--iv-ink-muted)' }}>{label}</div>
                 </div>
-                {i < 2 && <div style={{ width: 32, height: 2, background: done ? '#1D9E75' : '#eee', marginBottom: 16 }} />}
+                {i < 2 && <div style={{ width: 32, height: 2, background: done ? 'var(--iv-sage)' : 'var(--iv-line)', marginBottom: 16 }} />}
               </div>
             )
           })}
         </div>
 
-        <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 16px rgba(83,74,183,0.08)' }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 32, boxShadow: '0 2px 16px rgba(91,110,88,0.08)' }}>
 
           {sessao === 1 && (
             <div>
@@ -153,6 +160,8 @@ export default function EditarReavaliacao() {
                   <label style={labelStyle}>Local / Clínica</label>
                   <input type="text" value={dados.local} onChange={e => setDados(d => ({ ...d, local: e.target.value }))} style={inputStyle} />
                 </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
                 <div>
                   <label style={labelStyle}>Tipo de atendimento</label>
                   <select value={dados.tipo_atendimento} onChange={e => setDados(d => ({ ...d, tipo_atendimento: e.target.value }))} style={inputStyle}>
@@ -160,6 +169,12 @@ export default function EditarReavaliacao() {
                     {TIPOS_ATENDIMENTO.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
+                <CamposFinanceiros
+                  moeda={dados.moeda}
+                  valor={dados.valor}
+                  deslocamento={dados.deslocamento}
+                  onChange={(campo, valor) => setDados(d => ({ ...d, [campo]: valor }))}
+                />
               </div>
               <div>
                 <label style={labelStyle}>{config.labelMotivo}</label>
@@ -190,23 +205,23 @@ export default function EditarReavaliacao() {
           )}
 
           {erro && (
-            <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 16 }}>{erro}</div>
+            <div style={{ background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 16 }}>{erro}</div>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, paddingTop: 24, borderTop: '1px solid #f0f0f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--iv-line)' }}>
             <button onClick={() => setSessao(s => s - 1)} disabled={sessao === 1}
-              style={{ padding: '10px 24px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: sessao === 1 ? '#ccc' : '#555', fontSize: 14, cursor: sessao === 1 ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '10px 24px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: sessao === 1 ? 'var(--iv-line)' : 'var(--iv-ink-muted)', fontSize: 14, cursor: sessao === 1 ? 'not-allowed' : 'pointer' }}>
               ← Anterior
             </button>
-            <span style={{ fontSize: 12, color: '#aaa' }}>{saving ? '💾 A guardar...' : ''}</span>
+            <span style={{ fontSize: 12, color: 'var(--iv-ink-muted)' }}>{saving ? '💾 A guardar...' : ''}</span>
             {sessao < 3 ? (
               <button onClick={() => setSessao(s => s + 1)}
-                style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                 Próxima →
               </button>
             ) : (
               <button onClick={() => setRevisao(true)} disabled={saving}
-                style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: saving ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                style={{ padding: '10px 24px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: saving ? 0.55 : 1, color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                 👁 Rever ficha →
               </button>
             )}
@@ -217,7 +232,7 @@ export default function EditarReavaliacao() {
   )
 }
 
-const sectionTitle = { fontSize: 11, fontWeight: 600, color: '#534AB7', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }
-const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6 }
-const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', boxSizing: 'border-box', background: '#fafafa', fontFamily: 'inherit', color: '#222' }
-const btnNav = { padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 13, cursor: 'pointer' }
+const sectionTitle = { fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }
+const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 6 }
+const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, outline: 'none', boxSizing: 'border-box', background: 'var(--iv-bg)', fontFamily: 'inherit', color: 'var(--iv-ink)' }
+const btnNav = { padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer' }

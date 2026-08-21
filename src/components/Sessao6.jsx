@@ -40,6 +40,6 @@ export default function Sessao6({ dados, onChange }) {
 }
 
 const sectionTitleStyle = {
-  fontSize: 11, fontWeight: 600, color: '#534AB7',
+  fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)',
   textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12
 }

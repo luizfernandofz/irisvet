@@ -12,13 +12,13 @@ const PRINT_CSS = `
   body { background: white !important; margin: 0; padding: 0; }
   .ver-root { background: white !important; padding: 8px !important; }
   .ver-inner { max-width: 100% !important; }
-  .ver-card { box-shadow: none !important; border-radius: 4px !important; margin-bottom: 8px !important; padding: 16px !important; border: 0.5px solid #eee !important; page-break-inside: avoid; }
+  .ver-card { box-shadow: none !important; border-radius: 4px !important; margin-bottom: 8px !important; padding: 16px !important; border: 0.5px solid var(--iv-line) !important; page-break-inside: avoid; }
 }
 `
 
 function Card({ children }) {
   return (
-    <div className="ver-card" style={{ background: 'white', borderRadius: 16, padding: '32px', boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
+    <div className="ver-card" style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: '32px', boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
       {children}
     </div>
   )
@@ -26,7 +26,7 @@ function Card({ children }) {
 
 function SeccaoTitulo({ children }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 700, color: '#534AB7', textTransform: 'uppercase', letterSpacing: 1, background: '#f0f0f0', borderRadius: 6, padding: '6px 10px', marginBottom: 16 }}>
+    <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, background: 'var(--iv-line)', borderRadius: 6, padding: '6px 10px', marginBottom: 16 }}>
       {children}
     </div>
   )
@@ -35,8 +35,8 @@ function SeccaoTitulo({ children }) {
 function Campo({ label, valor }) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>{label}</label>
-      <div style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, boxSizing: 'border-box', background: '#fafafa', color: valor ? '#222' : '#ccc', whiteSpace: 'pre-wrap', lineHeight: 1.6, wordBreak: 'break-word', overflowWrap: 'break-word', minHeight: 40 }}>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 4 }}>{label}</label>
+      <div style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, boxSizing: 'border-box', background: 'var(--iv-bg)', color: valor ? 'var(--iv-ink)' : 'var(--iv-line)', whiteSpace: 'pre-wrap', lineHeight: 1.6, wordBreak: 'break-word', overflowWrap: 'break-word', minHeight: 40 }}>
         {valor || '—'}
       </div>
     </div>
@@ -48,8 +48,8 @@ function Grid2({ children }) {
 }
 
 const btnNav = {
-  padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
-  background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
+  padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)',
+  background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer'
 }
 
 export default function VerReavaliacao() {
@@ -103,14 +103,14 @@ export default function VerReavaliacao() {
   }, [id])
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
-      <div style={{ fontSize: 14, color: '#888' }}>A carregar...</div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--iv-bg)' }}>
+      <div style={{ fontSize: 14, color: 'var(--iv-ink-muted)' }}>A carregar...</div>
     </div>
   )
 
   if (!dados) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
-      <div style={{ fontSize: 14, color: '#888' }}>Ficha não encontrada.</div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--iv-bg)' }}>
+      <div style={{ fontSize: 14, color: 'var(--iv-ink-muted)' }}>Ficha não encontrada.</div>
     </div>
   )
 
@@ -155,7 +155,7 @@ export default function VerReavaliacao() {
   return (
     <>
       <style>{PRINT_CSS}</style>
-      <div className="ver-root" style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+      <div className="ver-root" style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
         <div className="ver-inner" style={{ maxWidth: 800, margin: '0 auto' }}>
 
         {/* CABEÇALHO */}
@@ -163,8 +163,8 @@ export default function VerReavaliacao() {
           <Header
             subtitulo={`Ficha de ${dados.tipo_atendimento || 'retorno / reavaliação'}`}
             botoes={<>
-              <button onClick={exportarPT} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
-              <button onClick={exportarEN} disabled={translating} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: translating ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 13, fontWeight: 600, cursor: translating ? 'not-allowed' : 'pointer' }}>
+              <button onClick={exportarPT} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
+              <button onClick={exportarEN} disabled={translating} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: translating ? 0.55 : 1, color: 'white', fontSize: 13, fontWeight: 600, cursor: translating ? 'not-allowed' : 'pointer' }}>
                 {translating ? 'A traduzir...' : '🇬🇧 Exportar PDF (EN)'}
               </button>
               <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
@@ -172,7 +172,7 @@ export default function VerReavaliacao() {
             </>}
           />
           {translateError && (
-            <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 12 }}>
+            <div style={{ background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 12 }}>
               {translateError}
             </div>
           )}
@@ -186,7 +186,7 @@ export default function VerReavaliacao() {
               <Campo label={L('Local / Clínica')} valor={dados.local} />
               <Campo label={L('Tipo de atendimento')} valor={L(dados.tipo_atendimento)} />
             </Grid2>
-            <div style={{ height: 1, background: '#f0f0f0', margin: '16px 0' }} />
+            <div style={{ height: 1, background: 'var(--iv-line)', margin: '16px 0' }} />
             <SeccaoTitulo>{L('Paciente')}</SeccaoTitulo>
             <Grid2>
               <Campo label={L('Nome do animal')} valor={paciente.nome} />
@@ -210,11 +210,11 @@ export default function VerReavaliacao() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[{ imagens: imagensOD, label: 'Olho Direito (OD)' }, { imagens: imagensOE, label: 'Olho Esquerdo (OE)' }].map(({ imagens, label }) => (
                 <div key={label}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 10, textAlign: 'center' }}>{L(label)}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--iv-ink-muted)', marginBottom: 10, textAlign: 'center' }}>{L(label)}</div>
                   {imagens.length > 0 ? imagens.map((img, i) => (
-                    <img key={i} src={img.preview} alt="" style={{ width: '100%', borderRadius: 10, marginBottom: 10, objectFit: 'cover', border: '1px solid #eee' }} />
+                    <img key={i} src={img.preview} alt="" style={{ width: '100%', borderRadius: 10, marginBottom: 10, objectFit: 'cover', border: '1px solid var(--iv-line)' }} />
                   )) : (
-                    <div style={{ border: '2px dashed #eee', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: '#ccc' }}>{L('Sem imagens')}</div>
+                    <div style={{ border: '2px dashed var(--iv-line)', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--iv-line)' }}>{L('Sem imagens')}</div>
                   )}
                 </div>
               ))}

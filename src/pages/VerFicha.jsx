@@ -35,7 +35,7 @@ const PRINT_CSS = `
     border-radius: 4px !important;
     margin-bottom: 8px !important;
     padding: 16px !important;
-    border: 0.5px solid #eee !important;
+    border: 0.5px solid var(--iv-line) !important;
     page-break-inside: avoid;
   }
   img { page-break-inside: avoid; max-width: 100%; }
@@ -45,8 +45,8 @@ const PRINT_CSS = `
 function Card({ children }) {
   return (
     <div className="ver-card" style={{
-      background: 'white', borderRadius: 16, padding: '32px',
-      boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16
+      background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: '32px',
+      boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16
     }}>
       {children}
     </div>
@@ -56,9 +56,9 @@ function Card({ children }) {
 function SeccaoTitulo({ children }) {
   return (
     <div style={{
-      fontSize: 11, fontWeight: 700, color: '#534AB7',
+      fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)',
       textTransform: 'uppercase', letterSpacing: 1,
-      background: '#f0f0f0', borderRadius: 6,
+      background: 'var(--iv-line)', borderRadius: 6,
       padding: '6px 10px', marginBottom: 16
     }}>
       {children}
@@ -69,13 +69,13 @@ function SeccaoTitulo({ children }) {
 function Campo({ label, valor }) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 4 }}>
         {label}
       </label>
       <div style={{
         width: '100%', padding: '10px 12px', borderRadius: 8,
-        border: '1px solid #ddd', fontSize: 14, boxSizing: 'border-box',
-        background: '#fafafa', color: valor ? '#222' : '#ccc',
+        border: '1px solid var(--iv-line)', fontSize: 14, boxSizing: 'border-box',
+        background: 'var(--iv-bg)', color: valor ? 'var(--iv-ink)' : 'var(--iv-line)',
         whiteSpace: 'pre-wrap', lineHeight: 1.6,
         wordBreak: 'break-word', overflowWrap: 'break-word', minHeight: 40
       }}>
@@ -90,15 +90,15 @@ function Grid2({ children }) {
 }
 
 function Divider() {
-  return <div style={{ height: 1, background: '#f0f0f0', margin: '20px 0' }} />
+  return <div style={{ height: 1, background: 'var(--iv-line)', margin: '20px 0' }} />
 }
 
 function CheckBox({ checked }) {
   return (
     <div style={{
       width: 18, height: 18, borderRadius: 4,
-      background: checked ? '#534AB7' : 'white',
-      border: '2px solid #534AB7',
+      background: checked ? 'var(--iv-sage)' : 'var(--iv-surface)',
+      border: '2px solid var(--iv-sage)',
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       flexShrink: 0
     }}>
@@ -111,7 +111,7 @@ function TabelaVer({ titulo, linhas, secao, lang, V, keyPrefix }) {
   return (
     <div style={{ marginBottom: 20 }}>
       {titulo && (
-        <div style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--iv-ink-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
           {translateLabel(lang, titulo)}
         </div>
       )}
@@ -130,7 +130,7 @@ function TabelaVer({ titulo, linhas, secao, lang, V, keyPrefix }) {
         </thead>
         <tbody>
           {linhas.map((l, i) => (
-            <tr key={l} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+            <tr key={l} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
               <td style={{ ...tdStyle, fontSize: 13 }}>{translateLabel(lang, l)}</td>
               <td style={tdStyle}>{V(`${keyPrefix}_${l}_OD`, secao?.[l]?.OD) || ''}</td>
               <td style={tdStyle}>{V(`${keyPrefix}_${l}_OE`, secao?.[l]?.OE) || ''}</td>
@@ -199,14 +199,14 @@ export default function VerFicha() {
   }, [id])
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
-      <div style={{ fontSize: 14, color: '#888' }}>A carregar ficha...</div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--iv-bg)' }}>
+      <div style={{ fontSize: 14, color: 'var(--iv-ink-muted)' }}>A carregar ficha...</div>
     </div>
   )
 
   if (!dados) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f4fe' }}>
-      <div style={{ fontSize: 14, color: '#888' }}>Ficha não encontrada.</div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--iv-bg)' }}>
+      <div style={{ fontSize: 14, color: 'var(--iv-ink-muted)' }}>Ficha não encontrada.</div>
     </div>
   )
 
@@ -290,7 +290,7 @@ export default function VerFicha() {
   return (
     <>
       <style>{PRINT_CSS}</style>
-      <div className="ver-root" style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+      <div className="ver-root" style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
         <div className="ver-inner" style={{ maxWidth: 800, margin: '0 auto' }}>
 
           {/* CABEÇALHO */}
@@ -298,9 +298,9 @@ export default function VerFicha() {
           <Header
             subtitulo="Ficha de atendimento"
             botoes={<>
-              <button onClick={() => navigate(`/editar/${id}`)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #534AB7', background: '#EEEDFE', color: '#534AB7', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>✏️ Editar</button>
-              <button onClick={exportarPT} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
-              <button onClick={exportarEN} disabled={translating} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: translating ? '#a9a4e8' : '#534AB7', color: 'white', fontSize: 13, fontWeight: 600, cursor: translating ? 'not-allowed' : 'pointer' }}>
+              <button onClick={() => navigate(`/editar/${id}`)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>✏️ Editar</button>
+              <button onClick={exportarPT} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
+              <button onClick={exportarEN} disabled={translating} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: translating ? 0.55 : 1, color: 'white', fontSize: 13, fontWeight: 600, cursor: translating ? 'not-allowed' : 'pointer' }}>
                 {translating ? 'A traduzir...' : '🇬🇧 Exportar PDF (EN)'}
               </button>
               <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
@@ -308,7 +308,7 @@ export default function VerFicha() {
             </>}
           />
           {translateError && (
-            <div style={{ background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 12 }}>
+            <div style={{ background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginTop: 12 }}>
               {translateError}
             </div>
           )}
@@ -317,9 +317,9 @@ export default function VerFicha() {
 
           {/* CABEÇALHO DA FICHA — visível só na impressão */}
           <div style={{ display: 'none' }} id="print-header">
-            <style>{`#print-header { display: none; } @media print { #print-header { display: block !important; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #534AB7; } }`}</style>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#534AB7' }}>írisvet</div>
-            <div style={{ fontSize: 10, color: '#888' }}>Dra. Anna Clara B. Hussein Zanuto · OMV 10.122 · PT: +351 916720461 · annaoftalmovet.com.pt</div>
+            <style>{`#print-header { display: none; } @media print { #print-header { display: block !important; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--iv-sage); } }`}</style>
+            <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 20, fontWeight: 500, color: 'var(--iv-sage)' }}>írisvet</div>
+            <div style={{ fontSize: 10, color: 'var(--iv-ink-muted)' }}>Dra. Anna Clara B. Hussein Zanuto · OMV 10.122 · PT: +351 916720461 · annaoftalmovet.com.pt</div>
           </div>
 
           {/* SESSÃO 1+2 */}
@@ -369,7 +369,7 @@ export default function VerFicha() {
               </thead>
               <tbody>
                 {SINAIS.map((s, i) => (
-                  <tr key={s} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+                  <tr key={s} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
                     <td style={tdStyle}>{L(s)}</td>
                     <td style={{ ...tdStyle, textAlign: 'center' }}><CheckBox checked={sinais[s]?.OD} /></td>
                     <td style={{ ...tdStyle, textAlign: 'center' }}><CheckBox checked={sinais[s]?.OE} /></td>
@@ -399,10 +399,10 @@ export default function VerFicha() {
             {alimentacao.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                 {alimentacao.map(a => (
-                  <span key={a} style={{ padding: '6px 14px', borderRadius: 20, fontSize: 13, border: '2px solid #534AB7', background: '#EEEDFE', color: '#534AB7', fontWeight: 600 }}>✓ {L(a)}</span>
+                  <span key={a} style={{ padding: '6px 14px', borderRadius: 20, fontSize: 13, border: '2px solid var(--iv-sage)', background: 'var(--iv-sage-light)', color: 'var(--iv-sage)', fontWeight: 600 }}>✓ {L(a)}</span>
                 ))}
               </div>
-            ) : <div style={{ fontSize: 13, color: '#ccc', marginBottom: 12 }}>—</div>}
+            ) : <div style={{ fontSize: 13, color: 'var(--iv-line)', marginBottom: 12 }}>—</div>}
             <Campo label={L('Observações')} valor={V('petisco_obs', flags.petisco)} />
             <Divider />
             <SeccaoTitulo>{L('Outros')}</SeccaoTitulo>
@@ -415,9 +415,9 @@ export default function VerFicha() {
                 <div key={campo}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                     <CheckBox checked={flags[campo]} />
-                    <span style={{ fontSize: 14, fontWeight: 500, color: '#333' }}>{L(label)}</span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--iv-ink)' }}>{L(label)}</span>
                   </div>
-                  <div style={{ marginLeft: 28, padding: '8px 12px', borderRadius: 8, border: '1px solid #eee', background: '#fafafa', fontSize: 13, color: flags[`${campo}_obs`] ? '#555' : '#ccc', minHeight: 36 }}>
+                  <div style={{ marginLeft: 28, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-bg)', fontSize: 13, color: flags[`${campo}_obs`] ? 'var(--iv-ink-muted)' : 'var(--iv-line)', minHeight: 36 }}>
                     {V(`${campo}_obs`, flags[`${campo}_obs`]) || '—'}
                   </div>
                 </div>
@@ -439,7 +439,7 @@ export default function VerFicha() {
               </thead>
               <tbody>
                 {REFLEXOS.map((r, i) => (
-                  <tr key={r} style={{ background: i % 2 === 0 ? '#fafafa' : 'white' }}>
+                  <tr key={r} style={{ background: i % 2 === 0 ? 'var(--iv-bg)' : 'var(--iv-surface)' }}>
                     <td style={{ ...tdStyle, fontSize: 13 }}>{L(r)}</td>
                     <td style={{ ...tdStyle, textAlign: 'center' }}><CheckBox checked={exame.reflexos?.[r]?.OD} /></td>
                     <td style={{ ...tdStyle, textAlign: 'center' }}><CheckBox checked={exame.reflexos?.[r]?.OE} /></td>
@@ -472,12 +472,12 @@ export default function VerFicha() {
                 { olho: 'OE', imagens: imagensOE, label: 'Olho Esquerdo (OE)' }
               ].map(({ imagens, label }) => (
                 <div key={label}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 10, textAlign: 'center' }}>{L(label)}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--iv-ink-muted)', marginBottom: 10, textAlign: 'center' }}>{L(label)}</div>
                   {imagens.length > 0 ? imagens.map((img, i) => (
                     <img key={i} src={img.preview} alt=""
-                      style={{ width: '100%', borderRadius: 10, marginBottom: 10, objectFit: 'cover', border: '1px solid #eee' }} />
+                      style={{ width: '100%', borderRadius: 10, marginBottom: 10, objectFit: 'cover', border: '1px solid var(--iv-line)' }} />
                   )) : (
-                    <div style={{ border: '2px dashed #eee', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: '#ccc' }}>
+                    <div style={{ border: '2px dashed var(--iv-line)', borderRadius: 10, padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--iv-line)' }}>
                       {L('Sem imagens')}
                     </div>
                   )}
@@ -499,16 +499,16 @@ export default function VerFicha() {
 }
 
 const btnNav = {
-  padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd',
-  background: 'white', color: '#555', fontSize: 13, cursor: 'pointer'
+  padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)',
+  background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer'
 }
 
 const thStyle = {
   textAlign: 'left', padding: '10px 12px', fontSize: 12,
-  fontWeight: 600, color: '#555', borderBottom: '2px solid #eee', background: '#f5f4fe'
+  fontWeight: 600, color: 'var(--iv-ink-muted)', borderBottom: '2px solid var(--iv-line)', background: 'var(--iv-bg)'
 }
 
 const tdStyle = {
-  padding: '8px 12px', borderBottom: '1px solid #f0f0f0',
-  fontSize: 13, color: '#222', verticalAlign: 'top'
+  padding: '8px 12px', borderBottom: '1px solid var(--iv-line)',
+  fontSize: 13, color: 'var(--iv-ink)', verticalAlign: 'top'
 }

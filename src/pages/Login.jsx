@@ -4,20 +4,20 @@ import logo from '../assets/logo.png'
 
 function cardStyle(wide) {
   return {
-    background: 'white', borderRadius: 16, padding: '48px 40px',
-    width: wide ? 480 : 360, boxShadow: '0 4px 24px rgba(83,74,183,0.10)'
+    background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: '48px 40px',
+    width: wide ? 480 : 360, boxShadow: '0 4px 24px rgba(91,110,88,0.10)'
   }
 }
-const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6 }
-const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', boxSizing: 'border-box' }
-const errorStyle = { background: '#FAECE7', color: '#993C1D', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }
-const infoStyle = { background: '#E1F5EE', color: '#0F6E56', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }
-const linkStyle = { background: 'none', border: 'none', color: '#534AB7', fontSize: 12, cursor: 'pointer', padding: 0, textDecoration: 'underline' }
+const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 6 }
+const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }
+const errorStyle = { background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }
+const infoStyle = { background: 'var(--iv-sage-light)', color: 'var(--iv-sage-dark)', borderRadius: 8, padding: '10px 12px', fontSize: 13, marginBottom: 16 }
+const linkStyle = { background: 'none', border: 'none', color: 'var(--iv-sage)', fontSize: 12, cursor: 'pointer', padding: 0, textDecoration: 'underline' }
 
 function submitStyle(loading) {
   return {
     width: '100%', padding: '11px', borderRadius: 8,
-    background: loading ? '#a9a4e8' : '#534AB7',
+    background: 'var(--iv-sage)', opacity: loading ? 0.55 : 1,
     color: 'white', fontWeight: 600, fontSize: 14,
     border: 'none', cursor: loading ? 'not-allowed' : 'pointer'
   }
@@ -111,12 +111,12 @@ export default function Login() {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', background: '#f5f4fe'
+      justifyContent: 'center', background: 'var(--iv-bg)'
     }}>
       <div style={cardStyle(mode === 'signup')}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <img src={logo} alt="írisvet" style={{ width: 180, marginBottom: 8 }} />
-          <div style={{ fontSize: 12, color: '#888' }}>Portugal: OMV 10.122 | Brasil: CRMV MG:22.291 e SP:36.217</div>
+          <div style={{ fontSize: 12, color: 'var(--iv-ink-muted)' }}>Portugal: OMV 10.122 | Brasil: CRMV MG:22.291 e SP:36.217</div>
         </div>
 
         {mode === 'login' && (
@@ -137,7 +137,7 @@ export default function Login() {
             <button type="submit" disabled={loading} style={submitStyle(loading)}>
               {loading ? 'A entrar...' : 'Entrar'}
             </button>
-            <div style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: '#888' }}>
+            <div style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: 'var(--iv-ink-muted)' }}>
               Ainda não tens conta?{' '}
               <button type="button" onClick={() => switchMode('signup')} style={linkStyle}>Registrar-se</button>
             </div>
@@ -163,7 +163,7 @@ export default function Login() {
               <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required minLength={6} style={inputStyle} />
             </div>
 
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 1, margin: '20px 0 12px' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--iv-ink-muted)', textTransform: 'uppercase', letterSpacing: 1, margin: '20px 0 12px' }}>
               Dados profissionais (aparecem nos documentos gerados — podes preencher ou editar depois em "Meu Perfil")
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
@@ -201,7 +201,7 @@ export default function Login() {
             <button type="submit" disabled={loading} style={submitStyle(loading)}>
               {loading ? 'A criar conta...' : 'Criar conta'}
             </button>
-            <div style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: '#888' }}>
+            <div style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: 'var(--iv-ink-muted)' }}>
               Já tens conta?{' '}
               <button type="button" onClick={() => switchMode('login')} style={linkStyle}>Entrar</button>
             </div>
@@ -219,7 +219,7 @@ export default function Login() {
             <button type="submit" disabled={loading} style={submitStyle(loading)}>
               {loading ? 'A enviar...' : 'Enviar link de recuperação'}
             </button>
-            <div style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: '#888' }}>
+            <div style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: 'var(--iv-ink-muted)' }}>
               <button type="button" onClick={() => switchMode('login')} style={linkStyle}>Voltar ao login</button>
             </div>
           </form>

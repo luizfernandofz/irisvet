@@ -105,9 +105,9 @@ export default function Sessao4({ dados, onChange }) {
                 onClick={() => toggleAlimentacao(opcao)}
                 style={{
                   padding: '8px 14px', borderRadius: 20, fontSize: 13,
-                  border: selected ? '2px solid #534AB7' : '2px solid #ddd',
-                  background: selected ? '#EEEDFE' : 'white',
-                  color: selected ? '#534AB7' : '#555',
+                  border: selected ? '2px solid var(--iv-sage)' : '2px solid var(--iv-line)',
+                  background: selected ? 'var(--iv-sage-light)' : 'var(--iv-surface)',
+                  color: selected ? 'var(--iv-sage)' : 'var(--iv-ink-muted)',
                   fontWeight: selected ? 600 : 400,
                   cursor: 'pointer', transition: 'all 0.15s'
                 }}
@@ -140,9 +140,9 @@ export default function Sessao4({ dados, onChange }) {
                   type="checkbox"
                   checked={flags[campo] || false}
                   onChange={e => setFlag(campo, e.target.checked)}
-                  style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#534AB7', flexShrink: 0 }}
+                  style={{ width: 18, height: 18, cursor: 'pointer', accentColor: 'var(--iv-sage)', flexShrink: 0 }}
                 />
-                <span style={{ fontSize: 14, fontWeight: 500, color: '#333' }}>{label}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--iv-ink)' }}>{label}</span>
               </div>
               <AutoTextarea
                 value={flags[`${campo}_obs`] || ''}
@@ -150,8 +150,8 @@ export default function Sessao4({ dados, onChange }) {
                 placeholder={`Detalhes sobre ${label.toLowerCase()}...`}
                 style={{
                   marginLeft: 28,
-                  border: '1px solid #eee',
-                  background: '#fafafa',
+                  border: '1px solid var(--iv-line)',
+                  background: 'var(--iv-bg)',
                   fontSize: 13,
                 }}
               />
@@ -164,14 +164,14 @@ export default function Sessao4({ dados, onChange }) {
 }
 
 const sectionTitleStyle = {
-  fontSize: 11, fontWeight: 600, color: '#534AB7',
+  fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)',
   textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12
 }
 
 const labelStyle = {
-  display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 6
+  display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 6
 }
 
 const dividerStyle = {
-  height: 1, background: '#f0f0f0', margin: '20px 0'
+  height: 1, background: 'var(--iv-line)', margin: '20px 0'
 }

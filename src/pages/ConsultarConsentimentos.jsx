@@ -85,7 +85,7 @@ export default function ConsultarConsentimentos({ profile }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f4fe', padding: '32px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--iv-bg)', padding: '32px 16px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
         <Header
           subtitulo="Consultar termos de consentimento"
@@ -95,8 +95,8 @@ export default function ConsultarConsentimentos({ profile }) {
           </>}
         />
 
-        <div style={{ background: 'white', borderRadius: 16, padding: 24, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#534AB7', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, padding: 24, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', marginBottom: 16 }}>
+          <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 12, fontWeight: 500, color: 'var(--iv-sage)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>
             Filtros de pesquisa
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -126,42 +126,42 @@ export default function ConsultarConsentimentos({ profile }) {
               </div>
             )}
           </div>
-          <button onClick={limparFiltros} style={{ marginTop: 12, padding: '7px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#888', fontSize: 12, cursor: 'pointer' }}>
+          <button onClick={limparFiltros} style={{ marginTop: 12, padding: '7px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 12, cursor: 'pointer' }}>
             Limpar filtros
           </button>
         </div>
 
-        <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(83,74,183,0.08)', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 24px', borderBottom: '1px solid #f0f0f0', fontSize: 13, color: '#888' }}>
+        <div style={{ background: 'var(--iv-surface)', border: '0.5px solid var(--iv-line)', borderRadius: 12, boxShadow: '0 2px 16px rgba(91,110,88,0.08)', overflow: 'hidden' }}>
+          <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--iv-line)', fontSize: 13, color: 'var(--iv-ink-muted)' }}>
             {loading ? 'A carregar...' : `${resultados.length} termo${resultados.length !== 1 ? 's' : ''} encontrado${resultados.length !== 1 ? 's' : ''}`}
           </div>
           {!loading && resultados.length === 0 && (
-            <div style={{ padding: 40, textAlign: 'center', color: '#bbb', fontSize: 14 }}>Nenhum termo encontrado</div>
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--iv-ink-muted)', fontSize: 14 }}>Nenhum termo encontrado</div>
           )}
           {resultados.map((t, i) => (
             <div key={t.id} style={{
               padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              borderBottom: i < resultados.length - 1 ? '1px solid #f0f0f0' : 'none',
+              borderBottom: i < resultados.length - 1 ? '1px solid var(--iv-line)' : 'none',
             }}>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: '#222', marginBottom: 3 }}>
+                <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 17, fontWeight: 500, color: 'var(--iv-ink)', marginBottom: 3 }}>
                   {t.paciente_nome || 'Sem nome'}
                   {t.status === 'rascunho' && (
-                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: '#FAEEDA', color: '#854F0B', fontWeight: 500, marginLeft: 8 }}>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'var(--iv-amber-light)', color: 'var(--iv-amber-dark)', fontWeight: 500, marginLeft: 8 }}>
                       rascunho
                     </span>
                   )}
                 </div>
-                <div style={{ fontSize: 13, color: '#888' }}>
+                <div style={{ fontSize: 13, color: 'var(--iv-ink-muted)' }}>
                   {t.tutor_nome} · {formatarData(t.data)}
                   {t.procedimento && <span> · {t.procedimento.slice(0, 40)}{t.procedimento.length > 40 ? '…' : ''}</span>}
-                  {isGodMode && t.vet_nome && <span style={{ color: '#534AB7', fontWeight: 600 }}> · {t.vet_nome}</span>}
+                  {isGodMode && t.vet_nome && <span style={{ color: 'var(--iv-sage)', fontWeight: 600 }}> · {t.vet_nome}</span>}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                <button onClick={() => navigate(`/consentimentos/${t.id}`)} style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #AFA9EC', background: '#EEEDFE', color: '#534AB7', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>👁 Ver</button>
-                <button onClick={() => navigate(`/consentimentos/editar/${t.id}`)} style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 12, cursor: 'pointer' }}>✏️ Editar</button>
-                <button onClick={() => excluirTermo(t.id)} style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid #F0997B', background: '#FAECE7', color: '#993C1D', fontSize: 12, cursor: 'pointer' }}>🗑 Excluir</button>
+                <button onClick={() => navigate(`/consentimentos/${t.id}`)} style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-sage)', background: 'var(--iv-sage-light)', color: 'var(--iv-sage)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>👁 Ver</button>
+                <button onClick={() => navigate(`/consentimentos/editar/${t.id}`)} style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 12, cursor: 'pointer' }}>✏️ Editar</button>
+                <button onClick={() => excluirTermo(t.id)} style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-plum)', background: 'var(--iv-plum-light)', color: 'var(--iv-plum-dark)', fontSize: 12, cursor: 'pointer' }}>🗑 Excluir</button>
               </div>
             </div>
           ))}
@@ -171,6 +171,6 @@ export default function ConsultarConsentimentos({ profile }) {
   )
 }
 
-const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }
-const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', boxSizing: 'border-box', background: '#fafafa', fontFamily: 'inherit', color: '#222' }
-const btnNav = { padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: 'white', color: '#555', fontSize: 13, cursor: 'pointer' }
+const labelStyle = { display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--iv-ink-muted)', marginBottom: 4 }
+const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--iv-line)', fontSize: 14, outline: 'none', boxSizing: 'border-box', background: 'var(--iv-bg)', fontFamily: 'inherit', color: 'var(--iv-ink)' }
+const btnNav = { padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-line)', background: 'var(--iv-surface)', color: 'var(--iv-ink-muted)', fontSize: 13, cursor: 'pointer' }
