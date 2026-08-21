@@ -5,6 +5,7 @@ import { formatarData } from '../lib/utils'
 import Header from '../components/Header'
 import { translateLabel, translateFreeTextFields } from '../lib/pdfTranslations'
 import { configSimplificado } from '../lib/tiposAtendimento'
+import { waitForImagesToLoad } from '../lib/utils'
 
 const PRINT_CSS = `
 @media print {
@@ -13,6 +14,9 @@ const PRINT_CSS = `
   .ver-root { background: white !important; padding: 8px !important; }
   .ver-inner { max-width: 100% !important; }
   .ver-card { box-shadow: none !important; border-radius: 4px !important; margin-bottom: 8px !important; padding: 16px !important; border: 0.5px solid var(--iv-line) !important; page-break-inside: avoid; }
+  img { page-break-inside: avoid; max-width: 100%; }
+  .print-stack { display: block !important; }
+  .print-stack > * { margin-bottom: 10px; }
 }
 `
 
@@ -44,7 +48,7 @@ function Campo({ label, valor }) {
 }
 
 function Grid2({ children }) {
-  return <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>{children}</div>
+  return <div className="print-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>{children}</div>
 }
 
 const btnNav = {
@@ -72,8 +76,13 @@ export default function VerReavaliacao() {
 
   useEffect(() => {
     if (!printRequested) return
-    window.print()
-    setPrintRequested(false)
+    let cancelado = false
+    waitForImagesToLoad().then(() => {
+      if (cancelado) return
+      window.print()
+      setPrintRequested(false)
+    })
+    return () => { cancelado = true }
   }, [printRequested])
 
   useEffect(() => {
@@ -207,7 +216,7 @@ export default function VerReavaliacao() {
           {/* IMAGENS */}
           <Card>
             <SeccaoTitulo>{L('Imagens')}</SeccaoTitulo>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="print-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[{ imagens: imagensOD, label: 'Olho Direito (OD)' }, { imagens: imagensOE, label: 'Olho Esquerdo (OE)' }].map(({ imagens, label }) => (
                 <div key={label}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--iv-ink-muted)', marginBottom: 10, textAlign: 'center' }}>{L(label)}</div>

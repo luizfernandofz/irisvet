@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import logoIrisvet from '../assets/Logo-sem-fundo-menor.png'
+import { waitForImagesToLoad } from '../lib/utils'
 
 const ESPECIE_EMOJI = {
   canino: '🐶', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
@@ -37,6 +38,8 @@ const PRINT_CSS = `
   }
   img { page-break-inside: avoid; max-width: 100%; }
   .revisao-botoes { display: none !important; }
+  .print-stack { display: block !important; }
+  .print-stack > * { margin-bottom: 10px; }
 }
 `
 
@@ -139,7 +142,7 @@ function Campo({ label, valor }) {
 }
 
 function Grid2({ children }) {
-  return <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>{children}</div>
+  return <div className="print-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>{children}</div>
 }
 
 function Divider() {
@@ -213,8 +216,9 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing, erro
     return [nomePaciente, primeiroNomeTutor, data].filter(Boolean).join('_')
   }
 
-  function exportarPDF() {
+  async function exportarPDF() {
     document.title = nomeArquivo()
+    await waitForImagesToLoad()
     window.print()
   }
 
@@ -389,7 +393,7 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing, erro
           {/* SESSÃO 6 — IMAGENS */}
           <Card>
             <SeccaoTitulo>Imagens</SeccaoTitulo>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="print-stack" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[
                 { olho: 'OD', imagens: imagensOD, label: 'Olho Direito (OD)' },
                 { olho: 'OE', imagens: imagensOE, label: 'Olho Esquerdo (OE)' }

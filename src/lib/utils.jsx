@@ -5,6 +5,20 @@ export function formatarData(dataStr) {
   return `${dia}/${meses[parseInt(mes) - 1]}/${ano}`
 }
 
+export function waitForImagesToLoad(root = document, timeoutMs = 4000) {
+  const pendentes = Array.from(root.querySelectorAll('img'))
+    .filter(img => !img.complete)
+    .map(img => new Promise(resolve => {
+      img.addEventListener('load', resolve, { once: true })
+      img.addEventListener('error', resolve, { once: true })
+    }))
+  if (pendentes.length === 0) return Promise.resolve()
+  return Promise.race([
+    Promise.all(pendentes),
+    new Promise(resolve => setTimeout(resolve, timeoutMs)),
+  ])
+}
+
 export function calcularIdade(dataNasc) {
   if (!dataNasc) return ''
   const nasc = new Date(dataNasc)
