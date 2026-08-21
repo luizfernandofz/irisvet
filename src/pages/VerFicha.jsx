@@ -2,22 +2,11 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import Header from '../components/Header'
-import { translateLabel, translateFreeTextFields } from '../lib/pdfTranslations'
-import { waitForImagesToLoad } from '../lib/utils'
+import { translateLabel } from '../lib/pdfTranslations'
 import logoIrisvet from '../assets/Logo-sem-fundo-menor.png'
 
 const ESPECIE_EMOJI = {
   canino: '🐶', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
-}
-
-function nomeArquivoFicha(dados) {
-  const sanitizar = s => (s || '').replace(/[\\/:*?"<>|]/g, '').trim()
-  const paciente = dados.patients || {}
-  const tutor = paciente.tutors || {}
-  const nomePaciente = sanitizar(paciente.nome) || 'Paciente'
-  const primeiroNomeTutor = sanitizar((tutor.nome || '').trim().split(/\s+/)[0]) || 'Tutor'
-  const data = sanitizar(dados.data)
-  return [nomePaciente, primeiroNomeTutor, data].filter(Boolean).join('_')
 }
 
 const REFLEXOS = [
@@ -172,37 +161,8 @@ export default function VerFicha() {
   const [imagens, setImagens] = useState([])
   const [followUps, setFollowUps] = useState([])
   const [loading, setLoading] = useState(true)
-  const [lang, setLang] = useState('pt')
-  const [translated, setTranslated] = useState({})
-  const [translating, setTranslating] = useState(false)
   const [translateError, setTranslateError] = useState(null)
-  const [printRequested, setPrintRequested] = useState(false)
-
-  useEffect(() => {
-    function handleAfterPrint() { setLang('pt') }
-    window.addEventListener('afterprint', handleAfterPrint)
-    return () => {
-      window.removeEventListener('afterprint', handleAfterPrint)
-      document.title = 'irisvet'
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!printRequested) return
-    let cancelado = false
-    waitForImagesToLoad()
-      .then(() => new Promise(resolve => setTimeout(resolve, 60)))
-      .then(() => {
-        if (cancelado) return
-        window.print()
-        setPrintRequested(false)
-      })
-    return () => { cancelado = true }
-  }, [printRequested])
-
-  useEffect(() => {
-    if (dados) document.title = nomeArquivoFicha(dados)
-  }, [dados])
+  const [baixando, setBaixando] = useState(null)
 
   useEffect(() => {
     async function fetchDados() {
@@ -256,62 +216,45 @@ export default function VerFicha() {
   const paciente = dados.patients || {}
   const tutor = paciente.tutors || {}
 
-  const L = (texto) => translateLabel(lang, texto)
-  const V = (chave, original) => (lang === 'en' ? (translated[chave] ?? original) : original)
+  // A pagina mostra sempre PT; a versao EN existe apenas no PDF, traduzida
+  // no servidor.
+  const L = (texto) => translateLabel('pt', texto)
+  const V = (chave, original) => original
 
-  function collectFreeTextFields() {
-    const fields = {
-      queixa_principal: dados.queixa_principal,
-      trat_ocular_previo: dados.trat_ocular_previo,
-      diag_ocular_previo: dados.diag_ocular_previo,
-      aspecto_geral: dados.aspecto_geral,
-      doencas_pre: dados.doencas_pre,
-      trat_sistemico: dados.trat_sistemico,
-      cirurgias: dados.cirurgias,
-      observacoes_historico: dados.observacoes_historico,
-      petisco_obs: flags.petisco,
-      esterelizacao_obs: flags.esterelizacao_obs,
-      vacinas_obs: flags.vacinas_obs,
-      ectoparasitas_obs: flags.ectoparasitas_obs,
-      exame_comentarios: exame.comentarios,
-      diagnostico: dados.diagnostico,
-      tratamento: dados.tratamento,
-      observacoes: dados.observacoes,
-    }
-    SINAIS.forEach(s => { fields[`sinal_obs_${s}`] = sinais[s]?.obs })
-    REFLEXOS.forEach(r => { fields[`reflexo_obs_${r}`] = exame.reflexos?.[r]?.obs })
-    TESTES.forEach(t => {
-      fields[`testes_${t}_OD`] = exame.testes?.[t]?.OD
-      fields[`testes_${t}_OE`] = exame.testes?.[t]?.OE
-    })
-    SEGMENTAR.forEach(s => {
-      fields[`segmentar_${s}_OD`] = exame.segmentar?.[s]?.OD
-      fields[`segmentar_${s}_OE`] = exame.segmentar?.[s]?.OE
-    })
-    return fields
-  }
-
-  async function exportarPT() {
-    setLang('pt')
-    setPrintRequested(true)
-  }
-
-  async function exportarEN() {
+  // O PDF é gerado no servidor (api/ficha-pdf) em vez de window.print(): a
+  // paginação fica igual em qualquer sistema/navegador e o nome do ficheiro
+  // vem no cabeçalho Content-Disposition, que o Safari do iOS respeita —
+  // ao contrário do document.title, que ignora.
+  async function baixarPdf(idioma) {
+    setBaixando(idioma)
     setTranslateError(null)
-    if (Object.keys(translated).length === 0) {
-      setTranslating(true)
-      try {
-        const result = await translateFreeTextFields(collectFreeTextFields())
-        setTranslated(result)
-      } catch (e) {
-        setTranslateError('Erro ao traduzir. Verifica a ligação e tenta novamente.')
-        setTranslating(false)
-        return
-      }
-      setTranslating(false)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch(`/api/ficha-pdf?id=${id}&lang=${idioma}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+      if (!res.ok) throw new Error('Falha ao gerar PDF')
+
+      // prefere o nome que o servidor indicou
+      const disposicao = res.headers.get('Content-Disposition') || ''
+      const encontrado = disposicao.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i)
+      const nome = encontrado ? decodeURIComponent(encontrado[1]) : `ficha-${id}.pdf`
+
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = nome
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error(e)
+      setTranslateError('Erro ao gerar o PDF. Verifica a ligação e tenta novamente.')
+    } finally {
+      setBaixando(null)
     }
-    setLang('en')
-    setPrintRequested(true)
   }
 
   return (
@@ -326,9 +269,11 @@ export default function VerFicha() {
             subtitulo="Ficha de atendimento"
             botoes={<>
               <button onClick={() => navigate(`/editar/${id}`)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>✏️ Editar</button>
-              <button onClick={exportarPT} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🖨️ Exportar PDF</button>
-              <button onClick={exportarEN} disabled={translating} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: translating ? 0.55 : 1, color: 'white', fontSize: 13, fontWeight: 600, cursor: translating ? 'not-allowed' : 'pointer' }}>
-                {translating ? 'A traduzir...' : '🇬🇧 Exportar PDF (EN)'}
+              <button onClick={() => baixarPdf('pt')} disabled={!!baixando} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: baixando ? 0.55 : 1, color: 'white', fontSize: 13, fontWeight: 600, cursor: baixando ? 'not-allowed' : 'pointer' }}>
+                {baixando === 'pt' ? 'A gerar...' : '🖨️ Exportar PDF'}
+              </button>
+              <button onClick={() => baixarPdf('en')} disabled={!!baixando} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--iv-sage)', opacity: baixando ? 0.55 : 1, color: 'white', fontSize: 13, fontWeight: 600, cursor: baixando ? 'not-allowed' : 'pointer' }}>
+                {baixando === 'en' ? 'A traduzir...' : '🇬🇧 Exportar PDF (EN)'}
               </button>
               <button onClick={() => navigate('/consultar')} style={btnNav}>← Voltar</button>
               <button onClick={() => navigate('/')} style={btnNav}>🏠 Home</button>
@@ -479,9 +424,9 @@ export default function VerFicha() {
               </tbody>
             </table>
             <Divider />
-            <TabelaVer titulo="Testes Oftálmicos" linhas={TESTES} secao={exame.testes} lang={lang} V={V} keyPrefix="testes" />
+            <TabelaVer titulo="Testes Oftálmicos" linhas={TESTES} secao={exame.testes} lang="pt" V={V} keyPrefix="testes" />
             <Divider />
-            <TabelaVer titulo="Avaliação Segmentar" linhas={SEGMENTAR} secao={exame.segmentar} lang={lang} V={V} keyPrefix="segmentar" />
+            <TabelaVer titulo="Avaliação Segmentar" linhas={SEGMENTAR} secao={exame.segmentar} lang="pt" V={V} keyPrefix="segmentar" />
             <Divider />
             <Campo label={L('Comentários')} valor={V('exame_comentarios', exame.comentarios)} />
           </Card>
