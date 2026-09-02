@@ -14,6 +14,16 @@ const TIPO_BADGE = {
 
 const MESES_ABREV = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
+// Ordem fixa de baixo para cima na barra empilhada, e cores reaproveitadas
+// dos tokens de design (mesma família de cores dos badges de tipo).
+const ORDEM_TIPOS = ['Consulta', 'Retorno/Reavaliação', 'Exame Complementar', 'Intervenção']
+const TIPO_COR = {
+  'Consulta': 'var(--iv-sage)',
+  'Retorno/Reavaliação': 'var(--iv-sage-dark)',
+  'Exame Complementar': 'var(--iv-plum)',
+  'Intervenção': 'var(--iv-amber)',
+}
+
 function badgeStyle(tipo) {
   const s = TIPO_BADGE[tipo] || { bg: 'var(--iv-line)', color: 'var(--iv-ink-muted)', border: 'var(--iv-line)' }
   return {
@@ -59,7 +69,7 @@ export default function Dashboard() {
   const [dataDe, setDataDe] = useState(primeiroDiaDoAno())
   const [dataAte, setDataAte] = useState(hoje())
   const [moedaGrafico, setMoedaGrafico] = useState('EUR')
-  const [hoverBarra, setHoverBarra] = useState(null)
+  const [hoverInfo, setHoverInfo] = useState(null) // { ym, tipo, valor } | null
 
   useEffect(() => {
     async function fetchDados() {
@@ -113,7 +123,11 @@ export default function Dashboard() {
     for (const r of filtrados) {
       if (r.moeda !== moedaGrafico || typeof r.valor !== 'number') continue
       const ym = ymDe(r.data)
-      somaPorMes[ym] = (somaPorMes[ym] || 0) + r.valor
+      if (!somaPorMes[ym]) somaPorMes[ym] = { total: 0, porTipo: {} }
+      somaPorMes[ym].total += r.valor
+      // tipos fora de ORDEM_TIPOS ainda entram no total, só não aparecem
+      // como fatia própria na barra (ver ORDEM_TIPOS/TIPO_COR).
+      somaPorMes[ym].porTipo[r.tipo_atendimento] = (somaPorMes[ym].porTipo[r.tipo_atendimento] || 0) + r.valor
     }
     const chaves = Object.keys(somaPorMes)
     if (chaves.length === 0) return []
@@ -133,7 +147,11 @@ export default function Dashboard() {
       sequencia = chaves.sort()
     }
 
-    return sequencia.map(ym => ({ ym, label: labelYm(ym), total: somaPorMes[ym] || 0 }))
+    return sequencia.map(ym => ({
+      ym, label: labelYm(ym),
+      total: somaPorMes[ym]?.total || 0,
+      porTipo: somaPorMes[ym]?.porTipo || {},
+    }))
   }, [filtrados, moedaGrafico, dataDe, dataAte])
 
   function aplicarPreset(preset) {
@@ -233,6 +251,7 @@ export default function Dashboard() {
                   Sem faturamento registado em {moedaGrafico} neste período.
                 </div>
               ) : (
+                <>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {/* eixo Y — coluna fixa, não faz scroll com as barras */}
                   <div style={{ position: 'relative', width: 52, flexShrink: 0, height: 220, paddingTop: 24 }}>
@@ -256,23 +275,37 @@ export default function Dashboard() {
                       ))}
                       {barrasGrafico.map(b => {
                         const alturaPct = maxBarra > 0 ? (b.total / maxBarra) : 0
-                        const emHover = hoverBarra === b.ym
+                        const alturaTotalPx = Math.max(alturaPct * 180, b.total > 0 ? 3 : 0)
+                        const hoverAqui = hoverInfo && hoverInfo.ym === b.ym ? hoverInfo : null
                         return (
-                          <div key={b.ym} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: '0 0 40px', zIndex: 1 }}>
-                            {b.total > 0 && (
-                              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--iv-sage)', marginBottom: 4, whiteSpace: 'nowrap' }}>
-                                {formatarValor(b.total, moedaGrafico)}
+                          <div key={b.ym} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: '0 0 40px', minWidth: 0, zIndex: hoverAqui ? 2 : 1 }}>
+                            {(b.total > 0 || hoverAqui) && (
+                              <div style={{ fontSize: 11, fontWeight: 600, color: hoverAqui ? TIPO_COR[hoverAqui.tipo] : 'var(--iv-sage)', marginBottom: 4, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                                {hoverAqui
+                                  ? `${hoverAqui.tipo}: ${formatarValor(hoverAqui.valor, moedaGrafico)}`
+                                  : formatarValor(b.total, moedaGrafico)}
                               </div>
                             )}
-                            <div
-                              onMouseEnter={() => setHoverBarra(b.ym)}
-                              onMouseLeave={() => setHoverBarra(null)}
-                              style={{
-                                width: 24, height: Math.max(alturaPct * 180, b.total > 0 ? 3 : 0),
-                                background: emHover ? 'var(--iv-sage-dark)' : 'var(--iv-sage)',
-                                borderRadius: '4px 4px 0 0', cursor: 'pointer', transition: 'background 0.15s'
-                              }}
-                            />
+                            <div style={{ width: 24, height: alturaTotalPx, borderRadius: '4px 4px 0 0', overflow: 'hidden', display: 'flex', flexDirection: 'column-reverse' }}>
+                              {ORDEM_TIPOS.map(tipo => {
+                                const valor = b.porTipo[tipo] || 0
+                                if (valor <= 0) return null
+                                const segPct = b.total > 0 ? (valor / b.total) * 100 : 0
+                                const ativo = hoverAqui?.tipo === tipo
+                                return (
+                                  <div
+                                    key={tipo}
+                                    onMouseEnter={() => setHoverInfo({ ym: b.ym, tipo, valor })}
+                                    onMouseLeave={() => setHoverInfo(null)}
+                                    style={{
+                                      width: '100%', height: `${segPct}%`,
+                                      background: TIPO_COR[tipo], opacity: ativo ? 0.8 : 1,
+                                      cursor: 'pointer', transition: 'opacity 0.15s'
+                                    }}
+                                  />
+                                )
+                              })}
+                            </div>
                             <div style={{ fontSize: 10, color: 'var(--iv-ink-muted)', marginTop: 6, whiteSpace: 'nowrap' }}>{b.label}</div>
                           </div>
                         )
@@ -280,6 +313,17 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
+
+                {/* LEGENDA */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px 20px', marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--iv-line)' }}>
+                  {ORDEM_TIPOS.map(tipo => (
+                    <div key={tipo} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 10, borderRadius: 3, background: TIPO_COR[tipo], display: 'inline-block', flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, color: 'var(--iv-ink-muted)' }}>{tipo}</span>
+                    </div>
+                  ))}
+                </div>
+                </>
               )}
             </div>
 
