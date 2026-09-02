@@ -40,8 +40,11 @@ function winAnsi(text) {
     .replace(/—|–/g, '-')
     .replace(/[‘’]/g, "'")
     .replace(/[“”]/g, '"')
-    // mantem apenas o que a codificacao WinAnsi consegue representar
-    .replace(/[^\x20-\xFF]/g, '')
+    // mantem apenas o que a codificacao WinAnsi consegue representar — mas
+    // preserva o \n (0x0A): fica fora de \x20-\xFF mas o wrapText precisa
+    // dele para separar paragrafos, senao texto com quebras de linha
+    // (ex.: Observações com varios paragrafos) colava tudo numa linha só.
+    .replace(/[^\x20-\xFF\n]/g, '')
     .trim()
 }
 

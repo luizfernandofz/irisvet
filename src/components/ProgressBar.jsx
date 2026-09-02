@@ -1,4 +1,4 @@
-export default function ProgressBar({ sessaoActual, total }) {
+export default function ProgressBar({ sessaoActual }) {
   const sessoes = [
     'Data e ID',
     'Anamnese',

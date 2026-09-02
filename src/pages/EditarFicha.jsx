@@ -183,6 +183,7 @@ export default function EditarFicha() {
   if (revisao) return (
     <Revisao
       dados={dados}
+      consultationId={id}
       onEditar={() => setRevisao(false)}
       onFinalizar={async () => {
         setFinalizing(true)

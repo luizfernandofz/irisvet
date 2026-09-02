@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { formatarData, calcularIdade } from '../lib/utils'
+import { formatarData } from '../lib/utils'
 import Header from '../components/Header'
 
 export default function VerConsentimento() {

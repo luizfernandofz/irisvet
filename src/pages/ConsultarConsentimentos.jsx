@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Fuse from 'fuse.js'
 import { supabase } from '../lib/supabase'
@@ -23,33 +23,32 @@ export default function ConsultarConsentimentos({ profile }) {
   const [filtroDataDe, setFiltroDataDe] = useState('')
   const [filtroDataAte, setFiltroDataAte] = useState('')
   const [filtroVet, setFiltroVet] = useState('')
-  const [resultados, setResultados] = useState([])
-
-  async function fetchDados() {
-    setLoading(true)
-    const { data } = await supabase
-      .from('consent_forms')
-      .select(`
-        id, data, procedimento, valor, status,
-        profiles ( display_name ),
-        patients ( id, nome, especie, raca, tutors ( nome, telefone ) )
-      `)
-      .order('data', { ascending: false })
-
-    const formatados = (data || []).map(t => ({
-      id: t.id, data: t.data, procedimento: t.procedimento || '', status: t.status,
-      paciente_nome: t.patients?.nome || '', tutor_nome: t.patients?.tutors?.nome || '',
-      vet_nome: t.profiles?.display_name || '',
-      _nome_norm: normalizar(t.patients?.nome), _tutor_norm: normalizar(t.patients?.tutors?.nome),
-    }))
-    setTermos(formatados)
-    setResultados(formatados)
-    setLoading(false)
-  }
-
-  useEffect(() => { fetchDados() }, [])
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
+    async function fetchDados() {
+      const { data } = await supabase
+        .from('consent_forms')
+        .select(`
+          id, data, procedimento, valor, status,
+          profiles ( display_name ),
+          patients ( id, nome, especie, raca, tutors ( nome, telefone ) )
+        `)
+        .order('data', { ascending: false })
+
+      const formatados = (data || []).map(t => ({
+        id: t.id, data: t.data, procedimento: t.procedimento || '', status: t.status,
+        paciente_nome: t.patients?.nome || '', tutor_nome: t.patients?.tutors?.nome || '',
+        vet_nome: t.profiles?.display_name || '',
+        _nome_norm: normalizar(t.patients?.nome), _tutor_norm: normalizar(t.patients?.tutors?.nome),
+      }))
+      setTermos(formatados)
+      setLoading(false)
+    }
+    fetchDados()
+  }, [refreshKey])
+
+  const resultados = useMemo(() => {
     let lista = [...termos]
     if (filtroDataDe) lista = lista.filter(t => t.data >= filtroDataDe)
     if (filtroDataAte) lista = lista.filter(t => t.data <= filtroDataAte)
@@ -66,7 +65,7 @@ export default function ConsultarConsentimentos({ profile }) {
       const r = fuse.search(termo)
       lista = r.length > 0 ? r.map(x => x.item) : lista.filter(t => t._nome_norm.includes(termo))
     }
-    setResultados(lista)
+    return lista
   }, [filtroTutor, filtroPet, filtroDataDe, filtroDataAte, filtroVet, isGodMode, termos])
 
   const vetsDisponiveis = isGodMode
@@ -81,7 +80,8 @@ export default function ConsultarConsentimentos({ profile }) {
     const confirmado = window.confirm('Você realmente quer eliminar permanentemente este termo de consentimento?')
     if (!confirmado) return
     await supabase.from('consent_forms').delete().eq('id', id)
-    fetchDados()
+    setLoading(true)
+    setRefreshKey(k => k + 1)
   }
 
   return (

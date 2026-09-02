@@ -73,11 +73,10 @@ export async function generateConsentPdfBytes(termo, lang = 'pt') {
   if (lang === 'en') {
     const toTranslate = [procedimento, observacoes, idade].filter(t => t && t.trim())
     if (toTranslate.length > 0) {
-      const translated = await translateTexts(toTranslate, 'EN-US')
-      let i = 0
-      if (procedimento && procedimento.trim()) procedimento = translated[i++]
-      if (observacoes && observacoes.trim()) observacoes = translated[i++]
-      if (idade && idade.trim()) idade = translated[i++]
+      const translated = [...await translateTexts(toTranslate, 'EN-US')]
+      if (procedimento && procedimento.trim()) procedimento = translated.shift()
+      if (observacoes && observacoes.trim()) observacoes = translated.shift()
+      if (idade && idade.trim()) idade = translated.shift()
     }
   }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Fuse from 'fuse.js'
 import { supabase } from '../lib/supabase'
@@ -24,35 +24,34 @@ export default function ConsultarReceituarios({ profile }) {
   const [filtroDataDe, setFiltroDataDe] = useState('')
   const [filtroDataAte, setFiltroDataAte] = useState('')
   const [filtroVet, setFiltroVet] = useState('')
-  const [resultados, setResultados] = useState([])
-
-  async function fetchDados() {
-    setLoading(true)
-    const { data } = await supabase
-      .from('receituarios')
-      .select(`
-        id, data, idade_no_receituario, status,
-        profiles ( display_name ),
-        patients ( id, nome, raca, tutors ( nome, nif ) )
-      `)
-      .order('data', { ascending: false })
-
-    const formatados = (data || []).map(r => ({
-      id: r.id, data: r.data, status: r.status, idade: r.idade_no_receituario || '',
-      paciente_nome: r.patients?.nome || '', paciente_raca: r.patients?.raca || '',
-      tutor_nome: r.patients?.tutors?.nome || '', tutor_nif: r.patients?.tutors?.nif || '',
-      vet_nome: r.profiles?.display_name || '',
-      _nome_norm: normalizar(r.patients?.nome), _tutor_norm: normalizar(r.patients?.tutors?.nome),
-      _raca_norm: normalizar(r.patients?.raca),
-    }))
-    setReceituarios(formatados)
-    setResultados(formatados)
-    setLoading(false)
-  }
-
-  useEffect(() => { fetchDados() }, [])
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
+    async function fetchDados() {
+      const { data } = await supabase
+        .from('receituarios')
+        .select(`
+          id, data, idade_no_receituario, status,
+          profiles ( display_name ),
+          patients ( id, nome, raca, tutors ( nome, nif ) )
+        `)
+        .order('data', { ascending: false })
+
+      const formatados = (data || []).map(r => ({
+        id: r.id, data: r.data, status: r.status, idade: r.idade_no_receituario || '',
+        paciente_nome: r.patients?.nome || '', paciente_raca: r.patients?.raca || '',
+        tutor_nome: r.patients?.tutors?.nome || '', tutor_nif: r.patients?.tutors?.nif || '',
+        vet_nome: r.profiles?.display_name || '',
+        _nome_norm: normalizar(r.patients?.nome), _tutor_norm: normalizar(r.patients?.tutors?.nome),
+        _raca_norm: normalizar(r.patients?.raca),
+      }))
+      setReceituarios(formatados)
+      setLoading(false)
+    }
+    fetchDados()
+  }, [refreshKey])
+
+  const resultados = useMemo(() => {
     let lista = [...receituarios]
     if (filtroDataDe) lista = lista.filter(r => r.data >= filtroDataDe)
     if (filtroDataAte) lista = lista.filter(r => r.data <= filtroDataAte)
@@ -73,7 +72,7 @@ export default function ConsultarReceituarios({ profile }) {
       const r = fuse.search(termo)
       lista = r.length > 0 ? r.map(x => x.item) : lista.filter(x => x._nome_norm.includes(termo))
     }
-    setResultados(lista)
+    return lista
   }, [filtroResponsavel, filtroPaciente, filtroRaca, filtroDataDe, filtroDataAte, filtroVet, isGodMode, receituarios])
 
   const vetsDisponiveis = isGodMode ? [...new Set(receituarios.map(r => r.vet_nome).filter(Boolean))].sort() : []
@@ -87,7 +86,8 @@ export default function ConsultarReceituarios({ profile }) {
     const confirmado = window.confirm('Você realmente quer eliminar permanentemente este receituário?')
     if (!confirmado) return
     await supabase.from('receituarios').delete().eq('id', id)
-    fetchDados()
+    setLoading(true)
+    setRefreshKey(k => k + 1)
   }
 
   return (

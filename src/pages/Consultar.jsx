@@ -1,5 +1,5 @@
 // Consultar.jsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Fuse from 'fuse.js'
 import { supabase } from '../lib/supabase'
@@ -56,50 +56,49 @@ export default function Consultar({ profile }) {
   const [filtroDataDe, setFiltroDataDe] = useState('')
   const [filtroDataAte, setFiltroDataAte] = useState('')
   const [filtroVet, setFiltroVet] = useState('')
-  const [resultados, setResultados] = useState([])
-
-  async function fetchDados() {
-    setLoading(true)
-    const { data: patients } = await supabase
-      .from('patients')
-      .select(`
-        id, nome, especie, raca,
-        profiles ( display_name ),
-        tutors ( id, nome, telefone ),
-        consultations ( id, data, tipo_atendimento, status ),
-        follow_ups ( id, data, tipo_atendimento )
-      `)
-      .order('nome')
-
-    const formatados = (patients || []).map(p => {
-      const consultas = (p.consultations || []).map(c => ({
-        id: c.id, tipo: c.tipo_atendimento || 'Consulta',
-        data: c.data, status: c.status, tabela: 'consultations',
-      }))
-      const reavs = (p.follow_ups || []).map(f => ({
-        id: f.id, tipo: f.tipo_atendimento || 'Retorno/Reavaliação',
-        data: f.data, status: 'finalizada', tabela: 'follow_ups',
-      }))
-      const todasFichas = [...consultas, ...reavs].sort((a, b) => b.data.localeCompare(a.data))
-      const ultimaData = todasFichas[0]?.data || ''
-      return {
-        id: p.id, nome: p.nome || '', especie: p.especie || '',
-        raca: p.raca || '', tutor_nome: p.tutors?.nome || '',
-        tutor_telefone: p.tutors?.telefone || '', fichas: todasFichas, ultimaData,
-        vet_nome: p.profiles?.display_name || '',
-        _nome_norm: normalizar(p.nome), _tutor_norm: normalizar(p.tutors?.nome),
-        _telefone_norm: normalizar(p.tutors?.telefone),
-      }
-    })
-    formatados.sort((a, b) => b.ultimaData.localeCompare(a.ultimaData))
-    setPacientes(formatados)
-    setResultados(formatados)
-    setLoading(false)
-  }
-
-  useEffect(() => { fetchDados() }, [])
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
+    async function fetchDados() {
+      const { data: patients } = await supabase
+        .from('patients')
+        .select(`
+          id, nome, especie, raca,
+          profiles ( display_name ),
+          tutors ( id, nome, telefone ),
+          consultations ( id, data, tipo_atendimento, status ),
+          follow_ups ( id, data, tipo_atendimento )
+        `)
+        .order('nome')
+
+      const formatados = (patients || []).map(p => {
+        const consultas = (p.consultations || []).map(c => ({
+          id: c.id, tipo: c.tipo_atendimento || 'Consulta',
+          data: c.data, status: c.status, tabela: 'consultations',
+        }))
+        const reavs = (p.follow_ups || []).map(f => ({
+          id: f.id, tipo: f.tipo_atendimento || 'Retorno/Reavaliação',
+          data: f.data, status: 'finalizada', tabela: 'follow_ups',
+        }))
+        const todasFichas = [...consultas, ...reavs].sort((a, b) => b.data.localeCompare(a.data))
+        const ultimaData = todasFichas[0]?.data || ''
+        return {
+          id: p.id, nome: p.nome || '', especie: p.especie || '',
+          raca: p.raca || '', tutor_nome: p.tutors?.nome || '',
+          tutor_telefone: p.tutors?.telefone || '', fichas: todasFichas, ultimaData,
+          vet_nome: p.profiles?.display_name || '',
+          _nome_norm: normalizar(p.nome), _tutor_norm: normalizar(p.tutors?.nome),
+          _telefone_norm: normalizar(p.tutors?.telefone),
+        }
+      })
+      formatados.sort((a, b) => b.ultimaData.localeCompare(a.ultimaData))
+      setPacientes(formatados)
+      setLoading(false)
+    }
+    fetchDados()
+  }, [refreshKey])
+
+  const resultados = useMemo(() => {
     let lista = [...pacientes]
     if (filtroEspecie) lista = lista.filter(p => p.especie === filtroEspecie)
     if (filtroDataDe) lista = lista.filter(p => p.ultimaData >= filtroDataDe)
@@ -121,7 +120,7 @@ export default function Consultar({ profile }) {
       const r = fuse.search(termo)
       lista = r.length > 0 ? r.map(x => x.item) : lista.filter(p => p._nome_norm.includes(termo))
     }
-    setResultados(lista)
+    return lista
   }, [filtroTutor, filtroTelefone, filtroPet, filtroEspecie, filtroDataDe, filtroDataAte, filtroVet, isGodMode, pacientes])
 
   const vetsDisponiveis = isGodMode
@@ -203,7 +202,7 @@ export default function Consultar({ profile }) {
               paciente={paciente}
               ultimo={i === resultados.length - 1}
               navigate={navigate}
-              onRefresh={fetchDados}
+              onRefresh={() => { setLoading(true); setRefreshKey(k => k + 1) }}
               mostrarVet={isGodMode}
             />
           ))}

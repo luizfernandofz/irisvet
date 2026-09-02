@@ -23,7 +23,7 @@ import VerReceituario from './pages/VerReceituario'
 import EditarReceituario from './pages/EditarReceituario'
 import Dashboard from './pages/Dashboard'
 
-function Home({ session }) {
+function Home() {
   const navigate = useNavigate()
 
   async function handleLogout() {
@@ -150,9 +150,11 @@ function AppInner() {
 
   useEffect(() => {
     if (session === undefined) return
-    if (!session) { setProfile(null); return }
-    supabase.from('profiles').select('role, display_name').eq('id', session.user.id).single()
-      .then(({ data }) => setProfile(data ?? null))
+    const request = session
+      ? supabase.from('profiles').select('role, display_name').eq('id', session.user.id).single()
+        .then(({ data }) => data ?? null)
+      : Promise.resolve(null)
+    request.then(setProfile)
   }, [session])
 
   if (session === undefined) return null
@@ -166,7 +168,7 @@ function AppInner() {
         <Route path="/*" element={null} />
       ) : (
         <>
-          <Route path="/" element={<Home session={session} />} />
+          <Route path="/" element={<Home />} />
           <Route path="/nova-consulta" element={<NovaConsulta />} />
           <Route path="/nova-consulta/:patientId" element={<NovaConsulta />} />
           <Route path="/consultar" element={<Consultar profile={profile} />} />

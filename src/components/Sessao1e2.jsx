@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import AutoTextarea from './AutoTextarea'
 import CamposFinanceiros from './CamposFinanceiros'
 import { calcularIdade } from '../lib/utils'
 

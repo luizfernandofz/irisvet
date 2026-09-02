@@ -47,6 +47,7 @@ export const EN_LABELS = {
   'Observações e procedimentos realizados': 'Notes and procedures performed',
   'Tutor': 'Owner',
   'Motivo': 'Reason',
+  'Motivo da consulta': 'Reason for visit',
   'Avaliação': 'Assessment',
   'Tratamento': 'Treatment',
 

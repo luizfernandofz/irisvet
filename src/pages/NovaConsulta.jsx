@@ -485,6 +485,7 @@ export default function NovaConsulta() {
   if (revisao) return (
     <Revisao
       dados={dados}
+      consultationId={consultationId}
       onEditar={() => setRevisao(false)}
       onFinalizar={async () => {
         setFinalizing(true)

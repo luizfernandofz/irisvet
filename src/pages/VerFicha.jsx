@@ -159,7 +159,6 @@ export default function VerFicha() {
   const navigate = useNavigate()
   const [dados, setDados] = useState(null)
   const [imagens, setImagens] = useState([])
-  const [followUps, setFollowUps] = useState([])
   const [loading, setLoading] = useState(true)
   const [translateError, setTranslateError] = useState(null)
   const [baixando, setBaixando] = useState(null)
@@ -183,13 +182,8 @@ export default function VerFicha() {
         return { ...img, preview: error ? '' : data.signedUrl }
       }))
 
-      const { data: fus } = await supabase
-        .from('follow_ups').select('*').eq('consultation_id', id)
-        .order('data', { ascending: true })
-
       setDados(cons)
       setImagens(imagensComUrl)
-      setFollowUps(fus || [])
       setLoading(false)
     }
     fetchDados()
