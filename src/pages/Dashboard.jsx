@@ -373,7 +373,7 @@ export default function Dashboard() {
                   if (linha.item === 'cabecalho') {
                     return (
                       <div key={`grupo-${linha.ym}`} style={{
-                        padding: '10px 24px', background: 'var(--iv-bg)', borderBottom: '1px solid var(--iv-line)',
+                        padding: '10px 24px', background: 'var(--iv-sage-light)', borderBottom: '1px solid var(--iv-line)',
                         borderTop: i > 0 ? '1px solid var(--iv-line)' : 'none',
                         display: 'flex', alignItems: 'baseline', justifyContent: 'space-between'
                       }}>
