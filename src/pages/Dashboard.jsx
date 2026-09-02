@@ -62,6 +62,19 @@ function primeiroDiaDoMes() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`
 }
 
+// Fichas antigas sem paciente vinculado (bug já corrigido na origem) que
+// ainda assim têm dado clínico/financeiro real — mantidas visíveis como
+// exceção pontual até serem reclassificadas manualmente pela Dra. Anna.
+// Novas fichas sem paciente/tutor nunca aparecem aqui (ver filtro em `filtrados`).
+const EXCECOES_SEM_PACIENTE = new Set([
+  '2dbd9b0b-1359-43bb-83cb-8dd9acf9d2c5',
+  '61c7aec9-6a08-4932-85b5-4b450b0b0277',
+  '69ed9990-e62b-4cc3-b982-d838be669e0f',
+  '96c632d3-45ad-4c06-8b19-935301ef90ff',
+  '67c67773-428b-41c5-a10c-8cb869670a7c',
+  '77f32ded-d3ba-4fbc-a1a2-f52748a1c791',
+])
+
 export default function Dashboard() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
@@ -90,6 +103,7 @@ export default function Dashboard() {
         deslocamento: r.deslocamento,
         paciente_nome: r.patients?.nome || '',
         tutor_nome: r.patients?.tutors?.nome || '',
+        temPaciente: !!r.patients,
       }))
       setRegistros([...normalizar(cons, 'consultations'), ...normalizar(fus, 'follow_ups')])
       setLoading(false)
@@ -100,8 +114,28 @@ export default function Dashboard() {
   const filtrados = useMemo(() => {
     return registros
       .filter(r => r.data && (!dataDe || r.data >= dataDe) && (!dataAte || r.data <= dataAte))
+      .filter(r => r.temPaciente || EXCECOES_SEM_PACIENTE.has(r.id))
       .sort((a, b) => b.data.localeCompare(a.data))
   }, [registros, dataDe, dataAte])
+
+  const listaComGrupos = useMemo(() => {
+    const contagemPorMes = {}
+    for (const r of filtrados) {
+      const ym = ymDe(r.data)
+      contagemPorMes[ym] = (contagemPorMes[ym] || 0) + 1
+    }
+    const out = []
+    let ymAnterior = null
+    for (const r of filtrados) {
+      const ym = ymDe(r.data)
+      if (ym !== ymAnterior) {
+        out.push({ item: 'cabecalho', ym, label: labelYm(ym), contagem: contagemPorMes[ym] })
+        ymAnterior = ym
+      }
+      out.push({ item: 'registro', registro: r })
+    }
+    return out
+  }, [filtrados])
 
   const resumo = useMemo(() => {
     const porMoeda = { EUR: { total: 0, deslocamento: 0, meses: new Set(), contagem: 0 }, BRL: { total: 0, deslocamento: 0, meses: new Set(), contagem: 0 } }
@@ -335,38 +369,63 @@ export default function Dashboard() {
               {filtrados.length === 0 ? (
                 <div style={{ padding: 40, textAlign: 'center', color: 'var(--iv-ink-muted)', fontSize: 14 }}>Nenhum atendimento neste período</div>
               ) : (
-                filtrados.map((r, i) => (
-                  <div key={`${r.tabela}-${r.id}`} style={{
-                    padding: '14px 24px', borderBottom: i < filtrados.length - 1 ? '1px solid var(--iv-line)' : 'none',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap'
-                  }}>
-                    <div style={{ minWidth: 220 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        <span style={badgeStyle(r.tipo_atendimento)}>{r.tipo_atendimento}</span>
-                        <span style={{ fontSize: 13, color: 'var(--iv-ink-muted)' }}>{formatarData(r.data)}</span>
+                listaComGrupos.map((linha, i) => {
+                  if (linha.item === 'cabecalho') {
+                    return (
+                      <div key={`grupo-${linha.ym}`} style={{
+                        padding: '10px 24px', background: 'var(--iv-bg)', borderBottom: '1px solid var(--iv-line)',
+                        borderTop: i > 0 ? '1px solid var(--iv-line)' : 'none',
+                        display: 'flex', alignItems: 'baseline', justifyContent: 'space-between'
+                      }}>
+                        <span style={{ fontFamily: 'var(--iv-font-display)', fontSize: 13, fontWeight: 600, color: 'var(--iv-sage-dark)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                          {linha.label}
+                        </span>
+                        <span style={{ fontSize: 12, color: 'var(--iv-ink-muted)' }}>
+                          {linha.contagem} atendimento{linha.contagem !== 1 ? 's' : ''}
+                        </span>
                       </div>
-                      <div style={{ fontSize: 13, color: 'var(--iv-ink)' }}>
-                        {r.paciente_nome || 'Sem nome'}
-                        {r.tutor_nome ? <span style={{ color: 'var(--iv-ink-muted)' }}> · {r.tutor_nome}</span> : ''}
-                        {r.local ? <span style={{ color: 'var(--iv-ink-muted)' }}> · {r.local}</span> : ''}
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                      <div style={{ textAlign: 'right', fontSize: 13 }}>
-                        <div style={{ fontWeight: 600, color: r.valor != null ? 'var(--iv-ink)' : 'var(--iv-line)' }}>
-                          {formatarValor(r.valor, r.moeda) || 'Sem valor'}
+                    )
+                  }
+                  const r = linha.registro
+                  const ultimaLinha = i === listaComGrupos.length - 1
+                  return (
+                    <div key={`${r.tabela}-${r.id}`} style={{
+                      padding: '14px 24px', borderBottom: ultimaLinha ? 'none' : '1px solid var(--iv-line)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap'
+                    }}>
+                      <div style={{ minWidth: 220 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <span style={badgeStyle(r.tipo_atendimento)}>{r.tipo_atendimento}</span>
+                          <span style={{ fontSize: 13, color: 'var(--iv-ink-muted)' }}>{formatarData(r.data)}</span>
+                          {!r.temPaciente && (
+                            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'var(--iv-amber-light)', color: 'var(--iv-amber-dark)', fontWeight: 600 }}>
+                              ⚠ sem paciente
+                            </span>
+                          )}
                         </div>
-                        {r.deslocamento != null && r.deslocamento > 0 && (
-                          <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)' }}>+ {formatarValor(r.deslocamento, r.moeda)} desloc.</div>
-                        )}
+                        <div style={{ fontSize: 13, color: 'var(--iv-ink)' }}>
+                          {r.paciente_nome || 'Sem nome'}
+                          {r.tutor_nome ? <span style={{ color: 'var(--iv-ink-muted)' }}> · {r.tutor_nome}</span> : ''}
+                          {r.local ? <span style={{ color: 'var(--iv-ink-muted)' }}> · {r.local}</span> : ''}
+                        </div>
                       </div>
-                      <button
-                        onClick={() => navigate(r.tabela === 'consultations' ? `/editar/${r.id}` : `/editar-reav/${r.id}`)}
-                        style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                      >✏️ Editar</button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                        <div style={{ textAlign: 'right', fontSize: 13 }}>
+                          <div style={{ fontWeight: 600, color: r.valor != null ? 'var(--iv-ink)' : 'var(--iv-line)' }}>
+                            {formatarValor(r.valor, r.moeda) || 'Sem valor'}
+                          </div>
+                          {r.deslocamento != null && r.deslocamento > 0 && (
+                            <div style={{ fontSize: 11, color: 'var(--iv-ink-muted)' }}>+ {formatarValor(r.deslocamento, r.moeda)} desloc.</div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => navigate(r.tabela === 'consultations' ? `/editar/${r.id}` : `/editar-reav/${r.id}`)}
+                          style={{ padding: '6px 12px', borderRadius: 7, border: '1px solid var(--iv-plum)', background: 'transparent', color: 'var(--iv-plum-dark)', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                        >✏️ Editar</button>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  )
+                })
               )}
             </div>
           </>
