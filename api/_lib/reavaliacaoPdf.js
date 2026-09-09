@@ -145,7 +145,7 @@ export async function generateReavaliacaoPdfBytes(fu, imagens = [], lang = 'pt',
     page.drawText(winAnsi('Dra. Anna Clara B. Hussein Zanuto'), {
       x: textoX, y: y - 15, size: 13, font: fontBold, color: SAGE,
     })
-    page.drawText(winAnsi('OMV 10.122 · PT: +351 916720461 · site: ofaltmo.vet'), {
+    page.drawText(winAnsi('OMV 10.122 | PT: +351 916720461 | Site: ofaltmo.vet | E-mail: annaoftalmovet@gmail.com'), {
       x: textoX, y: y - 28, size: 8, font, color: INK_MUTED,
     })
     y -= logoH + 8

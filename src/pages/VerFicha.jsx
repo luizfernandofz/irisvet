@@ -287,7 +287,7 @@ export default function VerFicha() {
             <img src={logoIrisvet} alt="írisvet" style={{ height: 44, width: 'auto' }} />
             <div>
               <div style={{ fontFamily: 'var(--iv-font-display)', fontSize: 18, fontWeight: 500, color: 'var(--iv-sage)' }}>Dra. Anna Clara B. Hussein Zanuto</div>
-              <div style={{ fontSize: 10, color: 'var(--iv-ink-muted)' }}>OMV 10.122 · PT: +351 916720461 · site: ofaltmo.vet</div>
+              <div style={{ fontSize: 10, color: 'var(--iv-ink-muted)' }}>OMV 10.122 | PT: +351 916720461 | Site: ofaltmo.vet | E-mail: annaoftalmovet@gmail.com</div>
             </div>
           </div>
 
