@@ -134,7 +134,7 @@ export async function generateConsentPdfBytes(termo, lang = 'pt') {
   const logoW = (logoImg.width / logoImg.height) * logoH
   page.drawImage(logoImg, { x: MARGIN, y: y - logoH, width: logoW, height: logoH })
   y -= logoH + 6
-  drawText('OMV 10.122 · annaoftalmovet.com.pt', { size: 9, color: GRAY, gap: 16 })
+  drawText('OMV 10.122 · site: ofaltmo.vet', { size: 9, color: GRAY, gap: 16 })
 
   drawText(L('TERMO DE CONSENTIMENTO CIRÚRGICO'), { size: 16, bold: true, gap: 4 })
   drawText('IrisVet - Oftalmologia Veterinária', { size: 10, color: GRAY, gap: 20 })
