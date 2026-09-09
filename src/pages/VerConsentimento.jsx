@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { formatarData } from '../lib/utils'
+import { formatarData, capitalizarPrimeiraLetra } from '../lib/utils'
 import Header from '../components/Header'
 
 export default function VerConsentimento() {
@@ -169,9 +169,9 @@ export default function VerConsentimento() {
           <div style={sectionTitle}>Paciente</div>
           <Grid2>
             <Campo label="Nome do animal" valor={paciente.nome} />
-            <Campo label="Espécie" valor={paciente.especie} />
+            <Campo label="Espécie" valor={capitalizarPrimeiraLetra(paciente.especie)} />
             <Campo label="Raça" valor={paciente.raca} />
-            <Campo label="Género" valor={paciente.genero} />
+            <Campo label="Género" valor={capitalizarPrimeiraLetra(paciente.genero)} />
             <Campo label="Idade (no termo)" valor={dados.idade_no_termo} />
           </Grid2>
         </div>

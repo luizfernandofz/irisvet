@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import Header from '../components/Header'
 import { translateLabel } from '../lib/pdfTranslations'
+import { capitalizarPrimeiraLetra } from '../lib/utils'
 import logoIrisvet from '../assets/Logo-sem-fundo-menor.png'
 
 const ESPECIE_EMOJI = {
@@ -314,9 +315,9 @@ export default function VerFicha() {
             <SeccaoTitulo>{L('Paciente')}</SeccaoTitulo>
             <Grid2>
               <Campo label={L('Nome do animal')} valor={paciente.nome ? `${ESPECIE_EMOJI[paciente.especie] || ''} ${paciente.nome}`.trim() : ''} />
-              <Campo label={L('Espécie')} valor={L(paciente.especie)} />
+              <Campo label={L('Espécie')} valor={capitalizarPrimeiraLetra(L(paciente.especie))} />
               <Campo label={L('Raça')} valor={paciente.raca} />
-              <Campo label={L('Género')} valor={L(paciente.genero)} />
+              <Campo label={L('Género')} valor={capitalizarPrimeiraLetra(L(paciente.genero))} />
               <Campo label={L('Data de nascimento')} valor={paciente.data_nascimento} />
             </Grid2>
           </Card>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { composerFraseMedicamento } from '../lib/receituarioOptions'
+import { capitalizarPrimeiraLetra } from '../lib/utils'
 import Header from '../components/Header'
 
 export default function VerReceituario() {
@@ -94,8 +95,8 @@ export default function VerReceituario() {
             <Campo label="Nome do paciente" valor={paciente.nome} />
             <Campo label="Idade" valor={dados.idade_no_receituario} />
             <Campo label="Raça" valor={paciente.raca} />
-            <Campo label="Espécie" valor={paciente.especie} />
-            <Campo label="Género" valor={paciente.genero} />
+            <Campo label="Espécie" valor={capitalizarPrimeiraLetra(paciente.especie)} />
+            <Campo label="Género" valor={capitalizarPrimeiraLetra(paciente.genero)} />
           </Grid5>
           <div style={dividerStyle} />
           <div style={sectionTitle}>Dados do Responsável</div>

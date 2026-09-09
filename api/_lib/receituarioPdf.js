@@ -38,6 +38,12 @@ function formatarDataCurta(dataStr) {
   return `${dia}/${meses[parseInt(mes, 10) - 1]}/${ano}`
 }
 
+function capitalizarPrimeiraLetra(texto) {
+  if (!texto) return texto
+  const normalizado = texto.toLowerCase() === 'femea' ? 'fêmea' : texto
+  return normalizado.charAt(0).toUpperCase() + normalizado.slice(1).toLowerCase()
+}
+
 export async function generateReceituarioPdfBytes(rec, lang = 'pt') {
   const paciente = rec.patients || {}
   const tutor = paciente.tutors || {}
@@ -161,8 +167,8 @@ export async function generateReceituarioPdfBytes(rec, lang = 'pt') {
       { label: L('Nome do Paciente'), value: paciente.nome },
       { label: L('Idade'), value: idade },
       { label: L('Raça'), value: paciente.raca },
-      { label: L('Espécie'), value: L(paciente.especie) },
-      { label: L('Género'), value: L(paciente.genero) },
+      { label: L('Espécie'), value: capitalizarPrimeiraLetra(L(paciente.especie)) },
+      { label: L('Género'), value: capitalizarPrimeiraLetra(L(paciente.genero)) },
     ]
   )
 

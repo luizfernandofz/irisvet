@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import Header from '../components/Header'
 import MedicamentoBloco from '../components/MedicamentoBloco'
 import { RECOMENDACOES_OPCOES, novoMedicamento } from '../lib/receituarioOptions'
+import { capitalizarPrimeiraLetra } from '../lib/utils'
 
 export default function EditarReceituario() {
   const { id } = useParams()
@@ -93,7 +94,7 @@ export default function EditarReceituario() {
             </span>
           </div>
           <div style={{ fontSize: 14, color: 'var(--iv-ink)', lineHeight: 1.8 }}>
-            <strong>{paciente.nome}</strong> ({paciente.especie}{paciente.raca ? `, ${paciente.raca}` : ''}) · Responsável: {tutor.nome}
+            <strong>{paciente.nome}</strong> ({capitalizarPrimeiraLetra(paciente.especie)}{paciente.raca ? `, ${paciente.raca}` : ''}) · Responsável: {tutor.nome}
           </div>
           <div style={{ marginTop: 12 }}>
             <label style={labelStyle}>Data</label>

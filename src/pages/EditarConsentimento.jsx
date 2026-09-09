@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import Header from '../components/Header'
+import { capitalizarPrimeiraLetra } from '../lib/utils'
 
 export default function EditarConsentimento() {
   const { id } = useParams()
@@ -80,7 +81,7 @@ export default function EditarConsentimento() {
             </span>
           </div>
           <div style={{ fontSize: 14, color: 'var(--iv-ink)', lineHeight: 1.8 }}>
-            <strong>{paciente.nome}</strong> ({paciente.especie}{paciente.raca ? `, ${paciente.raca}` : ''}) · Tutor: {tutor.nome}
+            <strong>{paciente.nome}</strong> ({capitalizarPrimeiraLetra(paciente.especie)}{paciente.raca ? `, ${paciente.raca}` : ''}) · Tutor: {tutor.nome}
           </div>
         </div>
 

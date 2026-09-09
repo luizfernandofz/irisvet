@@ -111,6 +111,12 @@ function formatarData(dataStr) {
   return `${m[3]}/${meses[parseInt(m[2], 10) - 1]}/${m[1]}`
 }
 
+function capitalizarPrimeiraLetra(texto) {
+  if (!texto) return texto
+  const normalizado = texto.toLowerCase() === 'femea' ? 'fêmea' : texto
+  return normalizado.charAt(0).toUpperCase() + normalizado.slice(1).toLowerCase()
+}
+
 export function nomeArquivoFicha(consulta) {
   const sanitizar = s => winAnsi(s).replace(/[\\/:*?"<>|]/g, '').trim()
   const paciente = consulta.patients || {}
@@ -423,9 +429,9 @@ export async function generateFichaPdfBytes(consulta, imagens = [], lang = 'pt',
   tituloSeccao('Paciente')
   grelhaCampos([
     { label: L('Nome do animal'), valor: winAnsi(paciente.nome) },
-    { label: L('Espécie'), valor: L(paciente.especie) },
+    { label: L('Espécie'), valor: capitalizarPrimeiraLetra(L(paciente.especie)) },
     { label: L('Raça'), valor: winAnsi(paciente.raca) },
-    { label: L('Género'), valor: L(paciente.genero) },
+    { label: L('Género'), valor: capitalizarPrimeiraLetra(L(paciente.genero)) },
     { label: L('Data de nascimento'), valor: winAnsi(formatarData(paciente.data_nascimento)), full: true },
   ])
 

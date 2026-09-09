@@ -62,6 +62,12 @@ function formatarDataExtenso(dataStr) {
   return `${dia}/${meses[parseInt(mes, 10) - 1]}/${ano}`
 }
 
+function capitalizarPrimeiraLetra(texto) {
+  if (!texto) return texto
+  const normalizado = texto.toLowerCase() === 'femea' ? 'fêmea' : texto
+  return normalizado.charAt(0).toUpperCase() + normalizado.slice(1).toLowerCase()
+}
+
 export async function generateConsentPdfBytes(termo, lang = 'pt') {
   const paciente = termo.patients || {}
   const tutor = paciente.tutors || {}
@@ -156,9 +162,9 @@ export async function generateConsentPdfBytes(termo, lang = 'pt') {
 
   drawSectionTitle(L('Dados do Paciente'))
   drawField(L('Paciente'), paciente.nome)
-  drawField(L('Espécie'), L(paciente.especie))
+  drawField(L('Espécie'), capitalizarPrimeiraLetra(L(paciente.especie)))
   drawField(L('Raça'), paciente.raca)
-  drawField(L('Género'), L(paciente.genero))
+  drawField(L('Género'), capitalizarPrimeiraLetra(L(paciente.genero)))
   drawField(L('Idade'), idade)
   y -= 8
 

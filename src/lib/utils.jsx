@@ -19,6 +19,12 @@ export function waitForImagesToLoad(root = document, timeoutMs = 4000) {
   ])
 }
 
+export function capitalizarPrimeiraLetra(texto) {
+  if (!texto) return texto
+  const normalizado = texto.toLowerCase() === 'femea' ? 'fêmea' : texto
+  return normalizado.charAt(0).toUpperCase() + normalizado.slice(1).toLowerCase()
+}
+
 export function calcularIdade(dataNasc) {
   if (!dataNasc) return ''
   const nasc = new Date(dataNasc)

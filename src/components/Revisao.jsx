@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import { supabase } from '../lib/supabase'
+import { capitalizarPrimeiraLetra } from '../lib/utils'
 
 const ESPECIE_EMOJI = {
   canino: '🐶', felino: '🐈', roedor: '🐇', equino: '🐴', ave: '🦜', outro: '',
@@ -293,9 +294,9 @@ export default function Revisao({ dados, onEditar, onFinalizar, finalizing, erro
             <SeccaoTitulo>Paciente</SeccaoTitulo>
             <Grid2>
               <Campo label="Nome do animal" valor={dados.paciente_nome ? `${ESPECIE_EMOJI[dados.paciente_especie] || ''} ${dados.paciente_nome}`.trim() : ''} />
-              <Campo label="Espécie" valor={dados.paciente_especie} />
+              <Campo label="Espécie" valor={capitalizarPrimeiraLetra(dados.paciente_especie)} />
               <Campo label="Raça" valor={dados.paciente_raca} />
-              <Campo label="Género" valor={dados.paciente_genero} />
+              <Campo label="Género" valor={capitalizarPrimeiraLetra(dados.paciente_genero)} />
               <Campo label="Data de nascimento" valor={dados.paciente_nascimento} />
             </Grid2>
           </Card>
